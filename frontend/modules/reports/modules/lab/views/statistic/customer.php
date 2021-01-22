@@ -254,26 +254,7 @@ $this->params['breadcrumbs'][] = $this->title;
 				    	//GridView::HTML => [],
 				   		GridView::PDF => [],
 				    	//GridView::EXCEL => [],
-				        GridView::EXCEL => [
-				            'label' => 'Excel',
-				            //'icon' => 'file-excel-o',
-				            //'iconOptions' => ['class' => 'text-success'],
-				            'showHeader' => true,
-				            'showPageSummary' => true,
-				            'showFooter' => true,
-				            'showCaption' => true,
-				            //'filename' => 'Summary of Samples',
-				            //'worksheet' => 'Summary of Samples',
-				            //'alertMsg' => 'The EXCEL export file will be generated for download.',
-				            'options' => ['title' => 'Microsoft Excel 95+'],
-				            'mime' => 'application/vnd.ms-excel',
-				            'extension' => 'xls',
-				            'filename' => Lab::findOne($labId)->labcode.'-CustomerServed_('.$startDate."_".$endDate.")",
-				            'config' => [
-				                //'worksheet' => $this->title,
-				                'cssFile' => ''
-				            ]
-				        ],
+				        GridView::EXCEL => [],
 				    ],
 					'columns' => $gridColumns,
 				    'toolbar' => [
