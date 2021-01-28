@@ -70,7 +70,9 @@ $this->params['breadcrumbs'][] = $this->title;
                'attribute'=>'manufacturing_date',
                'filterType'=> GridView::FILTER_DATE_RANGE,
                'value' => function($model) {
-                    return date_format(date_create($model->manufacturing_date),"m/d/Y");
+                    if($model->manufacturing_date)
+                        return date_format(date_create($model->manufacturing_date),"m/d/Y");
+                    return null;
                 },
                 'filterWidgetOptions' => ([
                      'model'=>$model,
