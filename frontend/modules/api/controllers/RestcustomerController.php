@@ -22,6 +22,7 @@ use common\models\lab\Testname;
 use common\models\lab\Lab;
 use common\models\lab\Quotation;
 use yii\helpers\Json;
+use common\models\finance\Epayment;
 
 
 class RestcustomerController extends \yii\rest\Controller
@@ -31,7 +32,7 @@ class RestcustomerController extends \yii\rest\Controller
         $behaviors = parent::behaviors();
         $behaviors['authenticator'] = [
             'class' => \sizeg\jwt\JwtHttpBearerAuth::class,
-            'except' => ['login','server','codevalid','mailcode','register','*'], //all the other
+            'except' => ['login','server','codevalid','mailcode','register','epayment'], //all the other
             'user'=> \Yii::$app->customeraccount
         ];
 
@@ -711,4 +712,49 @@ class RestcustomerController extends \yii\rest\Controller
 
         return $this->asJson($model);
     }*/
+    //for the OP sent from epayment
+    public function actionEpayment(){
+        \Yii::$app->response->format= \yii\web\Response::FORMAT_JSON;
+
+        $my_var = \Yii::$app->request->post();
+        if(!$my_var)
+            return '010';
+
+        if(!isset($my_var['merchant_reference_number']))
+            return '011'; //no MRN parameter
+        if(!str_replace(" ","",$my_var['merchant_reference_number']))
+            return '011'; //no MRN parameter
+
+
+        if(!isset($my_var['epp']))
+            return '012'; //no epp parameter
+        if(!str_replace(" ","",$my_var['epp']))
+            return '012'; //no MRN parameter
+
+
+        if(!isset($my_var['status_code']))
+            return '013'; //no epp parameter
+        if(!str_replace(" ","",$my_var['status_code']))
+            return '013'; //no MRN parameter
+
+
+        $merchant_reference_number = $my_var['merchant_reference_number'];
+        $epp = $my_var['epp'];
+        $status_code = $my_var['status_code'];
+        //find the mrn
+        $epayment = Epayment::find()->where(['mrn'=>$merchant_reference_number])->one();
+        if(!$epayment)
+            return '020'; //no MRN found in the database
+
+        if($epayment->status_code)
+            return '501';
+
+        $epayment->epp = $epp;
+        $epayment->status_code = $status_code;
+
+        if($epayment->save())
+            return '100';
+        else
+            return '500';
+    }
 }
