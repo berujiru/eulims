@@ -732,10 +732,10 @@ class RestcustomerController extends \yii\rest\Controller
             return '012'; //no MRN parameter
 
 
-        if(!isset($my_var['status_code']))
-            return '013'; //no epp parameter
-        if(!str_replace(" ","",$my_var['status_code']))
-            return '013'; //no MRN parameter
+        // if(!isset($my_var['status_code']))
+        //     return '013'; //no epp parameter
+        // if(!str_replace(" ","",$my_var['status_code']))
+        //     return '013'; //no MRN parameter
 
 
         $merchant_reference_number = $my_var['merchant_reference_number'];
@@ -746,7 +746,7 @@ class RestcustomerController extends \yii\rest\Controller
         if(!$epayment)
             return '020'; //no MRN found in the database
 
-        if($epayment->status_code)
+        if($epayment->epp)
             return '501';
 
         $epayment->epp = $epp;
