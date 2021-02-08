@@ -203,7 +203,10 @@ return [
             'lab/booking/viewcustomer',
             'lab/booking/viewbyreference',
             'lab/csf/index',
-            'lab/csf/view'
+            'lab/csf/view',
+            'chat/info/*',
+            'api/restreferral/*',
+            'api/restcustomer/*',
         ]
     ],
 
