@@ -740,7 +740,7 @@ class RestcustomerController extends \yii\rest\Controller
 
         $merchant_reference_number = $my_var['merchant_reference_number'];
         $epp = $my_var['epp'];
-        $status_code = $my_var['status_code'];
+        // $status_code = $my_var['status_code'];
         //find the mrn
         $epayment = Epayment::find()->where(['mrn'=>$merchant_reference_number])->one();
         if(!$epayment)
