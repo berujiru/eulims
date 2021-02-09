@@ -750,7 +750,7 @@ class RestcustomerController extends \yii\rest\Controller
             return '501';
 
         $epayment->epp = $epp;
-        $epayment->status_code = $status_code;
+        // $epayment->status_code = $status_code;
 
         if($epayment->save())
             return '100';
