@@ -141,35 +141,8 @@ use common\models\system\Profile;
                           'hAlign'=>'center',
                           'format'=>'raw',
                           'value' => function($model) {
-                            // $analysis = Analysis::findOne(['analysis_id' => $model->analysis_id]);
-                            // $modelmethod=  Methodreference::findOne(['method'=>$analysis->method]);    
-                                                      
-                            // $testnamemethod = Testnamemethod::findOne(['testname_id'=>$analysis->test_id, 'method_id'=>$analysis->testcategory_id]);                           
-                            
-                            // if ($testnamemethod){
-                            //     $count = Workflow::find()->where(['testname_method_id'=>$testnamemethod->testname_method_id])->count();     
-                                
-                             
-                            //      if ($analysis->completed==0) {
-                            //         return "<span class='badge btn-default' style='width:90px;height:20px'>PENDING</span>";
-                            //         }else if ($analysis->completed==$count) {
-                            //             return "<span class='badge btn-success' style='width:90px;height:20px'>COMPLETED</span>";            
-                            //         }
-                            //         else if ($analysis->completed>=1) {
-                            //             return "<span class='badge btn-primary' style='width:90px;height:20px'>ONGOING</span>";
-                            //         }
-                            //         else if ($analysis->completed==0) {
-                                        
-                        //        }   
-                       //     }
-                            // else {
-                            //     return "<span class='badge btn-default' style='width:90px;height:20px'>PENDING</span>";
-                          //  }
-                           
-                                
-                        //  },
-                        //   'enableSorting' => false,
-                        //   'contentOptions' => ['style' => 'width:5%; white-space: normal;'],
+                        if($model->references == "-")
+                            return "N/A";
 
                         if ($model->tagging){
 
