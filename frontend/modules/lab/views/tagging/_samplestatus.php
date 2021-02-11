@@ -42,7 +42,6 @@ $sampletagged= Sample::find()
 ->leftJoin('tbl_tagging', 'tbl_analysis.analysis_id=tbl_tagging.analysis_id') 
 ->leftJoin('tbl_request', 'tbl_request.request_id=tbl_analysis.request_id')    
 ->where(['tbl_tagging.tagging_status_id'=>2, 'tbl_request.request_id'=>$request->request_id])
-->andWhere(['<>','tbl_analysis.references', '-'])
 ->all();  
 //$st = count($sampletagged);
 // $requestcount= Sample::find()
