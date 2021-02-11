@@ -185,12 +185,14 @@ $this->registerJs($js,\yii\web\View::POS_READY);
                     ->leftJoin('tbl_request', 'tbl_request.request_id=tbl_sample.request_id')
                     ->leftJoin('tbl_tagging', 'tbl_analysis.analysis_id=tbl_tagging.analysis_id')   
                     ->where(['tbl_request.request_id'=>$model->request_id ])
+                    ->andWhere(['<>','tbl_analysis.references', '-'])
                     ->all();              
                     $sampletagged= Analysis::find()
                     ->leftJoin('tbl_sample', 'tbl_sample.sample_id=tbl_analysis.sample_id')
                     ->leftJoin('tbl_tagging', 'tbl_analysis.analysis_id=tbl_tagging.analysis_id') 
                     ->leftJoin('tbl_request', 'tbl_request.request_id=tbl_analysis.request_id')    
                     ->where(['tbl_tagging.tagging_status_id'=>2, 'tbl_request.request_id'=>$model->request_id ])
+                    ->andWhere(['<>','tbl_analysis.references', '-'])
                     ->all();
                     $scount = count($samples_count); 
                     $rcount = count($sampletagged); 
