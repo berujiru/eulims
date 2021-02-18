@@ -461,11 +461,16 @@ class RequestController extends Controller
         ////Reference Number Removing SP 10/282020 EGG
 		$Req= Request::find()->where(['request_id'=>$request_id])->one($Connection);
 		$requestdate=$Req->request_datetime;
+		//Updated to be able to encode backlogs of request	
+		$reqyear=date('Y',strtotime($requestdate));
+		 
 		$lastnum=(new Query)
             ->select('MAX(number) AS lastnumber')
             ->from('eulims_lab.tbl_requestcode')
-			->where(['lab_id' => $lab_id, 'year'=> date('Y')])
-            ->one();
+			->where(['lab_id' => $lab_id, 'year'=> $reqyear])
+            ->one();	
+			
+			
 		$monthyear=date('mY',strtotime($requestdate));
 		$rstl= Rstl::find()->where(['rstl_id'=>$rstl_id])->one();
 		$code=$rstl->code;

@@ -28,6 +28,7 @@ use frontend\modules\reports\modules\finance\templates\Opspreadsheet;
 use yii\data\SqlDataProvider;
 use common\models\finance\PostedOp;
 use common\models\lab\Customer;
+use common\models\finance\Epayment as Epay;
 /**
  * OrderofpaymentController implements the CRUD actions for Op model.
  */
@@ -567,4 +568,18 @@ class OpController extends Controller
         ->execute(); 
          return $success;
      }
+	 public function actionEpay($op_id)
+    {
+		
+		$epay = new Epay();
+		if ($epay->load(Yii::$app->request->post())) {
+			Yii::$app->session->setFlash('success', 'Successfully Created!');
+			return $this->redirect(['/finance/op/view?id='.$op_id]);
+		}else{
+			return $this->renderAjax('epayment', [
+                'epay' => $epay,
+				'op_id' => $op_id
+            ]);
+		}
+	}
 }

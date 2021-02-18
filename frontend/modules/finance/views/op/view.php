@@ -31,9 +31,11 @@ if(Yii::$app->user->can('allow-cancel-op')){
 if(Yii::$app->user->can('allow-create-receipt')){
     if($model->receipt_id == null){
         if($model->payment_mode_id!=5 || $model->payment_mode_id <> 6){//Not Flagged as Online payment
-           $receipt_button="<button type='button' value='/finance/cashier/create-receipt?op_id=$model->orderofpayment_id' id='btnCreateReceipt2' style='float: right;' class='btn btn-success' title='Receipt from OP' onclick='addReceipt(this.value,this.title)'><i class='fa fa-save'></i> Create Receipt</button>";    
+           $receipt_button="<button type='button' value='/finance/cashier/create-receipt?op_id=$model->orderofpayment_id' id='btnCreateReceipt2' style='float: right;padding-right:5px;margin-left: 5px' class='btn btn-success' title='Receipt from OP' onclick='addReceipt(this.value,this.title)'><i class='fa fa-save'></i> Create Receipt</button>";    
+		   $epay_button="<button type='button' value='/finance/op/epay?op_id=$model->orderofpayment_id' id='btnEpay' style='float: right;' class='btn btn-primary' title='Details for Epayment' onclick='LoadModal(this.title,this.value)'><i class='fa fa-upload'></i> Epayment </button>";    
         }else{
-           $receipt_button=""; 
+           $receipt_button="";
+		   $epay_button="";
         }
     }
     else{
@@ -177,7 +179,7 @@ $payment_status_id=$model->payment_status_id;
         'attributes' => [
             [
                     'group'=>true,
-                    'label'=>'Order of Payment Details '.$CancelButton.$receipt_button,
+                    'label'=>'Order of Payment Details '.$CancelButton.$receipt_button.$epay_button,
                     'rowOptions'=>['class'=>'info']
             ],
             [
