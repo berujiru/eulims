@@ -14,9 +14,14 @@ use Yii;
  * @property double $amount
  * @property string $epp
  * @property string $status_code
+ * @property string $op_id
  */
 class Epayment extends \yii\db\ActiveRecord
 {
+
+    //setting default merchant code for this epayment
+    public $merchant_code = "merchant_rix";
+    public $test_key = "d0stro9"; 
     /**
      * {@inheritdoc}
      */
@@ -61,6 +66,7 @@ class Epayment extends \yii\db\ActiveRecord
             'amount' => 'Amount',
             'epp' => 'Epp',
             'status_code' => 'Status Code',
+            'op_id'=> 'OP'
         ];
     }
 }

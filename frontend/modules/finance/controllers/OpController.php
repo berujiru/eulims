@@ -575,11 +575,16 @@ class OpController extends Controller
 		if ($epay->load(Yii::$app->request->post())) {
 			Yii::$app->session->setFlash('success', 'Successfully Created!');
 			return $this->redirect(['/finance/op/view?id='.$op_id]);
-		}else{
-			return $this->renderAjax('epayment', [
-                'epay' => $epay,
-				'op_id' => $op_id
-            ]);
 		}
+        $existing  =  Epay::find()->where(['op_id'=>$op_id])->one();
+        if($existing){
+            $epay = $existing;
+        }
+
+		return $this->renderAjax('epayment', [
+            'epay' => $epay,
+			'op_id' => $op_id
+        ]);
+		
 	}
 }
