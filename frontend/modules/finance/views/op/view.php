@@ -19,6 +19,7 @@ $this->title = 'Order of Payment';
 $this->params['breadcrumbs'][] = ['label' => 'Finance', 'url' => ['/finance']];
 $this->params['breadcrumbs'][] = ['label' => 'Order of Payment', 'url' => ['index']];
 $allow_cancel=false;
+$epay_button="";
 if($model->payment_mode_id!=5 && $model->payment_mode_id!=6){//Not Flagged as Online Payment
     //$button_paymentitem=Html::button('<i class="glyphicon glyphicon-plus"></i> Add Payment Item', ['value' => Url::to(['add-paymentitem','opid'=>$model->orderofpayment_id,'customerid'=>$model->customer_id]),'title'=>'Add Payment Item', 'onclick'=>'addPaymentitem(this.value,this.title)','style'=>'margin-right: 5px', 'class' => 'btn btn-success','id' => 'modalBtn']);
 	$button_paymentitem=Html::button('<i class="glyphicon glyphicon-plus"></i> Add Paymentitem', ['value' => Url::to(['add-paymentitem','collectiontype_id'=>$model->collectiontype_id,'opid'=>$model->orderofpayment_id]),'title'=>'Add Payment Item', 'onclick'=>'addPaymentitem(this.value,this.title)','style'=>'margin-right: 5px', 'class' => 'btn btn-success','id' => 'modalBtn']);

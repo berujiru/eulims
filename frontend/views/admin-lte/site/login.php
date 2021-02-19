@@ -145,8 +145,10 @@ $this->registerJsFile('/js/main.js');
                                     <!-- /.col -->
                                 </div>
                                 <?php ActiveForm::end(); ?>
-                                 <a href="#" onclick="ShowModal('Reset Password','/site/requestpasswordreset')">I forgot my password</a><br>
-                                <a href="#" onclick="ShowModal('Sign Up','/site/signup')">Sign Up</a>
+                                 <!--a href="#" onclick="ShowModal('Reset Password','/site/requestpasswordreset')">Forgot password?</a><br -->
+                                <!-- a href="#" onclick="ShowModal('Sign Up','/site/signup')">Request Administrator for new password</a-->
+								<a href="">Forgot password?</a><br>
+                                <a href="">Request for new password on Administrator </a>
                             </div>
                             <!-- /.login-box-body -->
                         </div><!-- /.login-box -->
