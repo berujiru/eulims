@@ -123,8 +123,8 @@ $fieldOptions2 = [
                             <!--<a href="/site/requestpasswordreset">I forgot my password</a><br>
                             <a href="/site/signup">SignUp</a>-->
                             
-                            <a href="#" onclick="LoadModal('Reset Password','/site/requestpasswordreset')">I forgot my password</a><br>
-                            <a href="#" onclick="LoadModal('Sign Up','/site/signup')">Sign Up</a>
+                           <a href="">Forgot password?</a><br>
+                           <a href="">Request for new password on Administrator </a>
                             
                            
                         </div>
