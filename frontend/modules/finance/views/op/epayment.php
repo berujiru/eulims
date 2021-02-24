@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\widgets\DetailView;
 // var_dump($epay); exit;
 
 if($epay->epp){
@@ -29,21 +30,62 @@ else{
 		<div class="col-sm-6">
 			 <?= $form->field($epay, 'merchant_code')->textInput(['maxlength' => true, 'readOnly'=>true]); ?>
 		</div>   
-    </div>
-	<div class="row">
-		 <div class="col-sm-12">
-				<?= $form->field($epay, 'mrn')->textInput(['maxlength' => true, 'readOnly'=>true]); ?>
-         </div>
-	</div>
-	<div class="row">
-		 <div class="col-sm-12">
-				<?= $form->field($epay, 'particulars')->textInput(['maxlength' => true, 'readOnly'=>true]); ?>
+		 <div class="col-sm-6">
+				<?= $form->field($epay, 'mrn')->textInput(['maxlength' => true, 'readOnly'=>true])->hint("Auto Generated"); ?>
          </div>
 	</div>
 	<div class="row">
 		 <div class="col-sm-12">
 				<?= $form->field($epay, 'amount')->textInput(['maxlength' => true, 'readOnly'=>true]); ?>
          </div>
+	</div>
+	<div class="row">
+		 <div class="col-sm-12">
+				<?= $form->field($epay, 'particulars')->hiddenInput(['maxlength' => true, 'readOnly'=>true]); ?>
+         </div>
+	</div>
+
+	<div class="row">
+		<div class="col-sm-12">
+			<?php
+				$parts = explode(";", $epay->particulars);
+				echo DetailView::widget([
+				    'model' => $epay,
+				    'attributes' => [
+				    	'hash',
+				        [
+				            'label' => 'Transaction Type',
+				            'value' => function()use($parts){
+				            	$value = explode("=", $parts[0]);
+				            	return $value[1];
+				            }
+				        ],
+				        [
+				            'label' => 'Reference Numbers',
+				            'value' =>  function()use($parts){
+				            	$value = explode("=", $parts[1]);
+				            	return $value[1];
+				            }
+				        ],
+				        [
+				            'label' => 'Customer',
+				            'value' =>  function()use($parts){
+				            	$value = explode("=", $parts[2]);
+				            	return $value[1];
+				            }
+				        ],
+				        [
+				            'label' => 'Email',
+				            'value' =>  function()use($parts){
+				            	$value = explode("=", $parts[3]);
+				            	return $value[1];
+				            }
+				        ],
+				    ],
+				]);
+			?>
+			<p class="note" style="color:red"><b>Make sure the customer's email is updated.</b></p>
+		</div>
 	</div>
 	<div class="form-group pull-right">
             <?= Html::submitButton('Send for Epayment', ['class' => $epay->isNewRecord ? 'btn btn-success' : 'btn btn-primary','id'=>'createEpay']) ?>
