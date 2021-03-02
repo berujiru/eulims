@@ -570,16 +570,84 @@ class OpController extends Controller
      }
 	 public function actionEpay($op_id)
     {
-		
 		$epay = new Epay();
 		if ($epay->load(Yii::$app->request->post())) {
+            $epay->generatehash();
+
+            //contact api here
+            $curl = new curl\Curl();
+            $token= 'Authorization: Bearer '.$_SESSION['usertoken'];
+            $curl->setOption(CURLOPT_HTTPHEADER, ['Content-Type: application/json' , $token]);
+            $curl->setOption(CURLOPT_CONNECTTIMEOUT, 180);
+            $curl->setOption(CURLOPT_TIMEOUT, 180);
+            $curl->setOption(CURLOPT_SSL_VERIFYPEER, false);
+            $curl->setRequestBody($epay);
+            $response = $curl->post("https://mctest.itdi.ph/connection/testing"); //ling here
+
+            if($response="00"){
+                //successful
+            }
+
+            switch ($response) {
+                case '00':
+                    Yii::$app->session->setFlash('success', 'Epayment Successfully Sent!');
+                    return $this->redirect(['/finance/op/view?id='.$op_id]);
+                    break;
+                case '01':
+                    Yii::$app->session->setFlash('error', 'Epayment unable to process, Contact System Administrator!');
+                    return $this->redirect(['/finance/op/view?id='.$op_id]);
+                    break;
+                case '02':
+                    Yii::$app->session->setFlash('error', 'Invalid Parameters, Contact System Administrator!');
+                    return $this->redirect(['/finance/op/view?id='.$op_id]);
+                    break;
+                case '03':
+                    Yii::$app->session->setFlash('error', 'Invalid Merchant, Contact System Administrator!');
+                    return $this->redirect(['/finance/op/view?id='.$op_id]);
+                    break;
+                case '04':
+                    Yii::$app->session->setFlash('error', 'Invalid MRN, Contact System Administrator!');
+                    return $this->redirect(['/finance/op/view?id='.$op_id]);
+                    break;
+                case '05':
+                    Yii::$app->session->setFlash('error', 'Invalid Particulars, Contact System Administrator!');
+                    return $this->redirect(['/finance/op/view?id='.$op_id]);
+                    break;
+                case '06':
+                    Yii::$app->session->setFlash('error', 'Invalid Amount, Contact System Administrator!');
+                    return $this->redirect(['/finance/op/view?id='.$op_id]);
+                    break;
+                case '07':
+                    Yii::$app->session->setFlash('error', 'Invalid Hash, Contact System Administrator!');
+                    return $this->redirect(['/finance/op/view?id='.$op_id]);
+                    break;
+                case '08':
+                    Yii::$app->session->setFlash('error', 'Invalid Status, Contact System Administrator!');
+                    return $this->redirect(['/finance/op/view?id='.$op_id]);
+                    break;
+                case '10':
+                    Yii::$app->session->setFlash('error', 'Transaction Cancelled!');
+                    return $this->redirect(['/finance/op/view?id='.$op_id]);
+                    break;
+                default:
+                    Yii::$app->session->setFlash('error', 'Response is not not recognize under MOU, Contact System Administrator!');
+                    return $this->redirect(['/finance/op/view?id='.$op_id]);
+                    break;
+            }
+
 			Yii::$app->session->setFlash('success', 'Successfully Created!');
 			return $this->redirect(['/finance/op/view?id='.$op_id]);
-		}else{
-			return $this->renderAjax('epayment', [
-                'epay' => $epay,
-				'op_id' => $op_id
-            ]);
 		}
+
+        $epay->generate($op_id);
+        $existing  =  Epay::find()->where(['op_id'=>$op_id])->one();
+        if($existing){
+            $epay = $existing;
+        }
+
+		return $this->renderAjax('epayment', [
+            'epay' => $epay,
+			'op_id' => $op_id
+        ]);	
 	}
 }
