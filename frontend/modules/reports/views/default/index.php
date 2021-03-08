@@ -25,12 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>      
         <div class="box-body">
           <div class="row">
-            <div class="col-md-3 col-sm-6 col-xs-12">
-              
-               <div  style="padding-top: 1px;padding-bottom: 1px;display:block;text-align: center">
-                  <a href="#" title="Billing"><img class="imgHover" src="/images/billingsquare.png" style="height:120px;width: 120px" ></a>
-              </div>
-            </div>
+       
             <!-- /.col -->
             <div class="col-md-3 col-sm-6 col-xs-12">
             
@@ -39,18 +34,11 @@ $this->params['breadcrumbs'][] = $this->title;
               </div>
             </div>
             <!-- /.col -->
-            <div class="col-md-3 col-sm-6 col-xs-12">
-              
-
-               <div  style="padding-top: 1px;padding-bottom: 1px;display:block;text-align: center">
-                   <a href="#" title="Cashier"><img class="imgHover" src="/images/cashiersquare.png" style="height:120px;width: 120px"></a>
-              </div>
-            </div>
             
             <div class="col-md-3 col-sm-6 col-xs-12">
            
                <div  style="padding-top: 1px;padding-bottom: 1px;display:block;text-align: center">
-                 <a href="/reports/finance/analytic" title="Customer Wallet"><img class="imgHover" src="/images/customerwalletsquare.png" style="height:120px;width: 120px"></a>
+                 <a href="/reports/finance/analytic" title="Analytic"><img class="imgHover" src="/images/reportsquare.png" style="height:120px;width: 120px"></a>
               </div>
             </div>
             
@@ -72,12 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>      
         <div class="box-body">
           <div class="row">
-            <div class="col-md-2 col-sm-6 col-xs-12">
-               <!-- col-md-offset-1  if 5 columns --> 
-             <div  style="padding-top: 1px;padding-bottom: 1px;display:block;text-align: center">
-                 <a href="#" title="Tagging"><img class="imgHover" src="/images/taggingsquare.png" style="height:120px;width: 120px"></a>
-              </div>
-            </div> 
+            
             
             <!-- /.col -->
            <div class="col-md-2 col-sm-6 col-xs-12">
@@ -138,7 +121,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-md-12 col-sm-12 col-xs-12">
               
                <div  style="padding-top: 1px;padding-bottom: 1px;display:block;text-align: center">
-                  <a href="#" title="Order of Payment"><img class="imgHover" src="/images/customerlistsquare.png" style="height:120px;width: 120px" ></a>
+                  <a href="/customer/info" title="Order of Payment"><img class="imgHover" src="/images/customerlistsquare.png" style="height:120px;width: 120px" ></a>
               </div>
             </div>
             <!-- /.col -->
