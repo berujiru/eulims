@@ -3,7 +3,7 @@
 namespace common\models\lab;
 
 use Yii;
-
+use common\models\lab\Testreportsummary;
 /**
  * This is the model class for table "tbl_testreport".
  *
@@ -74,6 +74,26 @@ class Testreport extends \yii\db\ActiveRecord
             'reissue' => 'Reissue',
             'previous_id' => 'Previous ID',
         ];
+    }
+
+
+    public function afterSave($insert, $changedAttributes)
+    {
+        if ($insert) {
+            $summary = new Testreportsummary;
+            $summary->date_created = date('Y-m-d');
+            $summary->testreport_id = $this->testreport_id;
+            $summary->request_id =$this->request_id;
+            $summary->lab_id =$this->lab_id;
+            $summary->isontime =0;
+            //check if its on time
+            $req = Request::findOne($this->request_id);
+            if(strtotime($summary->date_created) <= strtotime($req->report_due))
+                $summary->isontime =1;
+            $summary->save();
+        }
+
+        return parent::afterSave($insert, $changedAttributes);
     }
 
     /**
