@@ -16,7 +16,9 @@ use common\components\ReferralFunctions;
 use common\models\referral\Referral;
 use common\components\ReferralComponent;
 use yii\helpers\Json;
-use linslin\yii2\curl\Curl;
+//use linslin\yii2\curl\Curl;
+use common\models\system\LoginForm;
+use linslin\yii2\curl;
 /**
  * AttachmentController implements the CRUD actions for Attachment model.
  */
@@ -132,7 +134,7 @@ class AttachmentController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-	//upload Deposit Slip
+	//upload updated,Deposit Slip EGG 03/18/21
 	public function actionUpload_deposit()
     {
         set_time_limit(120);
@@ -150,7 +152,6 @@ class AttachmentController extends Controller
 
         $model = new Attachment();
 		 if($model->load(Yii::$app->request->post())){
-			 //$file->saveAs('https://eulims.onelab.ph/uploads/referral/' .'sample'.$file->extension);
             $model->filename = UploadedFile::getInstances($model,'filename');
             $model->referral_id = $referralId;
             if($model->filename){
@@ -171,7 +172,7 @@ class AttachmentController extends Controller
                         'uploader' => $uploaderName,
                     ];
                     $referralUrl='https://eulims.onelab.ph/api/restreferral/upload_deposit';
-                    //$referralUrl='http://localhost/eulimsapi.onelab.ph/api/web/referral/attachments/upload_or';
+                   
 					
                     $data = ['file_data'=>$file_data,'uploader_data'=>json_encode($uploader_data)];
 
@@ -183,13 +184,9 @@ class AttachmentController extends Controller
                     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
                     //curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
-                    $response = curl_exec($ch);
-
-                    //print_r($response);
-                    //exit;
-
+                    $response = curl_exec($ch); 
                     if($response == 1){
-                        Yii::$app->session->setFlash('success', "Official receipt successfully uploaded.");
+                        Yii::$app->session->setFlash('success', "Deposit slip successfully uploaded.");
                         return $this->redirect(['/lab/request/view','id'=>$requestId]);
                     } elseif($response == 0) {
                         Yii::$app->session->setFlash('error', "Attachment invalid!");
