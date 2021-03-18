@@ -259,13 +259,8 @@ if($requeststatus > 0 && $notified == 1 && $hasTestingAgency > 0 && !empty($mode
                             'format' => 'raw',
                             'value'=>function() use ($depositslip,$model){
                                 $link = '';
-                                $link .= !empty($model->request_ref_num) && $model->referralrequest->referral_type_id == 1 ? Html::button('<span class="glyphicon glyphicon-upload"></span> Upload', ['value'=>Url::to(['/referrals/attachment/upload_deposit','referral_id'=>$model->referral_id,'request_id'=>$model->request_id]), 'onclick'=>'upload(this.value,this.title)', 'class' => 'btn btn-primary btn-xs','title' => 'Upload Deposit Slip']) : '';
-                                if($depositslip > 0){
-                                    foreach ($depositslip as $deposit) {
-                                        $link .= "<br>".Html::a('<span class="glyphicon glyphicon-save-file"></span> '.$deposit['filename'],'/referrals/attachment/download?request_id='.$model->request_id.'&file='.$deposit['attachment_id'].'&referral_id='.$model->referral_id, ['style'=>'font-size:12px;color:#000077;font-weight:bold;','title'=>'Download Deposit Slip','target'=>'_self']);
-
-                                    }
-                                }
+                                $link .= !empty($model->request_ref_num) && $model->referralrequest->referral_type_id == 1 ? Html::button('<span class="glyphicon glyphicon-upload"></span>Upload', ['value'=>Url::to(['/referrals/attachment/upload_deposit','referral_id'=>$model->referral_id,'request_id'=>$model->request_id]), 'onclick'=>'upload(this.value,this.title)', 'class' => 'btn btn-primary btn-xs','title' => 'Upload Deposit Slip']) : '';
+                             
                                 return $link;
                             },
                             'displayOnly'=>true,

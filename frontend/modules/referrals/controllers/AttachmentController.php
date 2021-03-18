@@ -149,16 +149,15 @@ class AttachmentController extends Controller
         $request = $this->findRequest($requestId);
 
         $model = new Attachment();
-        if($model->load(Yii::$app->request->post())){
+		 if($model->load(Yii::$app->request->post())){
+			 //$file->saveAs('https://eulims.onelab.ph/uploads/referral/' .'sample'.$file->extension);
             $model->filename = UploadedFile::getInstances($model,'filename');
             $model->referral_id = $referralId;
-
             if($model->filename){
-
                 $ch = curl_init();
                 $referralCode = $request->request_ref_num;
                 foreach ($model->filename as $filename) {
-                    $file = $referralCode."_".date('YmdHis').".".$filename->extension; //.".".$filename->extension;
+                    $file = $referralCode."_".date('YmdHis').".".$filename->extension;
                     $file_data = curl_file_create($filename->tempName,$filename->type,$file);
 
                     $mi = !empty(Yii::$app->user->identity->profile->middleinitial) ? " ".substr(Yii::$app->user->identity->profile->middleinitial, 0, 1).". " : " "; 
@@ -171,14 +170,9 @@ class AttachmentController extends Controller
                         'user_id' => Yii::$app->user->identity->profile->user_id,
                         'uploader' => $uploaderName,
                     ];
-
-                    //btc has been here, i will not improve this code here anymore but i will just direct it to contact the referral component api link
-
-                    $refcom = new ReferralComponent();
-                    $referralUrl= $refcom->getSource().'/upload_deposit';
-                    //this code below was the first setup
-                    // $referralUrl='https://eulimsapi.onelab.ph/api/web/referral/attachments/upload_deposit';
-
+                    $referralUrl='https://eulims.onelab.ph/api/restreferral/upload_deposit';
+                    //$referralUrl='http://localhost/eulimsapi.onelab.ph/api/web/referral/attachments/upload_or';
+					
                     $data = ['file_data'=>$file_data,'uploader_data'=>json_encode($uploader_data)];
 
                     //hardcoded curl since the extension doesn't support create file
@@ -190,8 +184,12 @@ class AttachmentController extends Controller
                     //curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
                     $response = curl_exec($ch);
+
+                    //print_r($response);
+                    //exit;
+
                     if($response == 1){
-                        Yii::$app->session->setFlash('success', "Deposit slip successfully uploaded.");
+                        Yii::$app->session->setFlash('success', "Official receipt successfully uploaded.");
                         return $this->redirect(['/lab/request/view','id'=>$requestId]);
                     } elseif($response == 0) {
                         Yii::$app->session->setFlash('error', "Attachment invalid!");
@@ -206,7 +204,8 @@ class AttachmentController extends Controller
                 return $this->redirect(['/lab/request/view','id'=>$requestId]);
             }
         }
-        
+		
+		
         if(Yii::$app->request->isAjax) {
             return $this->renderAjax('_formUploadDeposit', [
                 'model' => $model,
