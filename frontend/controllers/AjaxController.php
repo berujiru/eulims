@@ -21,6 +21,11 @@ use frontend\modules\finance\components\epayment\ePayment;
 use common\models\finance\Op;
 use common\models\system\ApiSettings;
 use linslin\yii2\curl;
+use common\components\ReferralComponent;
+use common\models\system\Rstl;
+use yii\helpers\Url;
+
+
 
 /**
  * Description of AjaxController
@@ -156,5 +161,60 @@ class AjaxController extends Controller{
         $Row=$Command->queryOne();
         $Balance=(float)$Row['Balance'];
         return $Balance;
+    }
+
+
+    //toremove uneccessary and unsused code above
+    //lazy load the following 
+    public function actionGetunrespondednotification(){
+        $items ='<li>Empty</li>';
+        if(isset($_SESSION['usertoken'])&&(!Yii::$app->user->isGuest)){
+            //get the unresponded notification of the referral
+            $referralcomp = new ReferralComponent;
+            if(isset(Yii::$app->user->identity->profile->rstl_id)){
+                $unresponded = $referralcomp->listUnrespondedNofication((int) Yii::$app->user->identity->profile->rstl_id);
+                if($unresponded['count_notification']==0)
+                    return $items; //stops here
+                $items='';
+                $items.='<a href="#" class="dropdown-toggle" data-toggle="dropdown">';
+                $items.='<i class="fa fa-bell-o"></i>';
+                $items.='<span class="label label-warning" id="referralcount">'.$unresponded['count_notification'].'</span>';
+                $items.='</a>';
+                $items.='<ul class="dropdown-menu" style="width: 700px!important;">';
+                $items.='<li class="header" id="referralheader">You have '.$unresponded['count_notification'].' Notification</li>';
+                $items.='<li>';
+                $items.='<ul class="menu">';
+                foreach ($unresponded['notification'] as $item) {
+                    //get the agency they came from
+                    $rstlcode = Rstl::find()->select('code')->where(['rstl_id'=>$item['sender_id']])->one();
+                    $items.= '<li>';
+                        $items.= '<a href="#">';
+                            $items.= '<div class="pull-left">';
+                                $items.= '<img src="images/avatar04.png" class="img-circle" alt="User Image">';
+                            $items.= '</div>';
+                            $items.= '<h4>';
+                                $items.= $item['sender_name'].($rstlcode?' of '.$rstlcode->code:'');
+                                $items.= '<small><i class="fa fa-clock-o"></i> '.$item['notification_date'].'</small>';
+                            $items.= '</h4>';
+                            $items.= '<p>Accepted the Referral</p>';
+                        $items.= '</a>';
+                    $items.= '</li>';
+                    
+                }
+
+                //the footer
+                $items.='</ul>';
+                $items.='</li>';
+                //$items.='<li class="footer"><a href="#">See All Messages</a></li>';
+                $items.='<li class="footer">
+                            <a href="'.Url::to($GLOBALS["frontend_base_uri"]."/referrals/notification/list_unresponded_notification").'">View all Notification</a>
+                        </li>';
+                $items.='</ul>';
+            }
+        }
+        //else return with empty <li>
+        return $items;
+
+
     }
 }

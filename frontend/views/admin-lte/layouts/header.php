@@ -4,10 +4,8 @@ use yii\helpers\Url;
 use common\models\system\User;
 use common\models\system\Package;
 use common\models\system\Message;
-use common\models\system\Rstl;
 use yii\helpers\ArrayHelper;
 use common\components\Functions;
-use common\components\ReferralComponent;
 
 //EGG
 use kartik\file\FileInput;
@@ -135,15 +133,7 @@ if(isset($_SESSION['usertoken'])){
 
 
 
-$unresponded = [];
-if(isset($_SESSION['usertoken'])&&(!Yii::$app->user->isGuest)){
-    //get the unresponded notification of the referral
-    $referralcomp = new ReferralComponent;
-    if(isset(Yii::$app->user->identity->profile->rstl_id)){
-    $unresponded = $referralcomp->listUnrespondedNofication((int) Yii::$app->user->identity->profile->rstl_id);
-    $unresponded = $unresponded['notification'];
-    }
-}
+
 ?>
 
 <header class="main-header">
@@ -188,44 +178,19 @@ if(isset($_SESSION['usertoken'])&&(!Yii::$app->user->isGuest)){
                         </li>
                     </ul>
                 </li>
-                <li class="dropdown messages-menu">
+                <li class="dropdown messages-menu" id="referralnotif">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <i class="fa fa-bell-o"></i>
-                        <span class="label label-warning" id="top_notif_header"><?= count($unresponded)==0?"":count($unresponded) ?></span>
+                      <i class="fa fa-bell-o"></i>
+                      <span class="label" id="referralcount"><div style='text-align:center;'><img src='/images/img-loader64.gif' alt='' height='10px' width='10px'></div></span>
                     </a>
-                    <ul class="dropdown-menu">
-                        <!-- <li class="header">
-                        	<span class="label label-warning" id="mid_notif_header"></span>
-                        	Referral Notification
-                    	</li> -->
-                        <li>
-                        	<ul class="menu" id="referralnotif">
-                                <?php
-                                foreach ($unresponded as $item) {
-                                    //get the agency they came from
-                                    $rstlcode = Rstl::find()->select('code')->where(['rstl_id'=>$item['sender_id']])->one();
-                                    echo '<li>';
-                                        echo '<a href="#">';
-                                            echo '<div>';
-                                                echo '<span>'.$item['sender_name'].($rstlcode?' of '.$rstlcode->code:'').'</span>';
-                                            echo '</div>';
-                                            echo '<h4>';
-                                                echo "Accepted the referral";
-                                                echo '<small></small>';
-                                            echo '</h4>';
-                                            echo '<p><i class="fa fa-clock-o"></i> '.$item['notification_date'].'</p>';
-                                        echo '</a>';
-                                    echo '</li>';
-                                    
-                                }
-
-                                ?>
-                                <!-- start message --> 
-                            </ul>
-                        </li>
-                        <li class="footer">
-                            <a href="<?= Url::to($GLOBALS['frontend_base_uri'].'/referrals/notification/list_unresponded_notification') ?>">View all Notification</a>
-                        </li>
+                    <ul class="dropdown-menu" style="width: 700px!important;">
+                      <li class="header" id="referralheader"></li>
+                      <li>
+                        <!-- inner menu: contains the actual data -->
+                        <ul class="menu">
+                        </ul>
+                      </li>
+                      <li class="footer"><a href="#">See All Messages</a></li>
                     </ul>
                 </li>
                 <li class="dropdown user user-menu">
@@ -825,6 +790,21 @@ function search() {
 }
 
 function searchgroup() {
-var txtsearchgroup=$('#txtsearchgroup').val();
+    var txtsearchgroup=$('#txtsearchgroup').val();
 }
+
+function getunrespondednotification(){   
+
+    $('#referralnotif').load("/ajax/getunrespondednotification");
+}
+
+
+jQuery(document).ready(function ($) {
+
+getunrespondednotification();
+
+
+
+
+});
  </script>
