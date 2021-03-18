@@ -220,6 +220,16 @@ elseif (Yii::$app->controller->action->id === 'login') {
     </head>
     <body class="hold-transition skin-blue <?= $sidebarclass ?>">
     <?php $this->beginBody() ?>
+      <?php
+        if(!isset($_SESSION['usertoken'])&&(!Yii::$app->user->isGuest)){
+          ?>
+          <div class="alert alert-danger" style="background: #ffc0cb !important;">
+            <a href="#" class="close" data-dismiss="alert" >×</a>
+            <p class="note" style="color:#d73925"><b>Disconnected from Referral Services</b>, <?= Html::button('Connect Now', ['value'=>'/chat/info/login', 'class' => 'btn btn-sm btn-success','title' => Yii::t('app', "Login"),'id'=>'btnOP','onclick'=>'LoadModal(this.title, this.value,"100px","300px");']); ?> or <?= Html::a('Learn Why!', 'https://drive.google.com/file/d/1VRJhLAvtJnACuQAIGqmx9gBLgcaEcaQI/view?usp=sharing',['class'=>'btn btn-sm btn-info','target'=>"_blank"]); ?></p>
+          </div>
+          <?php
+        }
+      ?>
     <div class="wrapper">
 
         <?= $this->render(

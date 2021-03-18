@@ -4,8 +4,10 @@ use yii\helpers\Url;
 use common\models\system\User;
 use common\models\system\Package;
 use common\models\system\Message;
+use common\models\system\Rstl;
 use yii\helpers\ArrayHelper;
 use common\components\Functions;
+use common\components\ReferralComponent;
 
 //EGG
 use kartik\file\FileInput;
@@ -70,8 +72,6 @@ if($TotalMsg==0){
 }
 $GLOBALS['rstl_id']= 11;
 
-
-
 //added the intro js and css
 $this->registerCssFile("/css/introjs.css", [
 ], 'css-intro');
@@ -131,12 +131,23 @@ if(isset($_SESSION['usertoken'])){
 	
 	 
 	<?php
-	
 }	
 
+
+
+$unresponded = [];
+if(isset($_SESSION['usertoken'])&&(!Yii::$app->user->isGuest)){
+    //get the unresponded notification of the referral
+    $referralcomp = new ReferralComponent;
+    if(isset(Yii::$app->user->identity->profile->rstl_id)){
+    $unresponded = $referralcomp->listUnrespondedNofication((int) Yii::$app->user->identity->profile->rstl_id);
+    $unresponded = $unresponded['notification'];
+    }
+}
 ?>
 
 <header class="main-header">
+
     <?= Html::a(Html::img(Yii::$app->request->baseUrl."/images/logo.png",['title'=>'Enhanced ULIMS','alt'=>'Enhanced ULIMS','height'=>'30px']), Yii::$app->homeUrl, ['class' => 'logo']) ?>
     <nav class="navbar navbar-static-top" role="navigation">
         <a href="#" class="sidebar-toggle" onclick="ToggleLeftMenu()" data-toggle="push-menu" role="button">
@@ -180,58 +191,40 @@ if(isset($_SESSION['usertoken'])){
                 <li class="dropdown messages-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <i class="fa fa-bell-o"></i>
-                        <span class="label label-success" id="top_notif_header"></span>
+                        <span class="label label-warning" id="top_notif_header"><?= count($unresponded)==0?"":count($unresponded) ?></span>
                     </a>
                     <ul class="dropdown-menu">
-                        <li class="header">
-                        	<span class="label label-success" id="mid_notif_header">0</span>
-                        	Referral
-                    	</li>
+                        <!-- <li class="header">
+                        	<span class="label label-warning" id="mid_notif_header"></span>
+                        	Referral Notification
+                    	</li> -->
                         <li>
-                        	<ul class="menu">
-                                <li><!-- start message -->
+                        	<ul class="menu" id="referralnotif">
+                                <?php
+                                foreach ($unresponded as $item) {
+                                    //get the agency they came from
+                                    $rstlcode = Rstl::find()->select('code')->where(['rstl_id'=>$item['sender_id']])->one();
+                                    echo '<li>';
+                                        echo '<a href="#">';
+                                            echo '<div>';
+                                                echo '<span>'.$item['sender_name'].($rstlcode?' of '.$rstlcode->code:'').'</span>';
+                                            echo '</div>';
+                                            echo '<h4>';
+                                                echo "Accepted the referral";
+                                                echo '<small></small>';
+                                            echo '</h4>';
+                                            echo '<p><i class="fa fa-clock-o"></i> '.$item['notification_date'].'</p>';
+                                        echo '</a>';
+                                    echo '</li>';
                                     
-                                    <a href="#">
-                                            <div >
-                                                <span><?= "Username Here"?></span>
-                                            </div>
-                                            <h4>
-                                                <?= "Message Title"?>
-                                                <small><i class="fa fa-clock-o"></i> <?= "DateTime" ?></small>
-                                            </h4>
-                                            <p><?= "The Message"?></p>
-                                        </a> 
-                                    
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="header">
-                        	<span class="label label-success" id="mid_notif_header">0</span>
-                        	Bid
-                    	</li>
-                        <li>
-                         	<ul class="menu">
-                                <li><!-- start message -->
-                                    <?php $x=1; while ( $x<= 3) { //temporary
-                                    ?>
-                                    	<a href="#">
-                                            <div >
-                                                <span><?= "Username Here"?></span>
-                                            </div>
-                                            <h4>
-                                                <?= "Message Title"?>
-                                                <small><i class="fa fa-clock-o"></i> <?= "DateTime" ?></small>
-                                            </h4>
-                                            <p><?= "The Message"?></p>
-                                        </a>
+                                }
 
-                                    <?php	$x++;
-                                    }?> 
-                                </li>
+                                ?>
+                                <!-- start message --> 
                             </ul>
                         </li>
                         <li class="footer">
-                            <!-- <a href="<?= Url::to($GLOBALS['frontend_base_uri'].'message/message/inbox') ?>">View all Messages</a> -->
+                            <a href="<?= Url::to($GLOBALS['frontend_base_uri'].'/referrals/notification/list_unresponded_notification') ?>">View all Notification</a>
                         </li>
                     </ul>
                 </li>
