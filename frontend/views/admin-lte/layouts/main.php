@@ -158,65 +158,6 @@ elseif (Yii::$app->controller->action->id === 'login') {
                 }
             }
         </script>
-		<script type="text/javascript">
-			function get_unresponded_notifications()
-			{
-				$.ajax({
-					url: '/referrals/notification/count_unresponded_notification',
-					dataType: 'json',
-					method: 'GET',
-					success: function (data) {
-						if (data.num_notification > 0){
-							$('#count_noti_sub_referral').html(data.num_notification);
-							$('#count_noti_menu').html(data.all_notifications);
-						} else if(data.num_notification == 0 && data.all_notifications == 0) {
-							$('#count_noti_sub_referral').html('');
-							$('#count_noti_menu').html('');
-						} else if(data.num_notification == 0 && data.all_notifications > 0) {
-							$('#count_noti_sub_referral').html('');
-							$('#count_noti_menu').html(data.all_notifications);
-						} else {
-							console.log(data.num_notification);
-						}
-					},
-					/*beforeSend: function (xhr) {
-						$("#modalContent").html("<img src='/images/img-loader64.gif' alt='' style='display: block;margin-left: auto;margin-right: auto;'>");
-					},*/
-					error: function (jqXHR, textStatus, errorThrown) {
-						console.log('error occured!');
-					}
-				});
-			}
-			
-			function get_unseen_bidnotifications()
-			{
-				$.ajax({
-					url: '/referrals/bidnotification/count_unseen_bidnotification',
-					dataType: 'json',
-					method: 'GET',
-					success: function (data) {
-						if (data.bid_notification > 0){
-							$('#count_noti_sub_bid').html(data.bid_notification);
-							$('#count_noti_menu').html(data.all_notifications);
-						} else if(data.bid_notification == 0 && data.all_notifications == 0) {
-							$('#count_noti_sub_bid').html('');
-							$('#count_noti_menu').html('');
-						} else if(data.bid_notification == 0 && data.all_notifications > 0) {
-							$('#count_noti_sub_bid').html('');
-							$('#count_noti_menu').html(data.all_notifications);
-						} else {
-							console.log(data.bid_notification);
-						}
-					},
-					/*beforeSend: function (xhr) {
-						$("#modalContent").html("<img src='/images/img-loader64.gif' alt='' style='display: block;margin-left: auto;margin-right: auto;'>");
-					},*/
-					error: function (jqXHR, textStatus, errorThrown) {
-						console.log('error occured!');
-					}
-				});
-			}
-		</script>
     </head>
     <body class="hold-transition skin-blue <?= $sidebarclass ?>">
     <?php $this->beginBody() ?>

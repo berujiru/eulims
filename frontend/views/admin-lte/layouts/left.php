@@ -8,7 +8,7 @@ $unseen = '';
 $Packages= Package::find()->all();
 
 $Request_URI=$_SERVER['REQUEST_URI'];
-//$_SERVER['SERVER_NAME']
+
 if($Request_URI=='/'){//alias ex: http://admin.eulims.local
     $Backend_URI=Url::base();//Yii::$app->urlManagerBackend->createUrl('/');
     $Backend_URI=$Backend_URI."/uploads/user/photo/";
@@ -237,55 +237,3 @@ if(Yii::$app->user->isGuest){
     </section>
 
 </aside>
-<script type="text/javascript">
-	// referral notifications
-	function showNotifications(){
-		$.ajax({
-			url: '/referrals/notification/list_unresponded_notification',
-			//url: '',
-			success: function (data) {
-				$(".modal-title").html('Referral Notifications');
-				$('#modalNotification').modal('show')
-					.find('#modalBody')
-					.load('/referrals/notification/list_unresponded_notification');
-					get_unresponded_notifications();
-				$(".content-image-loader").css("display", "none");
-				$('.content-image-loader').removeClass('content-img-loader');
-			},
-			beforeSend: function (xhr) {
-				$(".content-image-loader").css("display", "block");
-				$('.content-image-loader').addClass('content-img-loader');
-			}
-		});
-
-        return false;
-	}
-	// bid notifications
-	function showBidNotifications(){
-		$.ajax({
-			url: '/referrals/bidnotification/list_unseen_bidnotification',
-			//url: '',
-			success: function (data) {
-				$(".modal-title").html('Bid Notifications');
-				$('#modalBidNotification').modal('show')
-					.find('#modalBody')
-					.load('/referrals/bidnotification/list_unseen_bidnotification');
-					get_unseen_bidnotifications();
-				$(".content-image-loader").css("display", "none");
-				$('.content-image-loader').removeClass('content-img-loader');
-			},
-			beforeSend: function (xhr) {
-				$(".content-image-loader").css("display", "block");
-				$('.content-image-loader').addClass('content-img-loader');
-			}
-		});
-
-        return false;
-	}
-	$("#btn_unresponded_referral").on('click', function(e) {
-		e.preventDefault();
-	});
-	$("#btn_unseen_bid").on('click', function(e) {
-		e.preventDefault();
-	});
-</script>

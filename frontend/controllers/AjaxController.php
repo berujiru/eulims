@@ -188,7 +188,29 @@ class AjaxController extends Controller{
                     //get the agency they came from
                     $rstlcode = Rstl::find()->select('code')->where(['rstl_id'=>$item['sender_id']])->one();
                     $items.= '<li>';
-                        $items.= '<a href="#">';
+                        $textcontent ="";
+                        switch ($item['notification_type_id']) {
+                            case 1:
+                                $items.= '<a href="/referrals/referral/view?id='.$item['referral_id'].'&notice_id='.$item['notification_id'].'">';
+                                $textcontent = "Sent Referral Notification!";
+                                break;
+                            case 2:
+                                //get referral local id
+                                $rstlId = (int) Yii::$app->user->identity->profile->rstl_id;
+                                $referral = $referralcomp->getReferralOne($item['referral_id'],$rstlId);
+                                $items.= '<a href="/lab/request/view?id='.$referral['local_request_id'].'&notice_id='.$item['notification_id'].'">';
+                                $textcontent= "Accepted the Referral Notification!";
+                                break;
+                            case 3:
+                                $items.= '<a href="/referrals/referral/view?id='.$item['referral_id'].'&notice_id='.$item['notification_id'].'">';
+                                $textcontent ="Sent a Referral!";
+                                break;
+                            
+                            default:
+                                $items.= '<a href="#">';
+                                $textcontent="Unregistered Notification!";
+                                break;
+                        }
                             $items.= '<div class="pull-left">';
                                 $items.= '<img src="images/avatar04.png" class="img-circle" alt="User Image">';
                             $items.= '</div>';
@@ -196,7 +218,7 @@ class AjaxController extends Controller{
                                 $items.= $item['sender_name'].($rstlcode?' of '.$rstlcode->code:'');
                                 $items.= '<small><i class="fa fa-clock-o"></i> '.$item['notification_date'].'</small>';
                             $items.= '</h4>';
-                            $items.= '<p>Accepted the Referral</p>';
+                            $items.= '<p>'.$textcontent.'</p>';
                         $items.= '</a>';
                     $items.= '</li>';
                     
@@ -207,7 +229,7 @@ class AjaxController extends Controller{
                 $items.='</li>';
                 //$items.='<li class="footer"><a href="#">See All Messages</a></li>';
                 $items.='<li class="footer">
-                            <a href="'.Url::to($GLOBALS["frontend_base_uri"]."/referrals/notification/list_unresponded_notification").'">View all Notification</a>
+                            <a href="'.Url::to($GLOBALS["frontend_base_uri"]."/referrals/notification").'">View all Notification</a>
                         </li>';
                 $items.='</ul>';
             }
