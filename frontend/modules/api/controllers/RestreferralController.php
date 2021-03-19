@@ -21,6 +21,9 @@ use common\models\referral\Analysis;
 use common\models\referral\Attachment;
 use common\models\referral\Pstcrequest;
 use common\models\referral\Customer;
+use common\models\referral\Referralextend;
+
+
 use yii\db\Query;
 
 class RestreferralController extends \yii\rest\Controller
@@ -612,6 +615,12 @@ class RestreferralController extends \yii\rest\Controller
             $notification->remarks = $details['remarks'];
             $notification->notification_date = date('Y-m-d H:i:s');
             if($notification->save(false)){
+                //respond the notification 2 
+                $prevnotif = Notification::find()->where(['referral_id'=>$details['referral_id'],'notification_type_id'=>2])->one();
+                if($prevnotif){
+                    $prevnotif->responded=1;
+                    $prevnotif->save(false);
+                }
                 return true;
             } else {
                 return false;
@@ -639,7 +648,7 @@ class RestreferralController extends \yii\rest\Controller
                 if($notificationCount > 0){
                     return ['notification'=>$notification,'count_notification'=>$notificationCount];
                 } else {
-                    return ['notification'=>null,'count_notification'=>0];
+                    return ['notification'=>[],'count_notification'=>0];
                 }
                 
             } catch (Exception $e) {
@@ -1025,12 +1034,11 @@ class RestreferralController extends \yii\rest\Controller
     //for saving eulims local
     public function actionGetreferraldetail($referral_id,$rstl_id){
         $getrequest = \Yii::$app->request;
-        
         if($referral_id && $rstl_id){
             
-            $checkTestingLab = $this->checkTestingLab($referral_id,$rstl_id);
+            echo $checkTestingLab = $this->checkTestingLab($referral_id,$rstl_id);
             $checkOwner = $this->actionCheckowner($referral_id,$rstl_id);
-            
+            exit;
             if($checkTestingLab > 0 || $checkOwner > 0){
                 
                 $referral = Referral::find()
@@ -1245,6 +1253,34 @@ class RestreferralController extends \yii\rest\Controller
             $return = 0;
         }
         return $return;
+    }
+
+    /** ACCOMPLISHMENT REPORT **/
+    public function actionAccomplishmentreportall($rstl_id,$fromDate,$toDate){
+        \Yii::$app->response->format= \yii\web\Response::FORMAT_JSON;
+
+        $modelReferral = Referralextend::find()
+                ->where('(testing_agency_id =:testingAgencyId OR receiving_agency_id =:receivingAgencyId) AND cancelled =:cancel AND DATE_FORMAT(`referral_date_time`, "%Y-%m-%d") BETWEEN :fromRequestDate AND :toRequestDate AND testing_agency_id != 0', [':testingAgencyId'=>$rstl_id,':receivingAgencyId'=>$rstlId,':cancel'=>0,':fromRequestDate'=>$fromDate,':toRequestDate'=>$toDate])
+                ->groupBy(['DATE_FORMAT(referral_date_time, "%Y-%m")'])
+                ->orderBy([
+                    'DATE_FORMAT(referral_date_time, "%Y")' => SORT_DESC,
+                    'DATE_FORMAT(referral_date_time, "%m")' => SORT_ASC,
+                ]);
+        return $modelReferral;
+    }
+
+    public function actionAccomplishmentreportselected($rstl_id,$lab_id,$fromDate,$toDate){
+        \Yii::$app->response->format= \yii\web\Response::FORMAT_JSON;
+
+        $modelReferral = Referralextend::find()
+                ->where('(testing_agency_id =:testingAgencyId OR receiving_agency_id =:receivingAgencyId) AND cancelled =:cancel AND lab_id = :labId AND DATE_FORMAT(`referral_date_time`, "%Y-%m-%d") BETWEEN :fromRequestDate AND :toRequestDate AND testing_agency_id != 0', [':testingAgencyId'=>$rstl_id,':receivingAgencyId'=>$rstl_id,':cancel'=>0,':labId'=>$lab_id,':fromRequestDate'=>$fromDate,':toRequestDate'=>$toDate])
+                ->groupBy(['DATE_FORMAT(referral_date_time, "%Y-%m")'])
+                ->orderBy([
+                    'DATE_FORMAT(referral_date_time, "%Y")' => SORT_DESC,
+                    'DATE_FORMAT(referral_date_time, "%m")' => SORT_ASC,
+                ]);
+
+        return $modelReferral;
     }
 
     //salvaged from STG

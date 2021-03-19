@@ -709,42 +709,6 @@ class ReferralController extends Controller
                         if(Yii::$app->request->get('bidding') == 1){ //no bidding yet
                             //this is just temporary
                             $data = [];
-                            // $requestData = [
-                            //     'request_id' => $request->request_id,
-                            //     'request_ref_num' => $request->request_ref_num,
-                            //     'request_datetime' => $request->request_datetime,
-                            //     'rstl_id' => $request->rstl_id,
-                            //     'lab_id' => $request->lab_id,
-                            //     'customer_id' => $request->customer_id,
-                            //     'payment_type_id' => $request->payment_type_id,
-                            //     'modeofrelease_ids' => $request->modeofrelease_ids,
-                            //     'discount_id' => $request->discount_id,
-                            //     'discount' => $request->discount,
-                            //     'purpose_id' => $request->purpose_id,
-                            //     //'total' => $request->total,
-                            //     'total' => 0,
-                            //     //'report_due' => $request->report_due, //report due is updated base on the estimated due date set by the agency
-                            //     'conforme' => $request->conforme,
-                            //     'receivedBy' => $request->receivedBy,
-                            //     'request_type_id' => $request->request_type_id,
-                            //     'sample_received_date' => $ref_request->sample_received_date,
-                            //     'user_id_receiving' => Yii::$app->user->identity->profile->user_id
-                            // ];
-
-                            // foreach ($samples as $sample) {
-                            //     $sampleData = [
-                            //         'sample_id' => $sample['sample_id'],
-                            //         'request_id' => $sample['request_id'],
-                            //         'sample_code' => $sample['sample_code'],
-                            //         'sample_month' => $sample['sample_month'],
-                            //         'sample_year' => $sample['sample_year']
-                            //     ];
-                            //     array_push($sample_data, $sampleData);
-                            // }
-                            // $data = Json::encode(['request_data'=>$requestData,'sample_data'=>$sample_data,'agency_id'=>$agency_id],JSON_NUMERIC_CHECK);
-
-                            // $referralUrl='https://eulimsapi.onelab.ph/api/web/referral/referrals/sendbidreferral';
-                            //$referralUrl='http://localhost/eulimsapi.onelab.ph/api/web/referral/referrals/sendbidreferral';
                         } else {
                             $requestData = [
                                 'request_id' => $request->request_id,
@@ -844,7 +808,7 @@ class ReferralController extends Controller
                             send: {
                                 //sends notification that the referral has been sent
                                 $transaction->commit();//new changes i move the commit here because the columns needed for the pstc is not existing anymore
-                                $notifyresponse = $refcomponent->notifyAgency($referralResponse['referral_id'],$agency_id,"Referral Sent");
+                                // $notifyresponse = $refcomponent->notifyAgency($referralResponse['referral_id'],$agency_id,"Referral Sent");
                                 $notifyresponse = $refcomponent->notifysendReferral($referralResponse['referral_id'],$agency_id,"Referral Sent");
 
                                 //new line , i move the notification greetings here
