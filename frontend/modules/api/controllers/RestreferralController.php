@@ -429,7 +429,7 @@ class RestreferralController extends \yii\rest\Controller
     public function actionInsertreferraldata()
     {
         \Yii::$app->response->format= \yii\web\Response::FORMAT_JSON;
-
+		return "hahahaha";
         $return = 0;
         $referralId = 0;
         $referralSave = 0;

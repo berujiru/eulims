@@ -561,6 +561,7 @@ class ReferralController extends Controller
 
                     $refcomponent = new ReferralComponent;
                     $response = $refcomponent->syncReferral($requestId,$agency_id); //return boolean
+					var_dump($response); exit;
                     if($response['response']==1){
 
                         //put the code here to notify the referred agency

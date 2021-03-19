@@ -90,25 +90,12 @@ if(isset($_SESSION['usertoken'])){
 	$sourcetoken=$_SESSION['usertoken'];
 	$userid= $_SESSION['userid'];
 	//get profile
-	$authorization = "Authorization: Bearer ".$sourcetoken; 
-	$apiUrl=$source.'getuser';
-	$curl = new curl\Curl();
-	$curl->setOption(CURLOPT_HTTPHEADER, ['Content-Type: application/json' , $authorization]);
-	$curl->setOption(CURLOPT_SSL_VERIFYPEER, false);
-	$curl->setOption(CURLOPT_CONNECTTIMEOUT, 180);
-	$curl->setOption(CURLOPT_TIMEOUT, 180);
-	$list = $curl->get($apiUrl);
-	$decode=Json::decode($list);
+	
+	$decode=[];
 
 	//GROUPLIST
-	$groupUrl=$source.'getgroup?userid='.$userid;
-	$curlgroup = new curl\Curl();
-	$curlgroup->setOption(CURLOPT_HTTPHEADER, ['Content-Type: application/json' , $authorization]);
-	$curlgroup->setOption(CURLOPT_SSL_VERIFYPEER, false);
-	$curlgroup->setOption(CURLOPT_CONNECTTIMEOUT, 180);
-	$curlgroup->setOption(CURLOPT_TIMEOUT, 180);
-	$grouplist = $curlgroup->get($groupUrl);
-	$group=Json::decode($grouplist);
+	
+	$group=[];
 
 	$chat = new Chat();
 	$searchModel = new ChatSearch();
@@ -576,21 +563,10 @@ function contacts(){ //Personnal Messages
          y = y + "</button>";
          y = y + "</div>";
 		 y = y + "</br>";
-		<?php 
-		if($contacts){
-			foreach ($contacts as $data)
-			 { 
-			 $profuserid=$data['user_id'];
-			 if(isset($_SESSION['usertoken'])){
-			 $userid2=($_SESSION['usertoken']);
-		     }
-			 
-			 
-			 ?>
-			y=y + "<a class='thismessage' onclick='mes(<?=$data['user_id']?>,1)'>";
-			y= y + "<div class='first'><img src='/uploads/user/photo/user.png' alt='/uploads/user/photo/user.png' width='42' height='42'>&nbsp;<b>"+ '<?= $data['fullname']?>' +"</div>";
-			y= y + "</a>";
-			<?php } ?>
+		  $.get("/ajax/getcontactuser", function(data){
+			
+		  });
+	
 			//GROUPS
 			y= y + "<br> <div> <h4>Groups Contacts </h4></div>";
 			<?php 
@@ -602,7 +578,7 @@ function contacts(){ //Personnal Messages
 					y= y + "</a>";
 				<?php } 
 			}
-		}	
+			
 		?>
 		
 		

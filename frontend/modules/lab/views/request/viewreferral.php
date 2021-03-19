@@ -261,6 +261,14 @@ if($requeststatus > 0 && $notified == 1 && $hasTestingAgency > 0 && !empty($mode
                                 $link = '';
                                 $link .= !empty($model->request_ref_num) && $model->referralrequest->referral_type_id == 1 ? Html::button('<span class="glyphicon glyphicon-upload"></span>Upload', ['value'=>Url::to(['/referrals/attachment/upload_deposit','referral_id'=>$model->referral_id,'request_id'=>$model->request_id]), 'onclick'=>'upload(this.value,this.title)', 'class' => 'btn btn-primary btn-xs','title' => 'Upload Deposit Slip']) : '';
                              
+							 
+								if($depositslip > 0){
+                                    /*foreach ($depositslip as $deposit) {
+                                        $link .= "<br>".Html::a('<span class="glyphicon glyphicon-save-file"></span> '.$deposit['filename'],'/referrals/attachment/download?request_id='.$model->request_id.'&file='.$deposit['attachment_id'].'&referral_id='.$model->referral_id, ['style'=>'font-size:12px;color:#000077;font-weight:bold;','title'=>'Download Deposit Slip','target'=>'_self']);
+
+                                    }*/
+									$link =22;
+                                }
                                 return $link;
                             },
                             'displayOnly'=>true,
@@ -274,12 +282,12 @@ if($requeststatus > 0 && $notified == 1 && $hasTestingAgency > 0 && !empty($mode
                             'value'=>function() use ($officialreceipt,$model){
                                 $link = '';
                                 $link .= !empty($model->request_ref_num) && $model->referralrequest->referral_type_id == 2 ? Html::button('<span class="glyphicon glyphicon-upload"></span> Upload', ['value'=>Url::to(['/referrals/attachment/upload_or','referral_id'=>$model->referral_id,'request_id'=>$model->request_id]), 'onclick'=>'upload(this.value,this.title)', 'class' => 'btn btn-primary btn-xs','title' => 'Upload Official Receipt']) : '';
-                                if($officialreceipt > 0){
+                                /*if($officialreceipt > 0){
                                     foreach ($officialreceipt as $or) {
                                         $link .= "<br>".Html::a('<span class="glyphicon glyphicon-save-file"></span> '.$or['filename'],'/referrals/attachment/download?request_id='.$model->request_id.'&file='.$or['attachment_id'].'&referral_id='.$model->referral_id, ['style'=>'font-size:12px;color:#000077;font-weight:bold;','title'=>'Download Official Receipt','target'=>'_self']);
 
                                     }
-                                }
+                                }*/
                                 return $link;
                             },
                             'valueColOptions'=>['style'=>'width:30%;vertical-align: top;'], 

@@ -174,8 +174,7 @@ class ReferralComponent extends Component {
         $analyses = Analysis::find()->where(['request_id'=>$request_id])->asArray()->all();
         //added customer to the sync
         $customerData = Customer::find()->where(['customer_id'=>$request['customer_id']])->asArray()->one();
-
-        if(count($request) > 0 && count($ref_request) > 0 && count($samples) > 0 && count($analyses) > 0){
+		if(count($request) > 0 && count($ref_request) > 0 && count($samples) > 0 && count($analyses) > 0){
 
             //perform the extraction of request data, salvaged the data from STG
             // BTC why do we have to reformat given that the returned value of the query is already in array, maybe because the structure of the local and Centralize dbase is not the same??????
@@ -202,7 +201,6 @@ class ReferralComponent extends Component {
                     'bid'=>0,
                     'pstc_id' => $request['pstc_id'],
                 ];
-
             //perform the extraction of the sample data, salvaged code from STG
             foreach ($samples as $sample) {
                 $sampleData = [
@@ -820,9 +818,9 @@ class ReferralComponent extends Component {
         }
     }
     //get attachment
-    function getAttachment($referralId,$rstlId,$type){
-        if($referralId > 0 && $rstlId > 0 && $type > 0) {
-            $apiUrl=$this->source.'/show_upload?referral_id='.$referralId.'&rstl_id='.$rstlId.'&type='.$type;
+    function getAttachment($referralId,$type){
+        if($referralId > 0 && $type > 0) {
+            $apiUrl=$this->source.'/show_upload?referral_id='.$referralId.'&type='.$type;
             $curl = new curl\Curl();
             $token= 'Authorization: Bearer '.$_SESSION['usertoken'];
             $curl->setOption(CURLOPT_HTTPHEADER, ['Content-Type: application/json' , $token]);
