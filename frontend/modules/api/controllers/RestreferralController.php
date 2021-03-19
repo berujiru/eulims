@@ -848,7 +848,7 @@ class RestreferralController extends \yii\rest\Controller
             $request = \Yii::$app->request->post('request_data');
             $samples = \Yii::$app->request->post('sample_data');
             //$analyses = Yii::$app->request->post('analysis_data');
-            
+
             $checkReferral = $this->checkReferral($request['request_id'],$request['rstl_id']);
             
             if($checkReferral == 0){
@@ -913,6 +913,7 @@ class RestreferralController extends \yii\rest\Controller
                         //return "No referral data!";
                         $return = 2;
                     }
+
                     if($referralSave == 1 && $sampleSave == 1){
 
                         //find and update the pstc if meron
@@ -1033,28 +1034,26 @@ class RestreferralController extends \yii\rest\Controller
     //salvaged data from STG
     //for saving eulims local
     public function actionGetreferraldetail($referral_id,$rstl_id){
+        \Yii::$app->response->format= \yii\web\Response::FORMAT_JSON;
         $getrequest = \Yii::$app->request;
         if($referral_id && $rstl_id){
-            
-            echo $checkTestingLab = $this->checkTestingLab($referral_id,$rstl_id);
+            $checkTestingLab = $this->checkTestingLab($referral_id,$rstl_id);
             $checkOwner = $this->actionCheckowner($referral_id,$rstl_id);
-            exit;
+
             if($checkTestingLab > 0 || $checkOwner > 0){
                 
                 $referral = Referral::find()
                     ->where('referral_id =:referralId', [':referralId'=>$referral_id])
                     ->one();
-                
                 $samples_analyses = Sample::find()
                     ->joinWith(['analyses','analyses.testname','analyses.methodreference'])
                     ->where('referral_id =:referralId', [':referralId'=>$referral_id])
                     ->asArray()
                     ->all();
-                    
+
                 $customer = Customer::find()
-                    ->where('local_customer_id =:customerId','rstl_id =:rstl_id', [':customerId'=>$referral->customer_id,':rstl_id'=>$referral->receiving_agency_id])
-                    ->one();
-                    
+                    ->where(['local_customer_id'=>$referral->customer_id,'rstl_id'=>$referral->receiving_agency_id])->one();
+
                 $data = ['request_data'=>$referral,'sample_analysis_data'=>$samples_analyses,'customer_data'=>$customer];
                 
                 return $data;

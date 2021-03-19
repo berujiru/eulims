@@ -167,7 +167,9 @@ class AjaxController extends Controller{
     //toremove uneccessary and unsused code above
     //lazy load the following 
     public function actionGetunrespondednotification(){
-        $items ='<li>Empty</li>';
+        $items ='<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell-o"></i><span class="label label-success" id="referralcount">0</span></a><ul class="dropdown-menu" style="width: 700px!important;"><li class="header" id="referralheader">You have 0 new notification</li><li></li><li class="footer">
+                            <a href="'.Url::to($GLOBALS["frontend_base_uri"]."/referrals/notification").'">View all Notification</a>
+                        </li></ul>';
         if(isset($_SESSION['usertoken'])&&(!Yii::$app->user->isGuest)){
             //get the unresponded notification of the referral
             $referralcomp = new ReferralComponent;
