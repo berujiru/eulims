@@ -263,13 +263,15 @@ if($requeststatus > 0 && $notified == 1 && $hasTestingAgency > 0 && !empty($mode
                              
 							 
 								if($depositslip > 0){
-                                    /*foreach ($depositslip as $deposit) {
-                                        $link .= "<br>".Html::a('<span class="glyphicon glyphicon-save-file"></span> '.$deposit['filename'],'/referrals/attachment/download?request_id='.$model->request_id.'&file='.$deposit['attachment_id'].'&referral_id='.$model->referral_id, ['style'=>'font-size:12px;color:#000077;font-weight:bold;','title'=>'Download Deposit Slip','target'=>'_self']);
-
-                                    }*/
-									$link =22;
+                                    foreach ($depositslip as $deposit) {
+										$link .= "<br>".Html::a('<span class="glyphicon glyphicon-save-file"></span> '.$deposit['filename'],'/referrals/attachment/download?request_id='.$model->request_id.'&file='.$deposit['filename'].'&referral_id='.$model->referral_id, ['style'=>'font-size:12px;color:#000077;font-weight:bold;','title'=>'Download Deposit Slip','target'=>'_self']);
+										//$link .="<br><a href='http://eulims.onelab.ph/uploads/referral/".$deposit['filename']."' download>".$deposit['filename']."</a>";
+										//$link .=  "<br>".Html::a('<span class="glyphicon glyphicon-save-file"></span> '.$deposit['filename'],'https://eulims.onelab.ph/uploads/referral/'.$deposit['filename'], ['style'=>'font-size:12px;color:#000077;font-weight:bold;','title'=>'Download Deposit Slip']);
+									}
+									
                                 }
                                 return $link;
+								
                             },
                             'displayOnly'=>true,
                             'valueColOptions'=>['style'=>'width:30%;vertical-align: top;'],

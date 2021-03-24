@@ -247,7 +247,6 @@ class AttachmentController extends Controller
                         'uploader' => $uploaderName,
                     ];
                     $referralUrl='https://eulimsapi.onelab.ph/api/web/referral/attachments/upload_or';
-                    //$referralUrl='http://localhost/eulimsapi.onelab.ph/api/web/referral/attachments/upload_or';
 
                     $data = ['file_data'=>$file_data,'uploader_data'=>json_encode($uploader_data)];
 
@@ -370,6 +369,7 @@ class AttachmentController extends Controller
                             $upload=['referralid'=>$referralId,'statusid'=>6];
                             $uploadData = Json::encode(['data'=>$upload]);
                             $uploadUrl ='https://eulimsapi.onelab.ph/api/web/referral/statuslogs/insertdata';
+                            $uploadUrl ='https://eulimsapi.onelab.ph/api/web/referral/statuslogs/insertdata';
                             //$uploadUrl ='http://localhost/eulimsapi.onelab.ph/api/web/referral/statuslogs/insertdata';
 
                             $curlTesting = new Curl();
@@ -402,40 +402,15 @@ class AttachmentController extends Controller
         }
     }
      //for download attachment type deposit slip, official receipt, test result
+	 //EGG created the function below, please  check before updating 03/24/21
     public function actionDownload()
     {
-        set_time_limit(120);
-        $refcomponent = new ReferralComponent();
-        if(Yii::$app->request->get('referral_id')){
-            $referralId = (int) Yii::$app->request->get('referral_id');
-        } else {
-            Yii::$app->session->setFlash('error', "Referral request not valid!");
-            return $this->redirect(['/referrals/referral']);
-        }
-
-        if(Yii::$app->request->get('file')){
-            $fileId = (int) Yii::$app->request->get('file');
-        } else {
-            Yii::$app->session->setFlash('error', "Not a valid file!");
-            return $this->redirect(['/referrals/referral/viewreferral','id'=>$referralId]);
-        }
-
-        if($fileId > 0){
-            $function = new ReferralFunctions();
-
-           // $referral = $this->findReferral($referralId);
-            
-            $rstlId = (int) Yii::$app->user->identity->profile->rstl_id;
-            $referral=$refcomponent->getReferralOne($referralId, $rstlId);
-
-            $file_download = $refcomponent->downloadAttachment($referral['referral_id'],$rstlId,$fileId);
-            if($file_download == 'false'){
-                Yii::$app->session->setFlash('error', "Can't download file!");
-                return $this->redirect(['/referrals/referral/viewreferral','id'=>$referralId]);
-            } else {
-                return $this->redirect($file_download);
-            }
-        }
+		$file= Yii::$app->request->get('file');
+		#setting headers
+		  $url = 'https://eulims.onelab.ph/uploads/referral/'.$file;
+		  header('Content-disposition: attachment; filename='.$file);
+		  header('Content-type: application/octet-stream');
+		  readfile($url);
     }
     //find request
     protected function findRequest($id)

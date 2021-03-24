@@ -820,7 +820,7 @@ class ReferralComponent extends Component {
     //get attachment
     function getAttachment($referralId,$type){
         if($referralId > 0 && $type > 0) {
-            $apiUrl=$this->source.'/show_upload?referral_id='.$referralId.'&type='.$type;
+            $apiUrl=$this->source.'/showupload?referral_id='.$referralId.'&type='.$type;
             $curl = new curl\Curl();
             $token= 'Authorization: Bearer '.$_SESSION['usertoken'];
             $curl->setOption(CURLOPT_HTTPHEADER, ['Content-Type: application/json' , $token]);
@@ -828,15 +828,26 @@ class ReferralComponent extends Component {
             $curl->setOption(CURLOPT_TIMEOUT, 180);
             $curl->setOption(CURLOPT_SSL_VERIFYPEER, false);
             $list = $curl->get($apiUrl);
-            return Json::decode($list);
+            $decoded=Json::decode($list);
+			//var_dump($decoded);
+			//exit;
+			return $decoded;
         } else {
             return 'Invalid referral!';
         }
     }
     function downloadAttachment($referralId,$rstlId,$fileId){
+		//$apiUrl=$this->source.'/showupload?referral_id='.$referralId.'&type='.$type;
+		$curl = new curl\Curl();
+		$token= 'Authorization: Bearer '.$_SESSION['usertoken'];
         if($referralId > 0 && $rstlId > 0 && $fileId > 0) {
             $apiUrl=$this->source.'/download?referral_id='.$referralId.'&rstl_id='.$rstlId.'&file='.$fileId;
-            return $apiUrl;
+            $curl->setOption(CURLOPT_HTTPHEADER, ['Content-Type: application/json' , $token]);
+            $curl->setOption(CURLOPT_CONNECTTIMEOUT, 180);
+            $curl->setOption(CURLOPT_TIMEOUT, 180);
+            $curl->setOption(CURLOPT_SSL_VERIFYPEER, false);
+            $list = $curl->get($apiUrl);
+			return $list;
         } else {
             return 'false';
         }
