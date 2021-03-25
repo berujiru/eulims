@@ -37,38 +37,11 @@ if(Yii::$app->user->isGuest){
     }else{
        $UsernameDesignation=$CurrentUserName.'<br>'.$CurrentUserDesignation;
     }
- //    //runs the action that gets all of the notification, btc was here, returns json encoded respponse
-	// $unresponded_notification = json_decode(Yii::$app->runAction('/referrals/notification/count_unresponded_notification'));
-    
- //    //checks if there are any notification response and displays them otherwise displays none, btc was here
-	// $unresponded = $unresponded_notification->num_notification > 0 ? $unresponded_notification->num_notification : ''; //no display if 0
-
-	// //same as the first notification but only gets all of the unseen bidding notification, btc was here, returns json encoded response
-	// $unseen_bid_notification = json_decode(Yii::$app->runAction('/referrals/bidnotification/count_unseen_bidnotification'));
-
- //    //display all or nothing, hmm btc was here
-	// $unseen = $unseen_bid_notification['bid_notification'] > 0 ? $unseen_bid_notification['bid_notification'] : '';
-  
-    //notification will run if the user is already logged in
-	// $this->registerJs("
-	// 	setInterval(function(e){
-	// 		get_unresponded_notifications();
-	// 	}, 30000);
-	// ");
-	
-	// $this->registerJs("
-	// 	setInterval(function(e){
-	// 		get_unseen_bidnotifications();
-	// 	}, 30000);
-	// ");
 }
 ?>
 <aside class="main-sidebar">
 
-    <section class="sidebar">
-
-        <!-- Sidebar user panel -->
-       
+    <section class="sidebar">       
         <div class="user-panel" style="height:70px">
             <div class="pull-left image">
             <?php 
@@ -99,17 +72,6 @@ if(Yii::$app->user->isGuest){
                 
             </div>
         </div>
-    
-        <!-- search form -->
-        <!-- <form action="#" method="get" class="sidebar-form">
-            <div class="input-group">
-                <input type="text" name="q" class="form-control" placeholder="Search..."/>
-              <span class="input-group-btn">
-                <button type='submit' name='search' id='search-btn' class="btn btn-flat"><i class="fa fa-search"></i>
-                </button>
-              </span>
-            </div>
-        </form> -->
       <br>
         <?php
         $Menu= Package::find()->orderBy(['PackageName'=>SORT_ASC])->all();
@@ -121,42 +83,19 @@ if(Yii::$app->user->isGuest){
                 'label' => '<img src="/images/icons/dashboard.png" style="width:20px">  <span>' . 'Dashboard' . '</span>', 
                 'icon'=>' " style="display:none;width:0px"',
                 'url'=>["/".strtolower($Item->PackageName)],
-                //'url'=>["/".strtolower($Item->PackageName)],
                 'visible'=>true
             ];
             $unresponded = '';
 	        $unseen = '';
-            //$unresponded=""; //comment this
-            // $ItemSubMenu[]=[];
             foreach ($MenuItems as $MenuItem => $mItem){
                 $icon=substr($mItem->icon,6,strlen($mItem->icon)-6);
                 $pkgdetails1=strtolower($mItem->Package_Detail);
                 $pkgdetails2=str_replace(" ","-",$pkgdetails1);
-                $SubmodulePermission="access-".$pkgdetails2; //access-Order of Payment
+                $SubmodulePermission="access-".$pkgdetails2;
 
-
-                //delete this 3 line if we gonna use the new referral
-                // $numNotification = '';
-                // $template = '<a href="{url}">{label}</a>';
-                // $showURL = [$mItem->url];
-                
-                //uncomment this line if we gonna use the new referral
-                
-
-				if($mItem->extra_element == 1){//1 is for the referral notification
-					$numNotification = '&nbsp;&nbsp;<span class="label label-danger" id="count_noti_sub_referral">'.$unresponded.'</span>';
-					$showURL = '#';
-					$template = '<a href="{url}" onclick="showNotifications()" id="btn_unresponded_referral">{label}</a>';
-				} elseif ($mItem->extra_element == 2) {//2 is for the bidding notification
-					$numNotification = '&nbsp;&nbsp;<span class="label label-danger" id="count_noti_sub_bid">'.$unseen.'</span>';
-					$showURL = '#';
-					$template = '<a href="{url}" onclick="showBidNotifications()" id="btn_unseen_bid">{label}</a>';
-				} else {
-					$numNotification = '';
-					$template = '<a href="{url}">{label}</a>';
-					$showURL = [$mItem->url];
-				}
-
+                $numNotification = '';
+                $template = '<a href="{url}">{label}</a>';
+                $showURL = [$mItem->url];
                 
                 $ItemS=[
                    'label' =>'<img src="/images/icons/' .$mItem->icon. '.png" style="width:20px">  <span>' . $mItem->Package_Detail . $numNotification . '</span>', 
@@ -168,16 +107,8 @@ if(Yii::$app->user->isGuest){
                 array_push($ItemSubMenu, $ItemS);
             }
 			
-			if($unresponded > 0 && $unseen > 0){
-            	$all_notification = $unresponded + $unseen;
-            } elseif($unresponded > 0 && $unseen == ''){
-             	$all_notification = $unresponded;
-            } elseif($unresponded == '' && $unseen > 0){
-           	$all_notification = $unseen;
-            } else {
-              	$all_notification = '';
-            }
-			
+            $all_notification = '';
+
             $MainIcon=substr($Item->icon,6,strlen($Item->icon)-6);
 			$showNotification = (stristr($Item->PackageName, 'referral')) ? '&nbsp;&nbsp;<span class="label label-danger" id="count_noti_menu">'.$all_notification.'</span>' : '';
             $ItemMenu[]=[
@@ -190,40 +121,6 @@ if(Yii::$app->user->isGuest){
             ]; 
              unset($ItemSubMenu);
         }
-        // Fixed Sub Menu Item
-        $SubItem=[
-            'label' => '<img src="/images/icons/admin.png" style="width:20px">  <span>System</span>', 
-            'icon'=>' " style="display:none;width:0px"',
-            'url' => ["#"],
-            'items'=>[
-                [
-                    'label' => '<img src="/images/icons/dbmanager.png" style="width:20px">  <span>DB Manager</span>', 
-                    'icon'=>' " style="display:none;width:0px"',
-                    'url' => ["/dbmanager"],
-                    'visible'=>Yii::$app->user->can('access-db-manager')
-                ],
-                [
-                    'label' => '<img src="/images/icons/dbconfig.png" style="width:20px">  <span>Configurations</span>', 
-                    'icon'=>' " style="display:none;width:0px"',
-                    'url' => ["/dbmanager/config"],
-                    'visible'=>Yii::$app->user->can('access-db-config')
-                ],
-                [
-                    'label' => '<img src="/images/icons/admin.png" style="width:20px">  <span>API Configuration</span>', 
-                    'icon'=>' " style="display:none;width:0px"',
-                    'url' => ["/system/apiconfig"],
-                    'visible'=>Yii::$app->user->can('access-api-config')
-                ],
-                [
-                    'label' => '<img src="/images/icons/admin.png" style="width:20px">  <span>Backup and Restore</span>', 
-                    'icon'=>' " style="display:none;width:0px"',
-                    'url' => ["/system/utilities/backup-restore"],
-                    'visible'=>Yii::$app->user->can('access-api-config')
-                ]
-            ],
-            'visible'=>Yii::$app->user->can('access-system')
-        ];
-        array_push($ItemMenu, $SubItem);
         ?>
          <?php 
          echo dmstr\widgets\Menu::widget(
