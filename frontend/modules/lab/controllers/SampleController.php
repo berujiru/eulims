@@ -12,6 +12,7 @@ use common\models\lab\Lab;
 use common\models\lab\Labsampletype;
 use common\models\lab\Samplecode;
 use common\models\lab\SampleName;
+use common\models\lab\Testnamemethod;
 use common\models\lab\Analysis;
 use common\models\finance\Paymentitem;
 use yii\web\Controller;
@@ -97,12 +98,6 @@ class SampleController extends Controller
         {
             $requestId = (int) Yii::$app->request->get('request_id');
         }
-
-        /*if(Yii::$app->request->get('request_type')){
-            $requestType = (int) Yii::$app->request->get('request_type');
-        } else {
-            $requestType = 1;
-        }*/
 
         $request = $this->findRequest($requestId);
         $labId = $request->lab_id;
@@ -428,17 +423,15 @@ class SampleController extends Controller
 
     protected function listSampletype($labId)
     {
-        $sampletype = ArrayHelper::map(Sampletype::find()->joinWith('labSampletypes')->andWhere(['lab_id'=>$labId,'status_id'=>1])->all(), 'sampletype_id', 
+        return $sampletype = ArrayHelper::map(Testnamemethod::find()->joinWith('sampletype')->where(['lab_id'=>$labId])->groupby('sampletype_id')->all(), 'sampletype_id', 
             function($sampletype, $defaultValue) {
-                return $sampletype->type;
+                return $sampletype->sampletype['type'];
         });
-
-        return $sampletype;
     }
 
     protected function filterSampletype()
     {
-        $sampletypes = ArrayHelper::map(Sampletype::find()->all(), 'sampletype_id', 
+        $sampletypes = ArrayHelper::map(Sampletype::find()->all(), 'sampletype_id',
             function($sampletypes, $defaultValue) {
                 return $sampletypes->type;
         });
