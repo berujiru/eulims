@@ -209,10 +209,10 @@ class AttachmentController extends Controller
             ]);
         }
     }
-	//upload Official Receipt
+	//upload Official Receipt 03/25/21
     public function actionUpload_or()
     {
-        set_time_limit(120);
+         set_time_limit(120);
 
         if(Yii::$app->request->get('referral_id')){
             $referralId = (int) Yii::$app->request->get('referral_id');
@@ -222,11 +222,11 @@ class AttachmentController extends Controller
         }
 
         $requestId = (int) Yii::$app->request->get('request_id');
+
         $request = $this->findRequest($requestId);
 
-
         $model = new Attachment();
-        if($model->load(Yii::$app->request->post())){
+		 if($model->load(Yii::$app->request->post())){
             $model->filename = UploadedFile::getInstances($model,'filename');
             $model->referral_id = $referralId;
             if($model->filename){
@@ -246,8 +246,9 @@ class AttachmentController extends Controller
                         'user_id' => Yii::$app->user->identity->profile->user_id,
                         'uploader' => $uploaderName,
                     ];
-                    $referralUrl='https://eulimsapi.onelab.ph/api/web/referral/attachments/upload_or';
-
+                    $referralUrl='https://eulims.onelab.ph/api/restreferral/upload_or';
+                   
+					
                     $data = ['file_data'=>$file_data,'uploader_data'=>json_encode($uploader_data)];
 
                     //hardcoded curl since the extension doesn't support create file
@@ -258,13 +259,9 @@ class AttachmentController extends Controller
                     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
                     //curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
-                    $response = curl_exec($ch);
-
-                    //print_r($response);
-                    //exit;
-
+                    $response = curl_exec($ch); 
                     if($response == 1){
-                        Yii::$app->session->setFlash('success', "Official receipt successfully uploaded.");
+                        Yii::$app->session->setFlash('success', "Official Receipt successfully uploaded.");
                         return $this->redirect(['/lab/request/view','id'=>$requestId]);
                     } elseif($response == 0) {
                         Yii::$app->session->setFlash('error', "Attachment invalid!");
@@ -279,8 +276,10 @@ class AttachmentController extends Controller
                 return $this->redirect(['/lab/request/view','id'=>$requestId]);
             }
         }
+		
+		
         if(Yii::$app->request->isAjax) {
-            return $this->renderAjax('_formUploadOR', [
+            return $this->renderAjax('_formUploadDeposit', [
                 'model' => $model,
             ]);
         }
