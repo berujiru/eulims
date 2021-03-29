@@ -738,14 +738,7 @@ class RequestController extends Controller
         $connection->createCommand('SET FOREIGN_KEY_CHECKS=0')->execute();
         $GLOBALS['rstl_id']=Yii::$app->user->identity->profile->rstl_id;
         
-        //gets the listoflabs //btc
-        $labreferral = ArrayHelper::map($refcomponent->listLabreferral(), 'lab_id', 'labname');
-        //gets the list of discounts //btc
-        $discountreferral = ArrayHelper::map($refcomponent->listDiscountreferral(), 'discount_id', 'type');
-        //gets all the list of purposes //btc
-        $purposereferral = ArrayHelper::map($refcomponent->listPurposereferral(), 'purpose_id', 'name');
-        //gets all the list of modeofrelease //btc 
-        $modereleasereferral = ArrayHelper::map($refcomponent->listModereleasereferral(), 'modeofrelease_id', 'mode');
+        
         
         if ($model->load(Yii::$app->request->post())) {
             $transaction = $connection->beginTransaction();
@@ -759,13 +752,13 @@ class RequestController extends Controller
                 $modelReferralrequest->referral_type_id = 1;
                 if ($modelReferralrequest->save()){
                     $transaction->commit();
+                    return $this->redirect(['view', 'id' => $model->request_id]); ///lab/request/view?id=1
                 } else {
                     $transaction->rollBack();
                     print_r($modelReferralrequest->getErrors());
-                    //return false;
+                    return false;
                 }
-              //  Yii::$app->session->setFlash('success', 'Referral Request Successfully Created!');
-                return $this->redirect(['view', 'id' => $model->request_id]); ///lab/request/view?id=1
+ 
             } else {
                 $transaction->rollBack();
                 print_r($model->getErrors());
@@ -797,6 +790,16 @@ class RequestController extends Controller
             }else{
                 $model->receivedBy="";
             }
+
+            //gets the listoflabs //btc
+            $labreferral = ArrayHelper::map($refcomponent->listLabreferral(), 'lab_id', 'labname');
+            //gets the list of discounts //btc
+            $discountreferral = ArrayHelper::map($refcomponent->listDiscountreferral(), 'discount_id', 'type');
+            //gets all the list of purposes //btc
+            $purposereferral = ArrayHelper::map($refcomponent->listPurposereferral(), 'purpose_id', 'name');
+            //gets all the list of modeofrelease //btc 
+            $modereleasereferral = ArrayHelper::map($refcomponent->listModereleasereferral(), 'modeofrelease_id', 'mode');
+
             if(\Yii::$app->request->isAjax){
                 return $this->renderAjax('createReferral', [
                     'model' => $model,
