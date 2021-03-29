@@ -168,13 +168,15 @@ class ReferralComponent extends Component {
         $request = exRequestreferral::find()->where(['request_id'=>$request_id,'request_type_id'=>2])->asArray()->one();
         //gets the referral information which is related to request above
         $ref_request = Referralrequest::find()->where('request_id =:requestId',[':requestId'=>$request_id])->one();
-        //get the associated sample of the request above
-        $samples = Sample::find()->where(['request_id'=>$request_id])->asArray()->all();
-        //get the associated analyses of the request above
-        $analyses = Analysis::find()->where(['request_id'=>$request_id])->asArray()->all();
-        //added customer to the sync
-        $customerData = Customer::find()->where(['customer_id'=>$request['customer_id']])->asArray()->one();
-		if(count($request) > 0 && count($ref_request) > 0 && count($samples) > 0 && count($analyses) > 0){
+
+        //get the associated samples with tests of it
+        $samples_analyses = Sample::find()
+                    ->joinWith('analyses')
+                    ->where(['tbl_sample.request_id'=>$request_id])
+                    ->asArray()
+                    ->all();
+
+		if(count($request) > 0 && count($ref_request) > 0 && count($samples_analyses) > 0 ){
 
             //perform the extraction of request data, salvaged the data from STG
             // BTC why do we have to reformat given that the returned value of the query is already in array, maybe because the structure of the local and Centralize dbase is not the same??????
@@ -201,8 +203,33 @@ class ReferralComponent extends Component {
                     'bid'=>0,
                     'pstc_id' => $request['pstc_id'],
                 ];
-            //perform the extraction of the sample data, salvaged code from STG
-            foreach ($samples as $sample) {
+
+
+            foreach ($samples_analyses as $sample) {
+                $analysis_data = [];
+                foreach ($sample['analyses'] as $analysis) {
+                    $analysisData = [
+                        'analysis_id' => $analysis['analysis_id'],
+                        'date_analysis' => $analysis['date_analysis'],
+                        'rstl_id' => $analysis['rstl_id'],
+                        'request_id' => $analysis['request_id'],
+                        'sample_id' => $analysis['sample_id'],
+                        'sample_code' => $analysis['sample_code'],
+                        'package_id' => $analysis['package_id'],
+                        'testname' => $analysis['testname'],
+                        'method' => $analysis['method'],
+                        'methodref_id' => $analysis['methodref_id'],
+                        'references' => $analysis['references'],
+                        'fee' => $analysis['fee'],
+                        'test_id' => $analysis['test_id'],
+                        'cancelled' => $analysis['cancelled'],
+                        'is_package' => $analysis['is_package'],
+                        // 'is_package_name' => $analysis['is_package_name'],
+                        'type_fee_id' => $analysis['type_fee_id']
+                    ];
+                    array_push($analysis_data, $analysisData);
+                }
+
                 $sampleData = [
                     'sample_id' => $sample['sample_id'],
                     'rstl_id' => $sample['rstl_id'],
@@ -217,38 +244,15 @@ class ReferralComponent extends Component {
                     'sample_month' => $sample['sample_month'],
                     'sample_year' => $sample['sample_year'],
                     'active' => $sample['active'],
-                    'completed' => $sample['completed']
+                    'completed' => $sample['completed'],
+                    'analyses'=> $analysis_data
                 ];
+
                 array_push($sample_data, $sampleData);
             }
 
-            //another one for analyses
-            foreach ($analyses as $analysis) {
-                $analysisData = [
-                    'analysis_id' => $analysis['analysis_id'],
-                    'date_analysis' => $analysis['date_analysis'],
-                    'rstl_id' => $analysis['rstl_id'],
-                    'request_id' => $analysis['request_id'],
-                    'sample_id' => $analysis['sample_id'],
-                    'sample_code' => $analysis['sample_code'],
-                    'package_id' => $analysis['package_id'],
-                    'testname' => $analysis['testname'],
-                    'method' => $analysis['method'],
-                    'methodref_id' => $analysis['methodref_id'],
-                    'references' => $analysis['references'],
-                    'fee' => $analysis['fee'],
-                    'test_id' => $analysis['test_id'],
-                    'cancelled' => $analysis['cancelled'],
-                    'is_package' => $analysis['is_package'],
-                    // 'is_package_name' => $analysis['is_package_name'],
-                    'type_fee_id' => $analysis['type_fee_id']
-                ];
-                array_push($analysis_data, $analysisData);
-            }
-
             //obviously encoding the 
-            $data = Json::encode(['request_data'=>$requestData,'sample_data'=>$sample_data,'analysis_data'=>$analysis_data,'customerData'=>$customerData,'agency_id'=>$agency_id],JSON_NUMERIC_CHECK);
-
+            $data = Json::encode(['request_data'=>$requestData,'sample_data'=>$sample_data,'agency_id'=>$agency_id],JSON_NUMERIC_CHECK);
             //trying to contact the mothership as API :D oh GOD how long do i need to read these code
             $apiUrl=$this->source.'/insertreferraldata';
             $curl = new curl\Curl();
