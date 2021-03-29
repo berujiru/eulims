@@ -409,8 +409,8 @@ class CashierController extends \yii\web\Controller
             $ids = $_POST['depdrop_parents'];
             $deposit_type_id = empty($ids[0]) ? null : $ids[0];
             $or_series_id= empty($ids[1]) ? null : $ids[1];
-            $list = Receipt::find()->andWhere(['or_series_id'=>$or_series_id])->andWhere(['deposit_type_id'=>$deposit_type_id])->andWhere(['deposit_id'=>null])->asArray()->all();
-            $selected  = null;
+            $list = Receipt::find()->andWhere(['or_series_id'=>$or_series_id])->andWhere(['deposit_type_id'=>$deposit_type_id])->andWhere(['deposit_id'=>null,'cancelled'=>0])->asArray()->all();
+            $selected  = null;  
             if ($ids != null && count($list) > 0) {
                 $selected = '';
                 foreach ($list as $i => $or) {
