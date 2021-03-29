@@ -55,16 +55,44 @@ $this->registerJs($js,\yii\web\View::POS_READY);
 ?>
 
 <div class="request-index">
+    
+    <div class="row">
+       <div class="col-sm-8 col-md-8 col-lg-8">
 
-    <fieldset>
-        <legend>Legends - Report Status</legend>
-        <div>
-            <span class="badge btn-success">Report Generated</span>
-            <span class="badge btn-warning">Report Nearly Due</span>
-            <span class="badge btn-danger">Urgent Action Needed</span>
+        <div class="info-box">
+                <span class="info-box-icon bg-aqua"><i class="fa fa-info-circle"></i></span>
+
+                <div class="info-box-content ">
+                    <span class="info-box-number">Legends - Report Status</span>
+                    
+                    <span class="info-box-number">
+                        <span class="badge btn-success">Report Generated</span>
+                        <span class="badge btn-warning">Report Nearly Due</span>
+                        <span class="badge btn-danger">Urgent Action Needed</span>
+                    </span>
+                    
+                </div>
+            <!-- /.info-box-content -->
+
+            </div>
         </div>
-    </fieldset>
-    <?php 
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            <div class="info-box">
+                <span class="info-box-icon bg-aqua"><i class="fa fa-question-circle"></i></span>
+                <a href="#" class="close" data-dismiss="alert" >×</a>
+                <div class="info-box-content bg-aqua">
+                    <span class="info-box-number">Manuals</span>
+                    <span class="info-box-text"><?= Html::a('How to create a job request', 'https://drive.google.com/file/d/1VRJhLAvtJnACuQAIGqmx9gBLgcaEcaQI/view?usp=sharing',['class'=>'btn-info','target'=>"_blank"]); ?></span>
+                    <span class="info-box-text"><?= Html::a('How to refer', 'https://drive.google.com/file/d/1VRJhLAvtJnACuQAIGqmx9gBLgcaEcaQI/view?usp=sharing',['class'=>'btn-info','target'=>"_blank"]); ?></span>
+                    <span class="info-box-text"><?= Html::a('How to received PSTC request', 'https://drive.google.com/file/d/1VRJhLAvtJnACuQAIGqmx9gBLgcaEcaQI/view?usp=sharing',['class'=>'btn-info','target'=>"_blank"]); ?></span>
+                </div>
+            <!-- /.info-box-content -->
+
+            </div>
+        </div> 
+    </div>
+<div class="table-responsive">
+          <?php 
     echo  GridView::widget([
         'dataProvider' => $dataProvider,
         'id'=>'RequestGrid',
@@ -80,7 +108,7 @@ $this->registerJs($js,\yii\web\View::POS_READY);
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
             'heading' => '<i class="glyphicon glyphicon-book"></i>  Request',
-			'before'=> (Yii::$app->user->identity->profile->rstl_id > 100) ? "<button type='button' onclick='LoadModal(\"Create Request\",\"/lab/request/create\")' class=\"btn btn-success\"><i class=\"fa fa-book-o\"></i> Create Request</button>" : "<button type='button' onclick='LoadModal(\"Create Request\",\"/lab/request/create\")' class=\"btn btn-success\"><i class=\"fa fa-book-o\"></i> Create Request</button>&nbsp;&nbsp;&nbsp;<button type='button' onclick='LoadModal(\"Create Referral Request\",\"/lab/request/createreferral\")' class=\"btn btn-success\"><i class=\"fa fa-book-o\"></i> Create Referral Request</button>&nbsp;&nbsp;&nbsp;<button type='button' value = '/lab/request/notifyreportdue' onclick='location.href=this.value' class=\"btn btn-primary\"><i class=\"glyphicon glyphicon-send\"></i> Notify Report Due</button>",
+            'before'=> (Yii::$app->user->identity->profile->rstl_id > 100) ? "<button type='button' onclick='LoadModal(\"Create Request\",\"/lab/request/create\")' class=\"btn btn-success\"><i class=\"fa fa-book-o\"></i> Create Request</button>" : "<button type='button' onclick='LoadModal(\"Create Request\",\"/lab/request/create\")' class=\"btn btn-success\"><i class=\"fa fa-book-o\"></i> Create Request</button>&nbsp;&nbsp;&nbsp;<button type='button' onclick='LoadModal(\"Create Referral Request\",\"/lab/request/createreferral\")' class=\"btn btn-success\"><i class=\"fa fa-book-o\"></i> Create Referral Request</button>&nbsp;&nbsp;&nbsp;<button type='button' value = '/lab/request/notifyreportdue' onclick='location.href=this.value' class=\"btn btn-primary\"><i class=\"glyphicon glyphicon-send\"></i> Notify Report Due</button>",
         ],
         'pjax' => true, // pjax is set to always true for this demo
         'pjaxSettings' => [
@@ -315,5 +343,7 @@ $this->registerJs($js,\yii\web\View::POS_READY);
             ],
         ],
 ]); 
-?>
+?>  
+</div>
+
 </div>
