@@ -108,7 +108,9 @@ $this->registerJs($js,\yii\web\View::POS_READY);
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
             'heading' => '<i class="glyphicon glyphicon-book"></i>  Request',
-            'before'=> (Yii::$app->user->identity->profile->rstl_id > 100) ? "<button type='button' onclick='LoadModal(\"Create Request\",\"/lab/request/create\")' class=\"btn btn-success\"><i class=\"fa fa-book-o\"></i> Create Request</button>" : "<button type='button' onclick='LoadModal(\"Create Request\",\"/lab/request/create\")' class=\"btn btn-success\"><i class=\"fa fa-book-o\"></i> Create Request</button>&nbsp;&nbsp;&nbsp;<button type='button' onclick='LoadModal(\"Create Referral Request\",\"/lab/request/createreferral\")' class=\"btn btn-success\"><i class=\"fa fa-book-o\"></i> Create Referral Request</button>&nbsp;&nbsp;&nbsp;<button type='button' value = '/lab/request/notifyreportdue' onclick='location.href=this.value' class=\"btn btn-primary\"><i class=\"glyphicon glyphicon-send\"></i> Notify Report Due</button>",
+			'before'=> (Yii::$app->user->identity->profile->rstl_id > 100) ? "<button type='button' onclick='LoadModal(\"Create Request\",\"/lab/request/create\")' class=\"btn btn-success\"><i class=\"fa fa-book-o\"></i> Create Request</button>" : "<button type='button' onclick='LoadModal(\"Create Request\",\"/lab/request/create\")' class=\"btn btn-success\"><i class=\"fa fa-book-o\"></i> Create Request</button>&nbsp;&nbsp;&nbsp;<button type='button' onclick='LoadModal(\"Create Referral Request\",\"/lab/request/createreferral\")' class=\"btn btn-success\"><i class=\"fa fa-book-o\"></i> Create Referral Request</button>
+			&nbsp;&nbsp;&nbsp;<button type='button' value = '/lab/request/notifyreportdue' onclick='location.href=this.value' class=\"btn btn-primary\"><i class=\"glyphicon glyphicon-send\"></i> Notify Report Due</button>
+			&nbsp;&nbsp;&nbsp;<button type='button' value = '/pstc/pstcrequest' onclick='location.href=this.value' class=\"btn btn-warning\">PSTC</button>",
         ],
         'pjax' => true, // pjax is set to always true for this demo
         'pjaxSettings' => [
