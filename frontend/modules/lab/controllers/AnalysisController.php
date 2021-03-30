@@ -507,12 +507,10 @@ class AnalysisController extends Controller
 
     protected function listSampletype($labId)
     {
-        $sampletype = ArrayHelper::map(Sampletype::find()->joinWith('labSampletypes')->andWhere(['lab_id'=>$labId,'status_id'=>1])->all(), 'sampletype_id', 
+        return $sampletype = ArrayHelper::map(Testnamemethod::find()->joinWith('sampletype')->where(['lab_id'=>$labId])->groupby('sampletype_id')->all(), 'sampletype_id', 
             function($sampletype, $defaultValue) {
-                return $sampletype->type;
+                return $sampletype->sampletype['type'];
         });
-
-        return $sampletype;
     }
    
 }

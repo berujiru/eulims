@@ -527,8 +527,8 @@ window.setInterval(function(){
    $(document).on('focus','.msg',function(){
 	  alert('is typing'); 
    });
-  
-}, 5000);
+   getunrespondednotification();
+}, 30000);
 
 function openForm() {
 	document.getElementById("myForm").style.display = "block";
@@ -778,9 +778,6 @@ function getunrespondednotification(){
 jQuery(document).ready(function ($) {
 
 getunrespondednotification();
-
-
-
 
 });
  </script>
