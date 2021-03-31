@@ -85,7 +85,7 @@ class CsfController extends Controller
 //         array_push($arrMonthlyCSF,$intCSF);
 //        } 
         
-         $intCSF2 = Yii::$app->labdb->createCommand("CALL spGetCSIReportValue(1,2020);")->queryAll();
+         $intCSF2 = Yii::$app->labdb->createCommand("CALL spGetCSIReportValue(1,".date('Y').");")->queryAll();
          
         $intArray=array();
         foreach($arrMonthlyCSF as $csf)
@@ -167,7 +167,7 @@ class CsfController extends Controller
     public function actionCsf()
     {  
         $pMonth = Yii::$app->request->get('csfmonth');
-        $csf = Csf::find()->andWhere('Month(r_date) =' .  $pMonth)->andWhere('Year(r_date) = 2020')->all();
+        $csf = Csf::find()->andWhere('Month(r_date) =' .  $pMonth)->andWhere('Year(r_date) = '.date('Y'))->all();
         return $this->asJson([$csf]);             
     }
 
@@ -178,7 +178,7 @@ class CsfController extends Controller
         $searchModel = new CsfSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        $csf = Csf::find()->andWhere('Month(r_date) =' .  $pMonth)->andWhere('Year(r_date) = 2020')->all();
+        $csf = Csf::find()->andWhere('Month(r_date) =' .  $pMonth)->andWhere('Year(r_date) = '.date('Y'))->all();
         $count = count($csf);
         return $this->render('csi', [
             'searchModel' => $searchModel,
