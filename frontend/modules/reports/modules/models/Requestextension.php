@@ -29,7 +29,7 @@ class Requestextension extends Request
                 $data =  Requestextension::find()
                     ->select(['request_id'])
                     ->where(['LIKE','request_datetime',$yearmonth])
-                    ->andWhere(['lab_id'=>$lab])
+                    ->andWhere(['lab_id'=>$lab, 'request_type_id' => 1])
                     ->andWhere(['>','status_id',0])
                     ->all(); 
 
@@ -39,7 +39,7 @@ class Requestextension extends Request
                 $data =  Requestextension::find()
                     ->select(['sample_id'])
                     ->where(['LIKE','request_datetime',$yearmonth])
-                    ->andWhere(['lab_id'=>$lab])
+                    ->andWhere(['lab_id'=>$lab, 'request_type_id' => 1])
                     ->andWhere(['>','status_id',0])
                     ->innerJoinWith('samples', 'tbl_sample.request_id = Requestextension.request_id')
                     ->andWhere(['tbl_sample.active'=>'1'])

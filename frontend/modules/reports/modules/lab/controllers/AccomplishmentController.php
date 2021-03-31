@@ -60,7 +60,7 @@ class AccomplishmentController extends \yii\web\Controller
 			'total'=>'SUM(total)',
 			'request_datetime',
 		])
-		->where('rstl_id =:rstlId AND status_id > :statusId AND lab_id = :labId AND DATE_FORMAT(`request_datetime`, "%Y") = :year AND request_ref_num != ""', [':rstlId'=>$rstlId,':statusId'=>0,':labId'=>$labId,':year'=>$year])
+		->where('rstl_id =:rstlId AND status_id > :statusId AND lab_id = :labId AND DATE_FORMAT(`request_datetime`, "%Y") = :year AND request_ref_num != "" AND request_type_id = 1', [':rstlId'=>$rstlId,':statusId'=>0,':labId'=>$labId,':year'=>$year])
 		->groupBy(['DATE_FORMAT(request_datetime, "%Y-%m")'])
 		->orderBy('request_datetime ASC');
 
