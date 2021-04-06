@@ -82,9 +82,9 @@ $this->registerJs($js,\yii\web\View::POS_READY);
                 <a href="#" class="close" data-dismiss="alert" >×</a>
                 <div class="info-box-content bg-aqua">
                     <span class="info-box-number">Manuals</span>
-                    <span class="info-box-text"><?= Html::a('How to create a job request', 'https://drive.google.com/file/d/1VRJhLAvtJnACuQAIGqmx9gBLgcaEcaQI/view?usp=sharing',['class'=>'btn-info','target'=>"_blank"]); ?></span>
-                    <span class="info-box-text"><?= Html::a('How to refer', 'https://drive.google.com/file/d/1VRJhLAvtJnACuQAIGqmx9gBLgcaEcaQI/view?usp=sharing',['class'=>'btn-info','target'=>"_blank"]); ?></span>
-                    <span class="info-box-text"><?= Html::a('How to receive PSTC request', 'https://drive.google.com/file/d/1VRJhLAvtJnACuQAIGqmx9gBLgcaEcaQI/view?usp=sharing',['class'=>'btn-info','target'=>"_blank"]); ?></span>
+                    <span class="info-box-text"><?= Html::a('How to create a job request <b>(soon)</b>', '#',['class'=>'btn-info','target'=>"_blank"]); ?></span>
+                    <span class="info-box-text"><?= Html::a('How to refer <b>(soon)</b>', '#',['class'=>'btn-info','target'=>"_blank"]); ?></span>
+                    <span class="info-box-text"><?= Html::a('How to receive PSTC request <b>(soon)</b>', '#',['class'=>'btn-info','target'=>"_blank"]); ?></span>
                 </div>
             <!-- /.info-box-content -->
 
