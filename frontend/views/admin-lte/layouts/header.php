@@ -168,7 +168,7 @@ if(isset($_SESSION['usertoken'])){
                 <li class="dropdown messages-menu" id="referralnotif">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                       <i class="fa fa-bell-o"></i>
-                      <span class="label" id="referralcount"><div style='text-align:center;'><img src='/images/img-loader64.gif' alt='' height='10px' width='10px'></div></span>
+                      <span class="label" id="referralcount"><div style='text-align:center;'></div></span>
                     </a>
                     <ul class="dropdown-menu" style="width: 700px!important;">
                       <li class="header" id="referralheader"></li>
@@ -770,7 +770,7 @@ function searchgroup() {
 }
 
 function getunrespondednotification(){   
-
+	$('#referralcount').html("<img src='/images/img-loader64.gif' alt='' height='10px' width='10px'>");
     $('#referralnotif').load("/ajax/getunrespondednotification");
 }
 
