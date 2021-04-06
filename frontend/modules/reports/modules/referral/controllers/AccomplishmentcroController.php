@@ -21,6 +21,10 @@ use yii2tech\spreadsheet\Spreadsheet;
 use yii2tech\spreadsheet\SerialColumn;
 use arturoliveira\ExcelView;
 use kartik\grid\GridView;
+use common\components\ReferralComponent;
+use common\models\lab\ReferralRequest;
+use frontend\modules\reports\modules\models\Requestextension;
+
 
 class AccomplishmentcroController extends \yii\web\Controller
 {
@@ -57,39 +61,46 @@ class AccomplishmentcroController extends \yii\web\Controller
 			$report_type = 2;
 		}
 
-		if($report_type == 1){
-			$modelReferral = Referralextend::find()
-				->where('(testing_agency_id =:testingAgencyId OR receiving_agency_id =:receivingAgencyId) AND cancelled =:cancel AND DATE_FORMAT(`referral_date_time`, "%Y-%m-%d") BETWEEN :fromRequestDate AND :toRequestDate AND testing_agency_id != 0', [':testingAgencyId'=>$rstlId,':receivingAgencyId'=>$rstlId,':cancel'=>0,':fromRequestDate'=>$fromDate,':toRequestDate'=>$toDate])
-				->groupBy(['DATE_FORMAT(referral_date_time, "%Y-%m")'])
-				//->orderBy('referral_date_time DESC');
-				//->groupBy(['DATE_FORMAT(referral_date_time, "%m")'])
-				//->addGroupBy(['DATE_FORMAT(referral_date_time, "%Y")'])
-				//->orderBy("DATE_FORMAT(`referral_date_time`, '%m') ASC, DATE_FORMAT(`referral_date_time`, '%Y') DESC");
-				->orderBy([
-					'DATE_FORMAT(referral_date_time, "%Y")' => SORT_DESC,
-				    'DATE_FORMAT(referral_date_time, "%m")' => SORT_ASC,
-				]);
-		} else {
-			$modelReferral = Referralextend::find()
-				->where('(testing_agency_id =:testingAgencyId OR receiving_agency_id =:receivingAgencyId) AND cancelled =:cancel AND lab_id = :labId AND DATE_FORMAT(`referral_date_time`, "%Y-%m-%d") BETWEEN :fromRequestDate AND :toRequestDate AND testing_agency_id != 0', [':testingAgencyId'=>$rstlId,':receivingAgencyId'=>$rstlId,':cancel'=>0,':labId'=>$labId,':fromRequestDate'=>$fromDate,':toRequestDate'=>$toDate])
-				->groupBy(['DATE_FORMAT(referral_date_time, "%Y-%m")'])
-				//->orderBy('referral_date_time DESC');
-				//->groupBy(['DATE_FORMAT(referral_date_time, "%m")'])
-				//->addGroupBy(['DATE_FORMAT(referral_date_time, "%Y")'])
-				//->orderBy("DATE_FORMAT(`referral_date_time`, '%m') ASC, DATE_FORMAT(`referral_date_time`, '%Y') DESC");
-				->orderBy([
-					'DATE_FORMAT(referral_date_time, "%Y")' => SORT_DESC,
-				    'DATE_FORMAT(referral_date_time, "%m")' => SORT_ASC,
-				]);
+		if($report_type==1){
+			$modelReferral = Requestextension::find()
+				->select([
+					'monthnum'=>'DATE_FORMAT(`request_datetime`, "%m")',
+					'month'=>'DATE_FORMAT(`request_datetime`, "%M")',
+					'totalrequests' => 'count(request_id)',
+					'request_datetime',
+				])
+                ->where('rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m-%d") BETWEEN :fromRequestDate AND :toRequestDate', [':rstlId'=>$rstlId,':statusId'=>0,':fromRequestDate'=>$fromDate,':toRequestDate'=>$toDate])
+                ->groupBy(['DATE_FORMAT(request_datetime, "%Y-%m")'])
+                ->orderBy([
+                    'DATE_FORMAT(request_datetime, "%Y")' => SORT_DESC,
+                    'DATE_FORMAT(request_datetime, "%m")' => SORT_ASC,
+                ]);
+		}else{
+			$modelReferral = Requestextension::find()
+				->select([
+					'monthnum'=>'DATE_FORMAT(`request_datetime`, "%m")',
+					'month'=>'DATE_FORMAT(`request_datetime`, "%M")',
+					'totalrequests' => 'count(request_id)',
+					'request_datetime',
+				])
+                ->where('lab_id=:labId AND rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m-%d") BETWEEN :fromRequestDate AND :toRequestDate', [':rstlId'=>$rstlId,':statusId'=>0,':fromRequestDate'=>$fromDate,':toRequestDate'=>$toDate,':labId'=>$labId])
+                ->groupBy(['DATE_FORMAT(request_datetime, "%Y-%m")'])
+                ->orderBy([
+                    'DATE_FORMAT(request_datetime, "%Y")' => SORT_DESC,
+                    'DATE_FORMAT(request_datetime, "%m")' => SORT_ASC,
+                ]);
 		}
 
-		$dataProvider = new ActiveDataProvider([
+
+        $dataProvider = new ActiveDataProvider([
             'query' => $modelReferral,
             'pagination' => false,
-            // 'pagination' => [
-            //     'pagesize' => 10,
-            // ],
         ]);
+
+		if(isset($response)){
+			$modelReferral=$response->modelReferral;
+			$dataProvider=$response->dataProvider;
+		}
 
         if (Yii::$app->request->isAjax) {
             return $this->renderAjax('index', [
