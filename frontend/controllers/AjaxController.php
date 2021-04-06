@@ -24,7 +24,7 @@ use linslin\yii2\curl;
 use common\components\ReferralComponent;
 use common\models\system\Rstl;
 use yii\helpers\Url;
-
+use yii\helpers\Json;
 
 
 /**
@@ -241,4 +241,84 @@ class AjaxController extends Controller{
 
 
     }
+	
+	public function actionGetcontactuser(){
+		if(isset($_SESSION['usertoken'])){
+			$sourcetoken=$_SESSION['usertoken'];
+			$userid= $_SESSION['userid'];
+			$authorization = "Authorization: Bearer ".$sourcetoken; 
+			$apiUrl=$GLOBALS['newapi_url'].'message/getuser';
+			//$apiUrl=$source.'getuser';
+			$curl = new curl\Curl();
+			$curl->setOption(CURLOPT_HTTPHEADER, ['Content-Type: application/json' , $authorization]);
+			$curl->setOption(CURLOPT_SSL_VERIFYPEER, false);
+			$curl->setOption(CURLOPT_CONNECTTIMEOUT, 180);
+			$curl->setOption(CURLOPT_TIMEOUT, 180);
+			$list = $curl->get($apiUrl);
+			$decode=Json::decode($list);
+			
+			$y="";
+			$y.= "<h4>List of Contacts </h4>";
+			 
+			$y.=  "<div>";
+			$y.= "<input type='text' id='txtsearch' placeholder='Search' style='width:90%;'>";
+			$y.= "<button id='btnsearch' name='btnsearch' onclick='search();'>";
+			$y.= "<i class='fa fa-search'></i>";
+			$y.= "</button>";
+			$y.= "</div>";
+			$y.= "</br>";
+			if($decode){
+				foreach ($decode as $data){ 
+					 $profuserid=$data['user_id'];
+					 if(isset($_SESSION['usertoken'])){
+						$userid2=($_SESSION['usertoken']);
+					 }
+				
+					$y.="<a class='thismessage' onclick='mes(".$data['user_id'].",1)'>";
+					$y.="<div class='first'><img src='/uploads/user/photo/user.png' alt='/uploads/user/photo/user.png' width='42' height='42'>&nbsp;<b>". $data['fullname']."</div>";
+					$y.="</a>";
+				}
+			}
+			return $y;
+		}else{
+			return;
+		}
+	}
+	
+	public function actionGetgroup(){
+		if(isset($_SESSION['usertoken'])){
+		$sourcetoken=$_SESSION['usertoken'];
+		$userid= $_SESSION['userid'];
+		$authorization = "Authorization: Bearer ".$sourcetoken; 
+		$groupUrl=$GLOBALS['newapi_url'].'message/getgroup?userid='.$userid;
+		$curlgroup = new curl\Curl();
+		$curlgroup->setOption(CURLOPT_HTTPHEADER, ['Content-Type: application/json' , $authorization]);
+		$curlgroup->setOption(CURLOPT_SSL_VERIFYPEER, false);
+		$curlgroup->setOption(CURLOPT_CONNECTTIMEOUT, 180);
+		$curlgroup->setOption(CURLOPT_TIMEOUT, 180);
+		$grouplist = $curlgroup->get($groupUrl);
+		$group=Json::decode($grouplist);
+		
+		$y="";
+		$y.= "<h4>List of Contacts </h4>";
+		 
+		$y.=  "<div>";
+		$y.= "<input type='text' id='txtsearch' placeholder='Search' style='width:90%;'>";
+		$y.= "<button id='btnsearch' name='btnsearch' onclick='search();'>";
+		$y.= "<i class='fa fa-search'></i>";
+		$y.= "</button>";
+		$y.= "</div>";
+		$y.= "</br>";
+		if($group){
+			foreach ($group as $data){ 
+				$y.="<a class='thismessage1' onclick='mes(".$data['chat_group_id'].",2)'>";
+				$y.= "<div class='first'><img src='/uploads/user/photo/group.png' alt='/uploads/user/photo/user.png' width='42' height='42'>&nbsp;<b>". $data['chatGroup']['group_name'] ."</div>";
+				$y.="</a>";
+			}
+		}
+		return $y;
+		}else{
+			return;	
+		}
+	}
 }
