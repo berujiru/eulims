@@ -551,62 +551,10 @@ $("#btngroup").click(function(){
 
 
 function contacts(){ //Personnal Messages
-    flag=<?=$flag?>;
-	if(flag == "1"){
-		var y;
-		 y = "<h4>List of Contacts </h4>";
-		 //y= "<input autocomplete='off' placeholder='Search' spellcheck='false' type='text' aria-label='Search' value=''>";
-		 y =  y+ "<div>";
-		 y = y + "<input type='text' id='txtsearch' placeholder='Search' style='width:90%;'>";
-		 y = y + "<button id='btnsearch' name='btnsearch' onclick='search();'>";
-         y = y + "<i class='fa fa-search'></i>";
-         y = y + "</button>";
-         y = y + "</div>";
-		 y = y + "</br>";
-		  $.get("/ajax/getcontactuser", function(data){
-			
-		  });
-	
-			//GROUPS
-			y= y + "<br> <div> <h4>Groups Contacts </h4></div>";
-			<?php 
-			if($group){
-				foreach ($group as $data)
-				 { ?>
-					y=y + "<a class='thismessage1' onclick='mes(<?=$data['chat_group_id']?>,2)'>";
-					y= y + "<div class='first'><img src='/uploads/user/photo/group.png' alt='/uploads/user/photo/user.png' width='42' height='42'>&nbsp;<b>"+ '<?= $data['chatGroup']['group_name']?>' +"</div>";
-					y= y + "</a>";
-				<?php } 
-			}
-			
-		?>
-		
-		
-		$('#popchatbody').html(y); 
-	}	
+	$('#popchatbody').load("/ajax/getcontactuser");
 }
 function groupcontacts(){ //Group Messages
-	var y;
-	//document.getElementById('popuser').style.display='block';
-	 y = "<h4>List of Contacts </h4>";
-	 y =  y+ "<div>";
-	 y = y + "<input type='text' id='txtsearchgroup' placeholder='Search' style='width:90%;'>";
-	 y = y + "<button id='btnsearchgroup' name='btnsearchgroup' onclick='searchgroup();'>";
-	 y = y + "<i class='fa fa-search'></i>";
-	 y = y + "</button>";
-	 y = y + "</div>";
-	<?php 
-		if($group){
-		foreach ($group as $data)
-		 { ?>
-				y=y + "<a class='thismessage1' onclick='mes(<?=$data['chat_group_id']?>,2)'>";
-				y= y + "<div class='first'><img src='/uploads/user/photo/group.png' alt='/uploads/user/photo/user.png' width='42' height='42'>&nbsp;<b>"+ '<?= $data['chatGroup']['group_name']?>' +"</div>";
-				y= y + "</a>";
-		<?php } 
-		}
-	?>
-	
-	$('#popchatbody').html(y); 
+	$('#popchatbody').load("/ajax/getgroup");
 }
 
 function sendchat(txt) {
@@ -778,6 +726,8 @@ function getunrespondednotification(){
 jQuery(document).ready(function ($) {
 
 getunrespondednotification();
+contacts();
+groupcontacts();
 
 });
  </script>
