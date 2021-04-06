@@ -128,8 +128,6 @@ class TaggingController extends Controller
                 'taggingmodel' => $taggingmodel,
             ]);
         }
-
-      
     }
 
     public function actionMonthlyreport($month, $year, $lab_id)
@@ -157,9 +155,44 @@ class TaggingController extends Controller
                 'year'=>$year,
                 'nmonth'=>$nmonth
             ]);
-        
+    }
 
-      
+    public function actionReferralmonthlyreport($month, $year, $lab_id)
+    {
+        $nmonth = date('m', strtotime($month));
+        $searchkey =  $year.'-'.$nmonth;
+        if($lab_id){
+             $request_query = Request::find()
+                ->innerJoinWith('referralrequest')
+                ->where(['like', 'request_datetime', $searchkey ])
+                ->andWhere(['lab_id'=> $lab_id,'status_id'=>1,'request_type_id'=>2])
+                ->with(['samples' => function($query){
+                        $query->andWhere(['active'=>'1']);
+            }]);
+        }else{
+            $request_query = Request::find()
+                ->innerJoinWith('referralrequest')
+                ->where(['like', 'request_datetime', $searchkey ])
+                ->andWhere(['status_id'=>1,'request_type_id'=>2])
+                ->with(['samples' => function($query){
+                        $query->andWhere(['active'=>'1']);
+            }]);
+        }
+
+        $requestdataprovider = new ActiveDataProvider([
+                'query' => $request_query,
+                'pagination' => [
+                    'pageSize' => false,
+                ],
+             
+        ]); 
+
+            return $this->renderAjax('referralmonthlyreport', [
+               'requestdataprovider' => $requestdataprovider,
+                'month'=>$month,
+                'year'=>$year,
+                'nmonth'=>$nmonth
+            ]);
     }
 
     public function actionUpdateana()

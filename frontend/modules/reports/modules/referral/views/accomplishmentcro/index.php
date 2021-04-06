@@ -118,7 +118,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			            'header' => 'Year',
 			            //'width'=>'310px',
 			            'value'=>function ($model, $key, $index, $widget) {
-		                    return Yii::$app->formatter->asDate($model->referral_date_time, 'php:Y');
+		                    return Yii::$app->formatter->asDate($model->request_datetime, 'php:Y');
 		                },
 		                'contentOptions' => ['class' => 'bg-info text-primary','style'=>'font-weight:bold;font-size:15px;'],
 			            'group'=>true,  // enable grouping,
@@ -129,7 +129,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			                return [
 			                    'mergeColumns'=>[[1]], // columns to merge in summary
 			                    'content'=>[             // content to show in each summary cell
-			                        1=>'SUB-TOTAL ('.Yii::$app->formatter->asDate($model->referral_date_time, 'php:Y').')',
+			                        1=>'SUB-TOTAL ('.Yii::$app->formatter->asDate($model->request_datetime, 'php:Y').')',
 			                        2=>GridView::F_SUM,
 			                        3=>GridView::F_SUM,
 			                        4=>GridView::F_SUM,
@@ -174,11 +174,21 @@ $this->params['breadcrumbs'][] = $this->title;
 			                ];
 			            }
 			        ],
+			        ['class' => 'kartik\grid\ActionColumn',
+			    		'header'=>'Details',
+						'contentOptions' => ['style' => 'width: 8.7%'],
+						'template' => '{view}',
+						'buttons'=>[
+							'view'=>function ($url, $model) use($lab_id) {
+								return Html::button('<span class="glyphicon glyphicon-print"></span>', ['value'=>Url::to(['/lab/tagging/referralmonthlyreport','month'=>Yii::$app->formatter->asDate($model->request_datetime, 'php:M'), 'year'=>Yii::$app->formatter->asDate($model->request_datetime, 'php:Y'), 'lab_id' => $lab_id]), 'class' => 'btn btn-primary','onclick'=>'LoadModal(this.title, this.value ,true, 1850);','title' => Yii::t('app', "Referral Monthly Report")]);
+							},
+						],
+					],
 		            [
 		                'attribute'=>'referral_date_time',
 		                'header' => 'Month',
 		                'value'=>function ($model, $key, $index, $widget) {
-		                    return strtoupper(Yii::$app->formatter->asDate($model->referral_date_time, 'php:M'));
+		                    return strtoupper(Yii::$app->formatter->asDate($model->request_datetime, 'php:M'));
 		                },
 		                'headerOptions' => ['class' => 'text-center','style'=>'vertical-align: middle;'],
 			            'contentOptions' => ['class' => 'text-center'],
@@ -191,8 +201,8 @@ $this->params['breadcrumbs'][] = $this->title;
 		                'headerOptions' => ['class' => 'text-center','style'=>'vertical-align: middle;'],
 			            'contentOptions' => ['class' => 'text-center'],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                   $countCustomer =  Yii::$app->formatter->format($model->computeAccomplishment($labId,date('Y-m-d',strtotime($model->referral_date_time)),$startDate,$endDate,2,$report_type),['decimal',0]);
-			            	return ($countCustomer > 0) ? $countCustomer : 0;
+
+			            	return $model->getreferralsenttotcl($labId,$model->request_datetime);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -204,8 +214,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		                'headerOptions' => ['class' => 'text-center','style'=>'vertical-align: middle;'],
 			            'contentOptions' => ['class' => 'text-center'],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                   $countRequest =  Yii::$app->formatter->format($model->computeAccomplishment($labId,date('Y-m-d',strtotime($model->referral_date_time)),$startDate,$endDate,4,$report_type),['decimal',0]);
-			            	return ($countRequest > 0) ? $countRequest : 0;
+		                   return $model->getsamplessenttotcl($labId,$model->request_datetime);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -217,8 +226,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		                'headerOptions' => ['class' => 'text-center','style'=>'vertical-align: middle;'],
 			            'contentOptions' => ['class' => 'text-center'],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                   $countSample =  Yii::$app->formatter->format($model->computeAccomplishment($labId,date('Y-m-d',strtotime($model->referral_date_time)),$startDate,$endDate,6,$report_type),['decimal',0]);
-			            	return ($countSample > 0) ? $countSample : 0;
+		                   return $model->gettestsenttotcl($labId,$model->request_datetime);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -230,8 +238,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		                'headerOptions' => ['class' => 'text-center','style'=>'vertical-align: middle;'],
 			            'contentOptions' => ['class' => 'text-center'],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                   $countCustomer =  Yii::$app->formatter->format($model->computeAccomplishment($labId,date('Y-m-d',strtotime($model->referral_date_time)),$startDate,$endDate,1,$report_type),['decimal',0]);
-			            	return ($countCustomer > 0) ? $countCustomer : 0;
+		                   return $model->getreferralserveastcl($labId,$model->request_datetime);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -243,8 +250,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		                'headerOptions' => ['class' => 'text-center','style'=>'vertical-align: middle;'],
 			            'contentOptions' => ['class' => 'text-center'],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                   $countCustomer =  Yii::$app->formatter->format($model->computeAccomplishment($labId,date('Y-m-d',strtotime($model->referral_date_time)),$startDate,$endDate,7,$report_type),['decimal',0]);
-			            	return ($countCustomer > 0) ? $countCustomer : 0;
+		                    return $model->getreferralserveastcl($labId,$model->request_datetime);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -256,8 +262,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		                'headerOptions' => ['class' => 'text-center','style'=>'vertical-align: middle;'],
 			            'contentOptions' => ['class' => 'text-center'],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                   $countCustomer =  Yii::$app->formatter->format($model->computeAccomplishment($labId,date('Y-m-d',strtotime($model->referral_date_time)),$startDate,$endDate,3,$report_type),['decimal',0]);
-			            	return ($countCustomer > 0) ? $countCustomer : 0;
+		                   return $model->getsamplesserveastcl($labId,$model->request_datetime);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -269,8 +274,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		                'headerOptions' => ['class' => 'text-center','style'=>'vertical-align: middle;'],
 			            'contentOptions' => ['class' => 'text-center'],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                   $countAnalysis =  Yii::$app->formatter->format($model->computeAccomplishment($labId,date('Y-m-d',strtotime($model->referral_date_time)),$startDate,$endDate,5,$report_type),['decimal',0]);
-			            	return ($countAnalysis > 0) ? $countAnalysis : 0;
+		                   return $model->gettestserveastcl($labId,$model->request_datetime);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -283,8 +287,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			            'contentOptions' => ['class' => 'text-right'],
 			            'format'=>['decimal', 2],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                   $totalIncome = $model->computeAccomplishment($labId,date('Y-m-d',strtotime($model->referral_date_time)),$startDate,$endDate,11,$report_type);
-			            	return ($totalIncome > 0) ? $totalIncome : 0;
+		                  return $model->getreferraltotal($labId,$model->request_datetime);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -297,8 +300,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			            'contentOptions' => ['class' => 'text-right'],
 			            'format'=>['decimal', 2],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                   $totalGratis = $model->computeAccomplishment($labId,date('Y-m-d',strtotime($model->referral_date_time)),$startDate,$endDate,9,$report_type);
-			            	return ($totalGratis > 0) ? $totalGratis : 0;
+		                   return $model->getgratisastcl($labId,$model->request_datetime);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -311,8 +313,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			            'contentOptions' => ['class' => 'text-right'],
 			            'format'=>['decimal', 2],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                   $totalDiscount = $model->computeAccomplishment($labId,date('Y-m-d',strtotime($model->referral_date_time)),$startDate,$endDate,10,$report_type);
-			            	return ($totalDiscount > 0) ? $totalDiscount : 0;
+		                   return $model->getdiscountastcl($labId,$model->request_datetime);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -325,17 +326,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			            'contentOptions' => ['class' => 'text-right'],
 			            'format'=>['decimal', 2],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                   //$totalGrossFee = $model->computeAccomplishment($labId,date('Y-m-d',strtotime($model->referral_date_time)),$startDate,$endDate,5,$report_type);
-			            	//return ($totalGrossFee > 0) ? $totalGrossFee : 0;
-			            	//$totalIncome = $model->computeAccomplishment($labId,date('Y-m-d',strtotime($model->referral_date_time)),$startDate,$endDate,8,$report_type);
-			            	//$totalDiscount = $model->computeAccomplishment($labId,date('Y-m-d',strtotime($model->referral_date_time)),$startDate,$endDate,7,$report_type);
-			            	//$totalGratis = $model->computeAccomplishment($labId,date('Y-m-d',strtotime($model->referral_date_time)),$startDate,$endDate,6,$report_type);
-
-			            	//$totalGrossFee = $totalIncome + $totalDiscount + $totalGratis;
-			            	//return ($totalGrossFee > 0) ? $totalGrossFee : 0;
-
-			            	$totalGrossFee = $model->computeAccomplishment($labId,date('Y-m-d',strtotime($model->referral_date_time)),$startDate,$endDate,8,$report_type);
-			            	return ($totalGrossFee > 0) ? $totalGrossFee : 0;
+			            	return $model->getgrossastcl($labId,$model->request_datetime);
 
 		                },
 		                'pageSummary'=>true,
@@ -368,7 +359,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		                ],
 				         'exportConfig' => [
 					    	GridView::PDF => [
-				                'filename' => $labCode.'-Accomplishment_Report',
+				                'filename' => $labCode.'-Referral Accomplishment_Report',
 				                'alertMsg'        => 'The PDF export file will be generated for download.',
 				                'config' => [
 				                   // 'methods' => [
@@ -404,10 +395,6 @@ $this->params['breadcrumbs'][] = $this->title;
 				        	[
 		                		'content' => Html::button('<i class="glyphicon glyphicon-repeat"></i> Reset Grid', ['title'=>'Reset Grid', 'onclick'=>'reloadGrid()', 'class' => 'btn btn-default'])
 		                	],
-		                	[
-		                		'content' => Html::button('<i class="glyphicon glyphicon-export"></i> Export', ['value'=>Url::to(['/reports/accomplishmentcro/export','lab_id'=>$labId,'report_type'=>$report_type,'from_date'=>$startDate,'to_date'=>$endDate]),'onclick'=>'window.open(this.value)','title'=>'Excel Export','class' => 'btn btn-default']),
-		                		//'content' => Html::button('<span class="glyphicon glyphicon-eye-open"></span>', ['value'=>Url::to(['referral/viewreferral','id'=>$data['referral_id']]),'onclick'=>'window.open(this.value)','class' => 'btn btn-primary','title' => 'View '.$data['referral_code']])
-		                	],
 		                	'{export}',
 		                ],
 	                /*'autoXlFormat'=>true,
@@ -422,6 +409,7 @@ $this->params['breadcrumbs'][] = $this->title;
         	?>
         	<?php //\yii\widgets\Pjax::end(); ?>
     </div>
+
 </div>
 <script type="text/javascript">
 
@@ -434,7 +422,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		$('#request_date_range-start').val(fromdate).trigger('change');
 		$('#request_date_range-end').val(todate).trigger('change');
 		$('#request_date_range').val(fromdate+' to '+todate);
-		$.pjax.reload({container:"#accomplishment-report-pjax",url: '/reports/accomplishmentcro?lab_id='+lab_id+'&from_date='+fromdate+'&to_date='+todate+'&report_type='+report_type,replace:false,timeout: false});
+		$.pjax.reload({container:"#accomplishment-report-pjax",url: '/reports/referral/accomplishmentcro?lab_id='+lab_id+'&from_date='+fromdate+'&to_date='+todate+'&report_type='+report_type,replace:false,timeout: false});
     }
 
 
@@ -489,22 +477,11 @@ $this->params['breadcrumbs'][] = $this->title;
 			$('.error-date').html('').fadeOut('fast');
 			$('.error-report-type').html('').fadeOut('fast');
 
-			$.get('/reports/accomplishmentcro', {
-		        data : $('form').serialize(),
-			    }, function(response){
-		    	<?php if(Yii::$app->session->hasFlash('error')): ?>
-	            	echo Yii::$app->session->getFlash('error');
-	            <?php else: ?>
-	            	var lab_id = $('#lab_id').val();
-	            	var fromdate = $('#request_date_range-start').val();
-	            	var todate = $('#request_date_range-end').val();
-	            	var report_type = $("input[name='report_type']:checked").val();
-	            	$.pjax.reload({container:"#accomplishment-report-pjax",url: '/reports/accomplishmentcro?lab_id='+lab_id+'&from_date='+fromdate+'&to_date='+todate+'&report_type='+report_type,replace:false,timeout: false});
-	            <?php 
-	        		endif;
-	            	Yii::$app->session->setFlash('error', null);
-		        ?>
-		    });
+			var lab_id = $('#lab_id').val();
+        	var fromdate = $('#request_date_range-start').val();
+        	var todate = $('#request_date_range-end').val();
+        	var report_type = $("input[name='report_type']:checked").val();
+        	$.pjax.reload({container:"#accomplishment-report-pjax",url: '/reports/referral/accomplishmentcro?lab_id='+lab_id+'&from_date='+fromdate+'&to_date='+todate+'&report_type='+report_type,replace:false,timeout: false});	
 		}
 	});
 </script>

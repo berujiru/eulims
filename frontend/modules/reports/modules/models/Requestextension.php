@@ -122,5 +122,235 @@ class Requestextension extends Request
             break;
           } 
     }
-    
+    //for referral accomplishment
+    public function getreferralsenttotcl($labId,$request_datetime){
+        $datetime=date('Y-m',strtotime($request_datetime));
+        $rstlId = Yii::$app->user->identity->profile->rstl_id;
+        if($labId){
+            return $modelReferral = Requestextension::find()
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['receiving_agency_id' => $rstlId]);
+                }])
+                ->where('tbl_request.lab_id=:labId AND tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime', [':labId'=>$labId,':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->count();
+        }else{
+            return $modelReferral = Requestextension::find()
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['receiving_agency_id' => $rstlId]);
+                }])
+                ->where('tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime', [':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->count();
+        }
+        
+    }
+
+    //for referral accomplishment
+    public function getsamplessenttotcl($labId,$request_datetime){
+        $datetime=date('Y-m',strtotime($request_datetime));
+        $rstlId = Yii::$app->user->identity->profile->rstl_id;
+        if($labId){
+            return $modelReferral = Requestextension::find()
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['receiving_agency_id' => $rstlId]);
+                }])
+                ->innerJoinWith('samples')
+                ->where('tbl_request.lab_id=:labId AND tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime', [':labId'=>$labId,':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->count();
+        }else{
+            return $modelReferral = Requestextension::find()
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['receiving_agency_id' => $rstlId]);
+                }])
+                ->innerJoinWith('samples')
+                ->where('tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime', [':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->count();
+        }
+    }
+    //for referral accomplishment
+    public function gettestsenttotcl($labId,$request_datetime){
+        $datetime=date('Y-m',strtotime($request_datetime));
+        $rstlId = Yii::$app->user->identity->profile->rstl_id;
+        if($labId){
+            return $modelReferral = Requestextension::find()
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['receiving_agency_id' => $rstlId]);
+                }])
+                ->innerJoinWith('analyses')
+                ->where('tbl_request.lab_id=:labId AND tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime', [':labId'=>$labId,':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->count();
+        }else{
+            return $modelReferral = Requestextension::find()
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['receiving_agency_id' => $rstlId]);
+                }])
+                ->innerJoinWith('analyses')
+                ->where('tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime', [':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->count();
+        }
+    }
+     //for referral accomplishment
+    public function getreferralserveastcl($labId,$request_datetime){
+        $datetime=date('Y-m',strtotime($request_datetime));
+        $rstlId = Yii::$app->user->identity->profile->rstl_id;
+        if($labId){
+            return $modelReferral = Requestextension::find()
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['testing_agency_id' => $rstlId]);
+                }])
+                ->where('tbl_request.lab_id=:labId AND tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime', [':labId'=>$labId,':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->count();
+        }else{
+            return $modelReferral = Requestextension::find()
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['testing_agency_id' => $rstlId]);
+                }])
+                ->where('tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime', [':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->count();
+        }
+    }
+     //for referral accomplishment
+    public function getsamplesserveastcl($labId,$request_datetime){
+        $datetime=date('Y-m',strtotime($request_datetime));
+        $rstlId = Yii::$app->user->identity->profile->rstl_id;
+        if($labId){
+            return $modelReferral = Requestextension::find()
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['testing_agency_id' => $rstlId]);
+                }])
+                ->innerJoinWith('samples')
+                ->where('tbl_request.lab_id=:labId AND tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime', [':labId'=>$labId,':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->count();
+        }else{
+            return $modelReferral = Requestextension::find()
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['testing_agency_id' => $rstlId]);
+                }])
+                ->innerJoinWith('samples')
+                ->where('tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime', [':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->count();
+        }
+    }
+    //for referral accomplishment
+    public function gettestserveastcl($labId,$request_datetime){
+        $datetime=date('Y-m',strtotime($request_datetime));
+        $rstlId = Yii::$app->user->identity->profile->rstl_id;
+        if($labId){
+            return $modelReferral = Requestextension::find()
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['testing_agency_id' => $rstlId]);
+                }])
+                ->innerJoinWith('analyses')
+                ->where('tbl_request.lab_id=:labId AND tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime', [':labId'=>$labId,':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->count();
+        }else{
+            return $modelReferral = Requestextension::find()
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['testing_agency_id' => $rstlId]);
+                }])
+                ->innerJoinWith('analyses')
+                ->where('tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime', [':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->count();
+        }
+    }
+
+     //for referral accomplishment
+    public function getreferraltotal($labId,$request_datetime){
+        $datetime=date('Y-m',strtotime($request_datetime));
+        $rstlId = Yii::$app->user->identity->profile->rstl_id;
+        if($labId){
+            $modelReferral = Requestextension::find()
+                ->select(['totalrequests'=>'SUM(total)'])
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['testing_agency_id' => $rstlId]);
+                }])
+                ->where('tbl_request.lab_id=:labId AND tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime AND payment_type_id=1', [':labId'=>$labId,':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->groupBy(['request_type_id'])->one();
+        }else{
+            $modelReferral = Requestextension::find()
+                ->select(['totalrequests'=>'SUM(total)'])
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['testing_agency_id' => $rstlId]);
+                }])
+                ->where('tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime AND payment_type_id=1', [':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->groupBy(['request_type_id'])->one();
+        }
+        return $modelReferral?$modelReferral->totalrequests:0;
+    }
+
+    //for referral accomplishment
+    public function getgratisastcl($labId,$request_datetime){
+        $datetime=date('Y-m',strtotime($request_datetime));
+        $rstlId = Yii::$app->user->identity->profile->rstl_id;
+        if($labId){
+            $modelReferral = Requestextension::find()
+                ->select(['totalrequests'=>'SUM(fee)'])
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['testing_agency_id' => $rstlId]);
+                }])
+                ->innerJoinWith('analyses')
+                ->where('tbl_request.lab_id=:labId AND tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime AND payment_type_id=2', [':labId'=>$labId,':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->groupBy(['request_type_id'])->one();
+        }else{
+            $modelReferral = Requestextension::find()
+                ->select(['totalrequests'=>'SUM(fee)'])
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['testing_agency_id' => $rstlId]);
+                }])
+                ->innerJoinWith('analyses')
+                ->where('tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime AND payment_type_id=2', [':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->groupBy(['request_type_id'])->one();
+        }
+        return $modelReferral?$modelReferral->totalrequests:0;
+    }
+
+    //for referral accomplishment
+    public function getdiscountastcl($labId,$request_datetime){
+        $datetime=date('Y-m',strtotime($request_datetime));
+        $rstlId = Yii::$app->user->identity->profile->rstl_id;
+        if($labId){
+            $modelReferral = Requestextension::find()
+                ->select(['totalrequests'=>'SUM(fee)','discount'])
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['testing_agency_id' => $rstlId]);
+                }])
+                ->innerJoinWith('analyses')
+                ->where('tbl_request.lab_id=:labId AND tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime AND payment_type_id=1 and discount > 0', [':labId'=>$labId,':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->groupBy(['request_type_id'])->one();
+        }else{
+            $modelReferral = Requestextension::find()
+                ->select(['totalrequests'=>'SUM(fee)','discount'])
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['testing_agency_id' => $rstlId]);
+                }])
+                ->innerJoinWith('analyses')
+                ->where('tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime AND payment_type_id=1 and discount > 0', [':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->groupBy(['request_type_id'])->one();
+        }
+        return $modelReferral?($modelReferral->totalrequests * ($modelReferral->discount *.01)):0;
+    }
+
+     public function getgrossastcl($labId,$request_datetime){
+        $datetime=date('Y-m',strtotime($request_datetime));
+        $rstlId = Yii::$app->user->identity->profile->rstl_id;
+        if($labId){
+            $modelReferral = Requestextension::find()
+                ->select(['totalrequests'=>'SUM(fee)'])
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['testing_agency_id' => $rstlId]);
+                }])
+                ->innerJoinWith('analyses')
+                ->where('tbl_request.lab_id=:labId AND tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime', [':labId'=>$labId,':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->groupBy(['request_type_id'])->one();
+        }else{
+            $modelReferral = Requestextension::find()
+                ->select(['totalrequests'=>'SUM(fee)'])
+                ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
+                    $query->where(['testing_agency_id' => $rstlId]);
+                }])
+                ->innerJoinWith('analyses')
+                ->where('tbl_request.rstl_id =:rstlId AND status_id > :statusId AND request_ref_num != "" AND request_type_id = 2 AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :datetime', [':rstlId'=>$rstlId,':statusId'=>0,':datetime'=>$datetime])
+                ->groupBy(['request_type_id'])->one();
+        }
+        return $modelReferral?$modelReferral->totalrequests:0;
+    }
 }
