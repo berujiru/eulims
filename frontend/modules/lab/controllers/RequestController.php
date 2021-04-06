@@ -152,13 +152,9 @@ class RequestController extends Controller
 
             // var_dump($agency); exit;
 
-            //gets the attachement details ??? //btc
-			//set third parameter to 1 for attachment type deposit slip
-            $deposit = $refcomponent->getAttachment($reqModel->referral_id,Yii::$app->user->identity->profile->rstl_id,1);
-
-            //set third parameter to 2 for attachment type or
-            //updated to new api with false return temporarily //btc TODOOOOOOOOOOOOOO
-            $or = $refcomponent->getAttachment($reqModel->referral_id,Yii::$app->user->identity->profile->rstl_id,2);
+            //updated by egg 04/06/21
+            $deposit = $refcomponent->getAttachment($reqModel->referral_id,1);
+            $or = $refcomponent->getAttachment($reqModel->referral_id,2);
 
             //get the referred Agency details //btc
             //updated to new api //btc TODOOOOOOOOOOOOOO
