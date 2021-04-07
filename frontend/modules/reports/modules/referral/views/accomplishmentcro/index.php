@@ -8,7 +8,7 @@ use kartik\daterange\DateRangePicker;
 use yii\widgets\ActiveForm;
 use kartik\widgets\Select2;
 use kartik\grid\DataColumn;
-use common\models\referral\Lab;
+use common\models\lab\Lab;
 use arturoliveira\ExcelView;
 
 $this->title = 'Reports';
