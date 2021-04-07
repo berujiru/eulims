@@ -198,11 +198,14 @@ use yii\web\JsExpression;
                     "change" => "function() {
                         var testId = this.value;
                         var analysisId = '".$model->analysis_id."';
+                        var labId = '".$labId."';
+                        var key_id = $('#sample-analysis-grid').yiiGridView('getSelectedRows');
+                        alert(key_id);
                         $.ajax({
                             url: '".Url::toRoute("analysisreferral/gettestnamemethod")."',
                             //dataType: 'json',
                             method: 'GET',
-                            data: {test_id:testId,analysis_id:analysisId},
+                            data: {test_id:testId,analysis_id:analysisId,lab_id:labId,sample_id:key_id},
                             //data: $(this).serialize(),
                             success: function (data, textStatus, jqXHR) {
                                 $('.image-loader').removeClass( \"img-loader\" );

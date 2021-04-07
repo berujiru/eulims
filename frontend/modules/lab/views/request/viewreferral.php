@@ -33,7 +33,7 @@ $paymentitem= Paymentitem::find()->where(['request_id'=> $model->request_id])->o
 if ($paymentitem){
     $analysistemplate = "{view}";
 }else{
-    $analysistemplate = "{view} {update} {delete}";
+    $analysistemplate = "{view} {delete}";
 }
 
 if($model->request_ref_num==null || $model->status_id==0 || $checkTesting == 1){

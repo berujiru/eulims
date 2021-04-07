@@ -110,7 +110,7 @@ class AnalysisreferralController extends Controller
 
         if(Yii::$app->request->get('test_id')>0){
             $testnameId = Yii::$app->request->get('test_id');
-            $methods = json_decode($this->listReferralmethodref($testnameId),true);
+            $methods = json_decode($this->listReferralmethodref($testnameId,$labId,[]),true);
         } else {
             $methods = [];
         }
@@ -227,10 +227,10 @@ class AnalysisreferralController extends Controller
 
         if (Yii::$app->request->get('test_id')>0){
             $testnameId = Yii::$app->request->get('test_id');
-            $methods = json_decode($this->listReferralmethodref($testnameId),true);
+            $methods = json_decode($this->listReferralmethodref($testnameId, $labId,[]),true);
         } 
         elseif ($model->test_id>0){
-            $methods = json_decode($this->listReferralmethodref($model->test_id),true);
+            $methods = json_decode($this->listReferralmethodref($model->test_id, $labId,[]),true);
         } 
         else {
             $methods = [];
@@ -496,12 +496,27 @@ class AnalysisreferralController extends Controller
         //code below is responsible for getting the testmethod reference , fee
         if (Yii::$app->request->get('test_id')>0){
             $testnameId = (int) Yii::$app->request->get('test_id');
-            $methods = $this->listReferralmethodref($testnameId);
+            $lab_id= Yii::$app->request->get('lab_id');
+            $sampleId = Yii::$app->request->get('sample_id');
+            $sample = (new Query)
+                ->select('sampletype_id')
+                ->from('eulims_lab.tbl_sample')
+                ->where([
+                    'sample_id' => $sampleId,
+                ])
+                ->groupBy('sampletype_id')
+                ->all();
+
+            $sampletypeId = implode(',', array_map(function ($data) {
+                return $data['sampletype_id'];
+            }, $sample));
+
+            $methods = $this->listReferralmethodref($testnameId,$lab_id,$sampletypeId);
         }
         else {
                 $methods = [];
         }
-        // var_dump($methods); exit;
+
         if (Yii::$app->request->isAjax) {
             $methodrefDataProvider = new ArrayDataProvider([
                 'allModels' => $methods,
@@ -517,16 +532,16 @@ class AnalysisreferralController extends Controller
     }
 
     //get referral method reference btc updated this action
-    protected function listReferralmethodref($testnameId)
+    protected function listReferralmethodref($testnameId,$lab_id,$sampletypeId)
     {
 
-        if(isset($testnameId))
+        if(isset($testnameId,$lab_id,$sampletypeId))
         {
             if($testnameId > 0){
                 //added this line here to get all the testnamemethods from the referral component
                 $refcomponent = new ReferralComponent();
                 //named this function like this because it has the same function with different number of args
-                $data = $refcomponent->getMethodrefbytestnameidonly($testnameId);
+                $data = $refcomponent->getMethodrefbytestnameidonly($testnameId,$lab_id,$sampletypeId);
             } else {
                 $data = [];
             }

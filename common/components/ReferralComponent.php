@@ -427,9 +427,8 @@ class ReferralComponent extends Component {
     }
 
     //btc this function here is same with the top but with only testname_id only as argument
-    function getMethodrefbytestnameidonly($testnameId){
-
-        $apiUrl=$this->source.'/testnamemethodref?testname_id='.$testnameId;
+    function getMethodrefbytestnameidonly($testnameId,$lab_id,$sampletypeId){
+        $apiUrl=$this->source.'/testnamemethodref?testname_id='.$testnameId.'&lab_id='.$lab_id.'&sampletypeId='.$sampletypeId;
         $curl = new curl\Curl();
         $token= 'Authorization: Bearer '.$_SESSION['usertoken'];
             $curl->setOption(CURLOPT_HTTPHEADER, ['Content-Type: application/json' , $token]);
