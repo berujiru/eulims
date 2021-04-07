@@ -200,7 +200,6 @@ use yii\web\JsExpression;
                         var analysisId = '".$model->analysis_id."';
                         var labId = '".$labId."';
                         var key_id = $('#sample-analysis-grid').yiiGridView('getSelectedRows');
-                        alert(key_id);
                         $.ajax({
                             url: '".Url::toRoute("analysisreferral/gettestnamemethod")."',
                             //dataType: 'json',
