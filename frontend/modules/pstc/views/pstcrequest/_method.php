@@ -72,7 +72,7 @@ $referralcomp = new ReferralComponent();
                 'contentOptions' => ['class' => 'text-center','style'=>'max-width:20px;'],
                 'radioOptions' => function ($model) {
                     return [
-                        'value' => $model['testname_method_id'],
+                        'value' => $model['methodreference_id'],
                         //'checked' => $model['testname_method_id'],
                     ];
                 },

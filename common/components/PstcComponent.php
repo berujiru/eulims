@@ -148,7 +148,7 @@ class PstcComponent extends Component {
 	{
         $apiUrl=$this->source.'analysis';
         $token= 'Authorization: Bearer '.$_SESSION['usertoken'];
-
+        //retierate every sample
         $params = [
             'rstl_id' => $data['rstl_id'],
             'pstc_id' => $data['pstc_id'],

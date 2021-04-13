@@ -236,6 +236,7 @@ class PstcrequestController extends Controller
         {
             $request_id = (int) $_POST['request_id'];
             $samples = Yii::$app->request->post('base_samples');
+            //this on only cater one sample
             foreach($samples as $sample){
                 $testarray = [
                     'sample_id' => $sample,
