@@ -158,29 +158,40 @@ if($notification['notification_type_id'] == 3 && $notification['responded'] == 0
                 [
                     'columns' => [
                         [
-                            'label'=>'Deposite Slip',
-                            'value'=>function() use ($depositslip,$model,$request){
+                            'label'=>'Deposit Slip',
+                            'format' => 'raw',
+                            'value'=>function() use ($depositslip,$model){
                                 $link = '';
-                                if($depositslip > 0){
+                                $link .= !empty($model->request_ref_num) && $model->referralrequest->referral_type_id == 1 ? Html::button('<span class="glyphicon glyphicon-upload"></span>Upload', ['value'=>Url::to(['/referrals/attachment/upload_deposit','referral_id'=>$model->referral_id,'request_id'=>$model->request_id]), 'onclick'=>'upload(this.value,this.title)', 'class' => 'btn btn-primary btn-xs','title' => 'Upload Deposit Slip']) : '';
+                             
+							 
+								if($depositslip > 0){
                                     foreach ($depositslip as $deposit) {
-                                        $link .= Html::a('<span class="glyphicon glyphicon-save-file"></span> '.$deposit['filename'],'/referrals/attachment/download?request_id='.$request['local_request_id'].'&file='.$deposit['attachment_id'], ['style'=>'font-size:12px;color:#000077;font-weight:bold;','title'=>'Download Deposit Slip','target'=>'_self'])."<br>";
-                                    }
+										$link .= "<br>".Html::a('<span class="glyphicon glyphicon-save-file"></span> '.$deposit['filename'],'/referrals/attachment/download?request_id='.$model->request_id.'&file='.$deposit['filename'].'&referral_id='.$model->referral_id, ['style'=>'font-size:12px;color:#000077;font-weight:bold;','title'=>'Download Deposit Slip','target'=>'_self']);
+										//$link .="<br><a href='http://eulims.onelab.ph/uploads/referral/".$deposit['filename']."' download>".$deposit['filename']."</a>";
+										//$link .=  "<br>".Html::a('<span class="glyphicon glyphicon-save-file"></span> '.$deposit['filename'],'https://eulims.onelab.ph/uploads/referral/'.$deposit['filename'], ['style'=>'font-size:12px;color:#000077;font-weight:bold;','title'=>'Download Deposit Slip']);
+									}
+									
                                 }
                                 return $link;
+								
                             },
-                            'format'=>'raw',
                             'displayOnly'=>true,
                             'valueColOptions'=>['style'=>'width:30%;vertical-align: top;'],
                             'labelColOptions' => ['style' => 'width: 20%; text-align: right; vertical-align: top;'],
+                            //'vAlign' => 'right',
                         ],
                         [
                             'label'=>'Official Receipt',
                             'format'=>'raw',
-                            'value'=>function() use ($officialreceipt,$model,$request){
+                            'value'=>function() use ($officialreceipt,$model){
                                 $link = '';
-                                if($officialreceipt > 0){
+                                $link .= !empty($model->request_ref_num) && $model->referralrequest->referral_type_id == 1 ? Html::button('<span class="glyphicon glyphicon-upload"></span>Upload', ['value'=>Url::to(['/referrals/attachment/upload_or','referral_id'=>$model->referral_id,'request_id'=>$model->request_id]), 'onclick'=>'upload(this.value,this.title)', 'class' => 'btn btn-primary btn-xs','title' => 'Upload Official Receipt']) : '';
+                             
+								if($officialreceipt > 0){
                                     foreach ($officialreceipt as $or) {
-                                        $link .= Html::a('<span class="glyphicon glyphicon-save-file"></span> '.$or['filename'],'/referrals/attachment/download?request_id='.$request['local_request_id'].'&file='.$or['attachment_id'], ['style'=>'font-size:12px;color:#000077;font-weight:bold;','title'=>'Download Official Receipt','target'=>'_self'])."<br>";
+                                       $link .= "<br>".Html::a('<span class="glyphicon glyphicon-save-file"></span> '.$or['filename'],'/referrals/attachment/download?request_id='.$model->request_id.'&file='.$or['filename'].'&referral_id='.$model->referral_id, ['style'=>'font-size:12px;color:#000077;font-weight:bold;','title'=>'Download Deposit Slip','target'=>'_self']);
+										
                                     }
                                 }
                                 return $link;
@@ -188,6 +199,7 @@ if($notification['notification_type_id'] == 3 && $notification['responded'] == 0
                             'valueColOptions'=>['style'=>'width:30%;vertical-align: top;'], 
                             'displayOnly'=>true,
                             'labelColOptions' => ['style' => 'width: 20%; text-align: right; vertical-align: top;'],
+                            //'vAlign' => 'right',
                         ],
                     ],
                 ],              
