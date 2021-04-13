@@ -409,7 +409,14 @@ class RestpstcController extends \yii\rest\Controller
 
         $getrequest = Yii::$app->request;
         $id = (int) $getrequest->get('id');
-        $testnamemethods = Testnamemethod::find()->with('testname')->where(['sampletype_id'=>$id])->groupBy('testname_id')->asArray()->all();
+        $rstl_id = (int) $getrequest->get('rstl_id');
+        $testnamemethods = Testnamemethod::find()
+        ->with('testname')
+        ->innerJoinWith('methodreference', 'tbl_testname_method.methodreference_id = tbl.methodreference.methodreference_id')
+        ->where(['sampletype_id'=>$id])
+        ->andWhere(['like','sync_id',$rstl_id."-%",false])
+        ->groupBy('testname_id')->asArray()
+        ->all();
 
         return $testnamemethods;
     }

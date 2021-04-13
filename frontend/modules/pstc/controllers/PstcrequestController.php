@@ -691,9 +691,10 @@ class PstcrequestController extends Controller
         $out = [];
         if (isset($_POST['depdrop_parents'])) {
             $sampletypeId = end($_POST['depdrop_parents']);
-          
+            $rstl_id = (int) Yii::$app->user->identity->profile->rstl_id;
+
             $function = new PstcComponent();
-            $list = json_decode($function->testnamemethods($sampletypeId),true);
+            $list = json_decode($function->testnamemethods($sampletypeId,$rstl_id),true);
             
             $selected  = null;
             if ($sampletypeId != null && count($list) > 0) {

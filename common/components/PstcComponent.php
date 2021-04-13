@@ -305,7 +305,7 @@ class PstcComponent extends Component {
         return $lists;
     }
 
-    function testnamemethods($id)
+    function testnamemethods($id,$rstl_id)
     {
         $token= 'Authorization: Bearer '.$_SESSION['usertoken'];
         $curl = new curl\Curl();
@@ -313,7 +313,7 @@ class PstcComponent extends Component {
         $curl->setOption(CURLOPT_CONNECTTIMEOUT, 120);
         $curl->setOption(CURLOPT_TIMEOUT, 120);
         $curl->setOption(CURLOPT_SSL_VERIFYPEER, false);
-        $lists = $curl->get($this->source."testnamemethods?id=".$id);
+        $lists = $curl->get($this->source."testnamemethods?id=".$id."&rstl_id=".$rstl_id);
 
         return $lists;
     }
