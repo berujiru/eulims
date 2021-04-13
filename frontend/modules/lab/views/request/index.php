@@ -8,6 +8,7 @@ use common\models\system\Rstl;
 use kartik\widgets\DatePicker;
 use common\models\lab\Lab;
 use common\models\lab\Request;
+use common\models\lab\ReferralRequest;
 use common\components\Functions;
 use common\models\lab\Customer;
 use common\models\lab\Sample;
@@ -175,7 +176,16 @@ $this->registerJs($js,\yii\web\View::POS_READY);
                 'width' => '400px',
                 'format' => 'raw',
                 'value' => function ($model, $key, $index, $widget) { 
-                    return $model->customer ? $model->customer->customer_name : "";
+
+                    if($model->request_type_id==1){
+                        return $model->customer ? $model->customer->customer_name : "";                        
+                    }
+
+                    $refreq = ReferralRequest::find()->where(['request_id'=>$model->request_id,'receiving_agency_id'=>$model->rstl_id])->one();
+                    if($refreq){
+                        return $model->customer ? $model->customer->customer_name : "";
+                    }
+                    return "Customer origin is from the referral";
                 },
               
                 'filterType' => GridView::FILTER_SELECT2,

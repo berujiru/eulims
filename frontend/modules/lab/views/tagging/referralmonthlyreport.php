@@ -12,6 +12,7 @@ use yii\helpers\ArrayHelper;
 use yii\bootstrap\Modal;
 use yii\helpers\Url;
 use common\models\system\RstlDetails;
+use common\models\lab\ReferralRequest;
 
 
 
@@ -100,24 +101,69 @@ echo "<h1>Referral Monthly Report for <b>".$month." ".$year."</b></h1>";
                 'contentOptions' => ['style' => 'width:40px; white-space: normal;'],                 
             ],
             'request_ref_num',
-            'customer.customer_name',
-            'customer.Completeaddress',
+            [
+                'attribute' => 'customer_name', 
+                'label'=>'Customer',
+                'vAlign' => 'middle',
+                'width' => '400px',
+                'format' => 'raw',
+                'value' => function ($model, $key, $index, $widget) { 
+
+                    if($model->request_type_id==1){
+                        return $model->customer ? $model->customer->customer_name : "";                        
+                    }
+
+                    $refreq = ReferralRequest::find()->where(['request_id'=>$model->request_id,'receiving_agency_id'=>$model->rstl_id])->one();
+                    if($refreq){
+                        return $model->customer ? $model->customer->customer_name : "";
+                    }
+                    return "Customer origin is from the referral";
+                },
+                'contentOptions' => ['style' => 'width: 50%;word-wrap: break-word;white-space:pre-line;'],
+            ],
+            [
+                'attribute' => 'Completeaddress', 
+                'label'=>'Customer Address',
+                'vAlign' => 'middle',
+                'width' => '400px',
+                'format' => 'raw',
+                'value' => function ($model, $key, $index, $widget) { 
+
+                    if($model->request_type_id==1){
+                        return $model->customer ? $model->customer->Completeaddress : "";                        
+                    }
+
+                    $refreq = ReferralRequest::find()->where(['request_id'=>$model->request_id,'receiving_agency_id'=>$model->rstl_id])->one();
+                    if($refreq){
+                        return $model->customer ? $model->customer->Completeaddress : "";
+                    }
+                    return "Customer origin is from the referral";
+                },
+                'contentOptions' => ['style' => 'width: 50%;word-wrap: break-word;white-space:pre-line;'],
+            ],
             [
                 'header'=>'Setup',
                 'format' => 'raw',
                 'width' => '80px',
                 'enableSorting' => false,
                 'value' => function($model) {
-                    if(isset($model->customer)){
+                    if($model->request_type_id==1){
                         if ($model->customer->customer_type_id==1){
                             return "Yes";
                         }else{
                             return "No";
-                        }
-                    }else{
-                        return "Customer origin is from other region";
+                        }                      
                     }
-                    
+
+                    $refreq = ReferralRequest::find()->where(['request_id'=>$model->request_id,'receiving_agency_id'=>$model->rstl_id])->one();
+                    if($refreq){
+                         if ($model->customer->customer_type_id==1){
+                            return "Yes";
+                        }else{
+                            return "No";
+                        }  
+                    }
+                    return "Customer origin is from the referral";                 
                 },
                 'contentOptions' => ['style' => 'width:40px; white-space: normal;'],                 
             ],
