@@ -108,10 +108,14 @@ echo "<h1>Referral Monthly Report for <b>".$month." ".$year."</b></h1>";
                 'width' => '80px',
                 'enableSorting' => false,
                 'value' => function($model) {
-                    if ($model->customer->customer_type_id==1){
-                        return "Yes";
+                    if(isset($model->customer)){
+                        if ($model->customer->customer_type_id==1){
+                            return "Yes";
+                        }else{
+                            return "No";
+                        }
                     }else{
-                        return "No";
+                        return "Customer origin is from other region";
                     }
                     
                 },

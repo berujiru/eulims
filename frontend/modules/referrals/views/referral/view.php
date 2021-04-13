@@ -70,7 +70,7 @@ if($notification['notification_type_id'] == 3 && $notification['responded'] == 0
                         [
                             'label'=>'Customer / Agency',
                             'format'=>'raw',
-                            'value'=> $request['customer_id'] > 0 && count($customer) > 0 ? $customer['customer_name'] : "",
+                            'value'=> $request['customer_id'] > 0 && count($customer) > 0 ? $customer['customer_name'] : "Customer Details is not sync yet",
                             'valueColOptions'=>['style'=>'width:30%'], 
                             'displayOnly'=>true
                         ],

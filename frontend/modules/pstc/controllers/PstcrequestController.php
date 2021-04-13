@@ -248,7 +248,6 @@ class PstcrequestController extends Controller
                 $function = new PstcComponent();
                 $data = json_decode($function->getAnalysiscreate($testarray),true);
             }
-
             if($data){
                 Yii::$app->session->setFlash('success', 'Test Name Added!');
                 return $this->redirect(['/pstc/pstcrequest/view','request_id'=>$request_id,'pstc_id'=>$_POST['pstc_id']]);
@@ -738,10 +737,10 @@ class PstcrequestController extends Controller
         $testname_id = $_GET['testname_id'];
         $sampletype_id = $_GET['sampletype_id'];
         $sample = $_GET['sample'];
+        $rstl_id = (int) Yii::$app->user->identity->profile->rstl_id;
 
         $function = new PstcComponent();
-        $testnamemethod = json_decode($function->testnamemethod($testname_id,$sampletype_id),true);
-        
+        $testnamemethod = json_decode($function->testnamemethod($testname_id,$sampletype_id,$rstl_id),true);
         $testnamedataprovider = new ArrayDataProvider([
             'allModels' => $testnamemethod,
             'pagination' => [

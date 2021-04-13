@@ -15,6 +15,8 @@ use kartik\widgets\DepDrop;
 use kartik\widgets\DatePicker;
 use kartik\datetime\DateTimePicker;
 use common\components\PstcComponent;
+use common\components\ReferralComponent;
+
 
 $js=<<<SCRIPT
 
@@ -32,6 +34,7 @@ $("#testname-grid").change(function(){
 SCRIPT;
 $this->registerJs($js, $this::POS_READY);
 
+$referralcomp = new ReferralComponent();
 ?>
 
 
@@ -74,6 +77,17 @@ $this->registerJs($js, $this::POS_READY);
                     ];
                 },
             ],
+             [
+                        'attribute'=>'method',
+                        'header' => 'Agency',
+                        'value' => function($data) use($referralcomp){
+                            $methodref = $referralcomp->getAgencybyMethodrefOne($data['methodreference_id']);
+                            if(!$methodref)
+                                return "Error: Cant get the agency details";
+                            
+                            return $methodref->name;
+                        },
+                    ],
             [     
                 'label' => 'Method',
                 'format' => 'raw',
@@ -81,8 +95,7 @@ $this->registerJs($js, $this::POS_READY);
                 'value' => function($model) {
 
                     $pstcComponent = new PstcComponent();
-                    $method_query = json_decode($pstcComponent->getMethodreference($model['testname_method_id']),true);
-    
+                    $method_query = json_decode($pstcComponent->getMethodreference($model['methodreference_id']),true);
                     if ($method_query){
                         return $method_query['method'];
                     }else{
@@ -97,7 +110,7 @@ $this->registerJs($js, $this::POS_READY);
                 'value' => function($model) {
 
                     $pstcComponent = new PstcComponent();
-                    $method_query = json_decode($pstcComponent->getMethodreference($model['testname_method_id']),true);
+                    $method_query = json_decode($pstcComponent->getMethodreference($model['methodreference_id']),true);
                     
                     if ($method_query){
                         return $method_query['reference'];
@@ -114,7 +127,7 @@ $this->registerJs($js, $this::POS_READY);
                 'contentOptions' => ['style' => 'width: 10%;word-wrap: break-word;white-space:pre-line;'],  
                 'value' => function($model) {
                     $pstcComponent = new PstcComponent();
-                    $method_query = json_decode($pstcComponent->getMethodreference($model['testname_method_id']),true);
+                    $method_query = json_decode($pstcComponent->getMethodreference($model['methodreference_id']),true);
                     if ($method_query){
                         return number_format($method_query['fee'],2);
                     }else{
