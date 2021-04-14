@@ -51,9 +51,9 @@ use common\components\ReferralComponent;
                         'value' => function($data) use($referralcomp){
                             $methodref = $referralcomp->getAgencybyMethodrefOne($data['methodreference_id']);
                             if(!$methodref)
-                                return "Error: Cant get the agency details";
+                                return "Sync ID-".$data['methodreference']['sync_id'].": Cant get the agency details";
                             
-                            return $methodref->name;
+                            return $methodref->code;
                         },
                     ],
                     [

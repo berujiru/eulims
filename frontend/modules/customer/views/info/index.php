@@ -74,28 +74,28 @@ if(Yii::$app->user->can('allow-create-op')){
                 //'business_nature_id',
                 //'industrytype_id',
                 //'created_at',c
-                [
-                    'header'=>'Status',
-                    'format'=>'raw',
-                    'value'=>function($model){
-                        if($model->sync_status==0){
-                            //for syncing
-                            //return Html::a('<span class="glyphicon glyphicon-arrow-up" title="Sync Info"></span>', ['syncrecord','id'=>$model->customer_id], ['class' => 'btn btn-primary']);
+                // [
+                //     'header'=>'Status',
+                //     'format'=>'raw',
+                //     'value'=>function($model){
+                //         if($model->sync_status==0){
+                //             //for syncing
+                //             //return Html::a('<span class="glyphicon glyphicon-arrow-up" title="Sync Info"></span>', ['syncrecord','id'=>$model->customer_id], ['class' => 'btn btn-primary']);
 
-                            //use Jquery here
-                            $t = '/customer/info/syncrecord?id='.$model->customer_id;
-                            return Html::button('<span class="glyphicon glyphicon-arrow-up"></span>', ['value'=>Url::to($t), 'class' => 'btn btn-primary','title' => Yii::t('app', "Sync Info of ".$model->customer_name),'name' => Yii::t('app', "Sync Info of  <font color='#272727'>[<b>".$model->customer_name."</b>]</font>"),'onclick'=>'openModal(this.value,this.title)']);
+                //             //use Jquery here
+                //             $t = '/customer/info/syncrecord?id='.$model->customer_id;
+                //             return Html::button('<span class="glyphicon glyphicon-arrow-up"></span>', ['value'=>Url::to($t), 'class' => 'btn btn-primary','title' => Yii::t('app', "Sync Info of ".$model->customer_name),'name' => Yii::t('app', "Sync Info of  <font color='#272727'>[<b>".$model->customer_name."</b>]</font>"),'onclick'=>'openModal(this.value,this.title)']);
 
-                        }elseif($model->sync_status==2){
-                            //for confirmation
-                            $t = '/customer/info/confirmrecord/?id='.$model->customer_id;
-                            return Html::button('<span class="glyphicon glyphicon-pencil"></span>', ['value'=>Url::to($t), 'class' => 'btn btn-warning','title' => Yii::t('app', "Confirm Info of ".$model->customer_name),'name' => Yii::t('app', "Confirm Info of <font color='#272727'>[<b>".$model->customer_name."</b>]</font>"),'onclick'=>'openModal(this.value,this.title)']);
-                        }else{
-                            //synced 
-                            return Html::button('<span class="glyphicon glyphicon-cloud"></span>', ['class' => 'btn btn-success']);
-                        }
-                    }
-                ],
+                //         }elseif($model->sync_status==2){
+                //             //for confirmation
+                //             $t = '/customer/info/confirmrecord/?id='.$model->customer_id;
+                //             return Html::button('<span class="glyphicon glyphicon-pencil"></span>', ['value'=>Url::to($t), 'class' => 'btn btn-warning','title' => Yii::t('app', "Confirm Info of ".$model->customer_name),'name' => Yii::t('app', "Confirm Info of <font color='#272727'>[<b>".$model->customer_name."</b>]</font>"),'onclick'=>'openModal(this.value,this.title)']);
+                //         }else{
+                //             //synced 
+                //             return Html::button('<span class="glyphicon glyphicon-cloud"></span>', ['class' => 'btn btn-success']);
+                //         }
+                //     }
+                // ],
                 ['class' => 'yii\grid\ActionColumn',
                 'contentOptions' => ['style' => 'width: 8.7%'],
                 'visible'=> Yii::$app->user->isGuest ? false : true,

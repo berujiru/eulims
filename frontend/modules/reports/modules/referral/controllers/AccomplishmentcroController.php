@@ -33,7 +33,7 @@ class AccomplishmentcroController extends \yii\web\Controller
     	$model = new Referralextend;
     	$rstlId = Yii::$app->user->identity->profile->rstl_id;
     	
-		if (Yii::$app->request->get())
+		if (Yii::$app->request->get('report_type'))
 		{
 			$labId = (int) Yii::$app->request->get('lab_id');
 
@@ -58,7 +58,7 @@ class AccomplishmentcroController extends \yii\web\Controller
 			$labId = 1;
 			$fromDate = date('Y-01-01'); //first day of the year
 			$toDate = date('Y-m-d'); //as of today
-			$report_type = 2;
+			$report_type = 1;
 		}
 
 		if($report_type==1){
@@ -75,7 +75,7 @@ class AccomplishmentcroController extends \yii\web\Controller
                     'DATE_FORMAT(request_datetime, "%Y")' => SORT_DESC,
                     'DATE_FORMAT(request_datetime, "%m")' => SORT_ASC,
                 ]);
-		}else{
+		}elseif($report_type==2){
 			$modelReferral = Requestextension::find()
 				->select([
 					'monthnum'=>'DATE_FORMAT(`request_datetime`, "%m")',
@@ -110,7 +110,7 @@ class AccomplishmentcroController extends \yii\web\Controller
                 'to_date' => $toDate,
                 'model'=>$modelReferral,
 	            'laboratories' => $this->listLaboratory(),
-	            'reportType' => $report_type,
+	            'report_type' => $report_type,
             ]);
         } else {
 			return $this->render('index', [
@@ -120,7 +120,7 @@ class AccomplishmentcroController extends \yii\web\Controller
                 'from_date' => $fromDate,
                 'to_date' => $toDate,
 	            'laboratories' => $this->listLaboratory(),
-	            'reportType' => $report_type,
+	            'report_type' => $report_type,
 	        ]);
 		}
 

@@ -668,9 +668,9 @@ if($requeststatus > 0 && $notified == 1 && $hasTestingAgency > 0 && !empty($mode
                     ],
                 ],
                 [
-					'attribute'=>'region',
+					'attribute'=>'code',
                     'enableSorting' => false,
-                    'header' => 'Region',
+                    'header' => 'Code',
                     'contentOptions' => [
                         'style'=>'max-width:200px; overflow: auto; white-space: normal; word-wrap: break-word;'
                     ],
@@ -684,7 +684,7 @@ if($requeststatus > 0 && $notified == 1 && $hasTestingAgency > 0 && !empty($mode
                     'header' => 'Estimated due date',
                     'enableSorting' => false,
                     'value' => function($data) use ($model,$referralcomp,$rstlId){
-                        $estimated_due = $referralcomp->getDuedate($model->request_id,$rstlId,$data['agency_id']);
+                        $estimated_due = $referralcomp->getDuedate($model->request_id,$rstlId,$data['rstl_id']);
                         return $estimated_due == 0 ? "No Data" : date('F j, Y',strtotime($estimated_due));
                     },
                    'contentOptions' => [
@@ -707,9 +707,9 @@ if($requeststatus > 0 && $notified == 1 && $hasTestingAgency > 0 && !empty($mode
                             if((int)$multiagency>1)
                                 return '<span class="label label-danger">Notification Disabled</span>';
 
-                            $checkActive = $referralcomp->checkActiveLab($model->lab_id,$data['agency_id']);
-                            $checkNotify = $referralcomp->checkNotify($model->request_id,$data['agency_id']);
-                            $checkConfirm = $referralcomp->checkConfirm($model->request_id,$rstlId,$data['agency_id']);
+                            $checkActive = $referralcomp->checkActiveLab($model->lab_id,$data['rstl_id']);
+                            $checkNotify = $referralcomp->checkNotify($model->request_id,$data['rstl_id']);
+                            $checkConfirm = $referralcomp->checkConfirm($model->request_id,$rstlId,$data['rstl_id']);
 
                             if($model->status_id > 0) {
                                 switch ($checkNotify) {
@@ -720,14 +720,14 @@ if($requeststatus > 0 && $notified == 1 && $hasTestingAgency > 0 && !empty($mode
                                         }
                                     case 1:
                                         if($checkActive == 1){
-                                            return Html::button('<span class="glyphicon glyphicon-bell"></span> Notify', ['value'=>Url::to(['/referrals/referral/notify','request_id'=>$model->request_id,'agency_id'=>$data['agency_id']]),'onclick'=>'sendNotification(this.value,this.title)','class' => 'btn btn-primary','title' => 'Notify '.$data['name']]);
+                                            return Html::button('<span class="glyphicon glyphicon-bell"></span> Notify', ['value'=>Url::to(['/referrals/referral/notify','request_id'=>$model->request_id,'agency_id'=>$data['rstl_id']]),'onclick'=>'sendNotification(this.value,this.title)','class' => 'btn btn-primary','title' => 'Notify '.$data['name']]);
                                         } else {
                                             return '<span class="label label-danger">LAB NOT ACTIVE</span>';
                                         }
                                         break;
                                     case 2: 
                                         //return '<span class="text-success">Notice sent.</span>';
-                                        return $checkConfirm == 1 ? Html::button('<span class="glyphicon glyphicon-send"></span>&nbsp;&nbsp;Send', ['value'=>Url::to(['/referrals/referral/send','request_id'=>$model->request_id,'agency_id'=>$data['agency_id']]),'onclick'=>'sendReferral(this.value,this.title)','class' => 'btn btn-primary','title' => 'Send Referral to '.$data['name']]) : '<span class="text-success">Notice sent.</span>';
+                                        return $checkConfirm == 1 ? Html::button('<span class="glyphicon glyphicon-send"></span>&nbsp;&nbsp;Send', ['value'=>Url::to(['/referrals/referral/send','request_id'=>$model->request_id,'agency_id'=>$data['rstl_id']]),'onclick'=>'sendReferral(this.value,this.title)','class' => 'btn btn-primary','title' => 'Send Referral to '.$data['name']]) : '<span class="text-success">Notice sent.</span>';
                                         break;
                                 }
                             } else {

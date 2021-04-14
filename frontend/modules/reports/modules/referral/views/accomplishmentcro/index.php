@@ -109,7 +109,7 @@ $this->params['breadcrumbs'][] = $this->title;
         		$startDate = Yii::$app->request->get('from_date', date('Y-01-01'));
         		$endDate = Yii::$app->request->get('to_date', date('Y-m-d'));
         		$labId = (int) Yii::$app->request->get('lab_id', 1);
-        		$report_type = (int) Yii::$app->request->get('report_type', 2);
+        		// $report_type = (int) Yii::$app->request->get('report_type', 2);
         		$labCode = Lab::findOne($labId)->labcode;
                 
 				$gridColumns = [
@@ -179,8 +179,12 @@ $this->params['breadcrumbs'][] = $this->title;
 						'contentOptions' => ['style' => 'width: 8.7%'],
 						'template' => '{view}',
 						'buttons'=>[
-							'view'=>function ($url, $model) use($lab_id) {
-								return Html::button('<span class="glyphicon glyphicon-print"></span>', ['value'=>Url::to(['/lab/tagging/referralmonthlyreport','month'=>Yii::$app->formatter->asDate($model->request_datetime, 'php:M'), 'year'=>Yii::$app->formatter->asDate($model->request_datetime, 'php:Y'), 'lab_id' => $lab_id]), 'class' => 'btn btn-primary','onclick'=>'LoadModal(this.title, this.value ,true, 1850);','title' => Yii::t('app', "Referral Monthly Report")]);
+							'view'=>function ($url, $model) use($lab_id,$report_type) {
+								$labId=$lab_id;
+								if($report_type==1){
+									$labId=false;
+								}
+								return Html::button('<span class="glyphicon glyphicon-print"></span>', ['value'=>Url::to(['/lab/tagging/referralmonthlyreport','month'=>Yii::$app->formatter->asDate($model->request_datetime, 'php:M'), 'year'=>Yii::$app->formatter->asDate($model->request_datetime, 'php:Y'), 'lab_id' => $labId]), 'class' => 'btn btn-primary','onclick'=>'LoadModal(this.title, this.value ,true, 1850);','title' => Yii::t('app', "Referral Monthly Report")]);
 							},
 						],
 					],
@@ -202,7 +206,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			            'contentOptions' => ['class' => 'text-center'],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
 
-			            	return $model->getreferralsenttotcl($labId,$model->request_datetime);
+			            	return $model->getreferralsenttotcl($labId,$model->request_datetime,$report_type);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -214,7 +218,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		                'headerOptions' => ['class' => 'text-center','style'=>'vertical-align: middle;'],
 			            'contentOptions' => ['class' => 'text-center'],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                   return $model->getsamplessenttotcl($labId,$model->request_datetime);
+		                   return $model->getsamplessenttotcl($labId,$model->request_datetime,$report_type);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -226,7 +230,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		                'headerOptions' => ['class' => 'text-center','style'=>'vertical-align: middle;'],
 			            'contentOptions' => ['class' => 'text-center'],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                   return $model->gettestsenttotcl($labId,$model->request_datetime);
+		                   return $model->gettestsenttotcl($labId,$model->request_datetime,$report_type);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -238,7 +242,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		                'headerOptions' => ['class' => 'text-center','style'=>'vertical-align: middle;'],
 			            'contentOptions' => ['class' => 'text-center'],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                   return $model->getreferralserveastcl($labId,$model->request_datetime);
+		                   return $model->getreferralserveastcl($labId,$model->request_datetime,$report_type);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -250,7 +254,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		                'headerOptions' => ['class' => 'text-center','style'=>'vertical-align: middle;'],
 			            'contentOptions' => ['class' => 'text-center'],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                    return $model->getreferralserveastcl($labId,$model->request_datetime);
+		                    return $model->getreferralserveastcl($labId,$model->request_datetime,$report_type);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -262,7 +266,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		                'headerOptions' => ['class' => 'text-center','style'=>'vertical-align: middle;'],
 			            'contentOptions' => ['class' => 'text-center'],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                   return $model->getsamplesserveastcl($labId,$model->request_datetime);
+		                   return $model->getsamplesserveastcl($labId,$model->request_datetime,$report_type);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -274,7 +278,7 @@ $this->params['breadcrumbs'][] = $this->title;
 		                'headerOptions' => ['class' => 'text-center','style'=>'vertical-align: middle;'],
 			            'contentOptions' => ['class' => 'text-center'],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                   return $model->gettestserveastcl($labId,$model->request_datetime);
+		                   return $model->gettestserveastcl($labId,$model->request_datetime,$report_type);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -287,7 +291,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			            'contentOptions' => ['class' => 'text-right'],
 			            'format'=>['decimal', 2],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                  return $model->getreferraltotal($labId,$model->request_datetime);
+		                  return $model->getreferraltotal($labId,$model->request_datetime,$report_type);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -300,7 +304,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			            'contentOptions' => ['class' => 'text-right'],
 			            'format'=>['decimal', 2],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                   return $model->getgratisastcl($labId,$model->request_datetime);
+		                   return $model->getgratisastcl($labId,$model->request_datetime,$report_type);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -313,7 +317,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			            'contentOptions' => ['class' => 'text-right'],
 			            'format'=>['decimal', 2],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-		                   return $model->getdiscountastcl($labId,$model->request_datetime);
+		                   return $model->getdiscountastcl($labId,$model->request_datetime,$report_type);
 		                },
 		                'pageSummary'=>true,
         				'pageSummaryFunc'=>GridView::F_SUM,
@@ -326,7 +330,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			            'contentOptions' => ['class' => 'text-right'],
 			            'format'=>['decimal', 2],
 			            'value'=>function ($model, $key, $index, $widget) use ($labId, $startDate,$endDate,$report_type) {
-			            	return $model->getgrossastcl($labId,$model->request_datetime);
+			            	return $model->getgrossastcl($labId,$model->request_datetime,$report_type);
 
 		                },
 		                'pageSummary'=>true,

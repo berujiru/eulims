@@ -161,11 +161,13 @@ class TaggingController extends Controller
     {
         $nmonth = date('m', strtotime($month));
         $searchkey =  $year.'-'.$nmonth;
+        $rstl_id=Yii::$app->user->identity->profile->rstl_id;
+
         if($lab_id){
              $request_query = Request::find()
                 ->innerJoinWith('referralrequest')
                 ->where(['like', 'request_datetime', $searchkey ])
-                ->andWhere(['lab_id'=> $lab_id,'status_id'=>1,'request_type_id'=>2])
+                ->andWhere(['lab_id'=> $lab_id,'status_id'=>1,'request_type_id'=>2,'rstl_id'=>$rstl_id])
                 ->with(['samples' => function($query){
                         $query->andWhere(['active'=>'1']);
             }]);
@@ -173,7 +175,7 @@ class TaggingController extends Controller
             $request_query = Request::find()
                 ->innerJoinWith('referralrequest')
                 ->where(['like', 'request_datetime', $searchkey ])
-                ->andWhere(['status_id'=>1,'request_type_id'=>2])
+                ->andWhere(['status_id'=>1,'request_type_id'=>2,'rstl_id'=>$rstl_id])
                 ->with(['samples' => function($query){
                         $query->andWhere(['active'=>'1']);
             }]);

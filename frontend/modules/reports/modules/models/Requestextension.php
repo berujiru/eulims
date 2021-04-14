@@ -123,10 +123,10 @@ class Requestextension extends Request
           } 
     }
     //for referral accomplishment
-    public function getreferralsenttotcl($labId,$request_datetime){
+    public function getreferralsenttotcl($labId,$request_datetime,$report_type){
         $datetime=date('Y-m',strtotime($request_datetime));
         $rstlId = Yii::$app->user->identity->profile->rstl_id;
-        if($labId){
+        if($report_type==2){
             return $modelReferral = Requestextension::find()
                 ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
                     $query->where(['receiving_agency_id' => $rstlId]);
@@ -145,10 +145,10 @@ class Requestextension extends Request
     }
 
     //for referral accomplishment
-    public function getsamplessenttotcl($labId,$request_datetime){
+    public function getsamplessenttotcl($labId,$request_datetime,$report_type){
         $datetime=date('Y-m',strtotime($request_datetime));
         $rstlId = Yii::$app->user->identity->profile->rstl_id;
-        if($labId){
+        if($report_type==2){
             return $modelReferral = Requestextension::find()
                 ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
                     $query->where(['receiving_agency_id' => $rstlId]);
@@ -167,10 +167,10 @@ class Requestextension extends Request
         }
     }
     //for referral accomplishment
-    public function gettestsenttotcl($labId,$request_datetime){
+    public function gettestsenttotcl($labId,$request_datetime,$report_type){
         $datetime=date('Y-m',strtotime($request_datetime));
         $rstlId = Yii::$app->user->identity->profile->rstl_id;
-        if($labId){
+        if($report_type==2){
             return $modelReferral = Requestextension::find()
                 ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
                     $query->where(['receiving_agency_id' => $rstlId]);
@@ -189,10 +189,10 @@ class Requestextension extends Request
         }
     }
      //for referral accomplishment
-    public function getreferralserveastcl($labId,$request_datetime){
+    public function getreferralserveastcl($labId,$request_datetime,$report_type){
         $datetime=date('Y-m',strtotime($request_datetime));
         $rstlId = Yii::$app->user->identity->profile->rstl_id;
-        if($labId){
+        if($report_type==2){
             return $modelReferral = Requestextension::find()
                 ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
                     $query->where(['testing_agency_id' => $rstlId]);
@@ -209,10 +209,10 @@ class Requestextension extends Request
         }
     }
      //for referral accomplishment
-    public function getsamplesserveastcl($labId,$request_datetime){
+    public function getsamplesserveastcl($labId,$request_datetime,$report_type){
         $datetime=date('Y-m',strtotime($request_datetime));
         $rstlId = Yii::$app->user->identity->profile->rstl_id;
-        if($labId){
+        if($report_type==2){
             return $modelReferral = Requestextension::find()
                 ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
                     $query->where(['testing_agency_id' => $rstlId]);
@@ -231,10 +231,10 @@ class Requestextension extends Request
         }
     }
     //for referral accomplishment
-    public function gettestserveastcl($labId,$request_datetime){
+    public function gettestserveastcl($labId,$request_datetime,$report_type){
         $datetime=date('Y-m',strtotime($request_datetime));
         $rstlId = Yii::$app->user->identity->profile->rstl_id;
-        if($labId){
+        if($report_type==2){
             return $modelReferral = Requestextension::find()
                 ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
                     $query->where(['testing_agency_id' => $rstlId]);
@@ -254,10 +254,10 @@ class Requestextension extends Request
     }
 
      //for referral accomplishment
-    public function getreferraltotal($labId,$request_datetime){
+    public function getreferraltotal($labId,$request_datetime,$report_type){
         $datetime=date('Y-m',strtotime($request_datetime));
         $rstlId = Yii::$app->user->identity->profile->rstl_id;
-        if($labId){
+        if($report_type==2){
             $modelReferral = Requestextension::find()
                 ->select(['totalrequests'=>'SUM(total)'])
                 ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
@@ -278,10 +278,10 @@ class Requestextension extends Request
     }
 
     //for referral accomplishment
-    public function getgratisastcl($labId,$request_datetime){
+    public function getgratisastcl($labId,$request_datetime,$report_type){
         $datetime=date('Y-m',strtotime($request_datetime));
         $rstlId = Yii::$app->user->identity->profile->rstl_id;
-        if($labId){
+        if($report_type==2){
             $modelReferral = Requestextension::find()
                 ->select(['totalrequests'=>'SUM(fee)'])
                 ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
@@ -304,10 +304,10 @@ class Requestextension extends Request
     }
 
     //for referral accomplishment
-    public function getdiscountastcl($labId,$request_datetime){
+    public function getdiscountastcl($labId,$request_datetime,$report_type){
         $datetime=date('Y-m',strtotime($request_datetime));
         $rstlId = Yii::$app->user->identity->profile->rstl_id;
-        if($labId){
+        if($report_type==2){
             $modelReferral = Requestextension::find()
                 ->select(['totalrequests'=>'SUM(fee)','discount'])
                 ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
@@ -329,10 +329,10 @@ class Requestextension extends Request
         return $modelReferral?($modelReferral->totalrequests * ($modelReferral->discount *.01)):0;
     }
 
-     public function getgrossastcl($labId,$request_datetime){
+     public function getgrossastcl($labId,$request_datetime,$report_type){
         $datetime=date('Y-m',strtotime($request_datetime));
         $rstlId = Yii::$app->user->identity->profile->rstl_id;
-        if($labId){
+        if($report_type==2){
             $modelReferral = Requestextension::find()
                 ->select(['totalrequests'=>'SUM(fee)'])
                 ->innerJoinWith(['referralrequest' => function($query)use($rstlId){
