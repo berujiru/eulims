@@ -84,7 +84,7 @@ $this->registerJs($js,\yii\web\View::POS_READY);
                 <div class="info-box-content bg-aqua">
                     <span class="info-box-number">Manuals</span>
                     <span class="info-box-text"><?= Html::a('How to create a job request <b>(soon)</b>', '#',['class'=>'btn-info','target'=>"_blank"]); ?></span>
-                    <span class="info-box-text"><?= Html::a('How to refer <b>(soon)</b>', '#',['class'=>'btn-info','target'=>"_blank"]); ?></span>
+                    <span class="info-box-text"><?= Html::a('How to refer', 'https://tinyurl.com/u79rtc8d',['class'=>'btn-info','target'=>"_blank"]); ?></span>
                     <span class="info-box-text"><?= Html::a('How to receive PSTC request <b>(soon)</b>', '#',['class'=>'btn-info','target'=>"_blank"]); ?></span>
                 </div>
             <!-- /.info-box-content -->
