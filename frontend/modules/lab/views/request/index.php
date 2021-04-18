@@ -37,11 +37,9 @@ foreach ($roles as $role) {
     //if the user has the role of these two then actioncgridview will not display the specific action buttons 
     if(($role->name == "pro-MANAGER")or($role->name == "super-administrator"))
         $Button="{view}{update}{delete}";
-
 }
 
 $js=<<<JS
-
     $(document).on('pjax:complete', function() {
         $('#requestsearch-request_datetime').kvDatepicker({
             format : 'yyyy-mm-dd',
@@ -54,18 +52,13 @@ JS;
 $this->registerJs($js,\yii\web\View::POS_READY);
 
 ?>
-
-<div class="request-index">
-    
+<div class="request-index">  
     <div class="row">
        <div class="col-sm-8 col-md-8 col-lg-8">
-
         <div class="info-box">
                 <span class="info-box-icon bg-aqua"><i class="fa fa-info-circle"></i></span>
-
                 <div class="info-box-content ">
-                    <span class="info-box-number">Legends - Report Status</span>
-                    
+                    <span class="info-box-number">Legends - Report Status</span>    
                     <span class="info-box-number">
                         <span class="badge btn-success">Report Generated</span>
                         <span class="badge btn-warning">Report Nearly Due</span>

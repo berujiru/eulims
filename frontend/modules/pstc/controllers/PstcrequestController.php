@@ -61,7 +61,6 @@ class PstcrequestController extends Controller
         $pstcId = $_SESSION['pstcid'];
         $pstcComponent = new PstcComponent();
         $referrals = json_decode($pstcComponent->getAll($rstlId),true);
-        
         if((int) $referrals == 0){
             $referralDataprovider = new ArrayDataProvider([
                 'allModels' => [],
@@ -294,27 +293,88 @@ class PstcrequestController extends Controller
         ]);
     }
 
+    public function actionSample_delete($sample_id,$request_id,$pstc_id){
+        $function = new PstcComponent();
+        $response = json_decode($function->deletesample($sample_id,$request_id,$pstc_id),true);
+        if($response){
+            Yii::$app->session->setFlash('success', 'Sample Deleted!');
+        }else{
+            Yii::$app->session->setFlash('error', 'Sample Failed to Delete!');
+        }
+        return $this->redirect(['/pstc/pstcrequest/view','request_id'=>$request_id,'pstc_id'=>$pstc_id]);
+    }
+
+    public function actionAnalysis_delete($analysis_id,$request_id,$pstc_id){
+        $function = new PstcComponent();
+        $response = json_decode($function->deleteanalysis($analysis_id),true);
+        if($response){
+            Yii::$app->session->setFlash('success', 'Analysis Deleted!');
+        }else{
+            Yii::$app->session->setFlash('error', 'Analysis Failed to Delete!');
+        }
+        return $this->redirect(['/pstc/pstcrequest/view','request_id'=>$request_id,'pstc_id'=>$pstc_id]);
+    }
+
+    public function actionNotifycro($request_id,$pstc_id){
+
+        $rstlId = (int) Yii::$app->user->identity->profile->rstl_id;
+        $function = new PstcComponent();
+        $response = json_decode($function->notify($request_id,$rstlId,$pstc_id),true);
+        if($response){
+            Yii::$app->session->setFlash('success', 'Notification Sent!');
+        }else{
+            Yii::$app->session->setFlash('error', 'Failed to send notification!!');
+        }
+        return $this->redirect(['/pstc/pstcrequest/view','request_id'=>$request_id,'pstc_id'=>$pstc_id]);
+    }
 
     public function actionSavetolocal()
     {
         $rstlId = (int) Yii::$app->user->identity->profile->rstl_id;
         $request_id = (int) Yii::$app->request->post('request_id');
         $pstc_id = $_SESSION['pstcid'];
+        $total=0;
         
         $function = new PstcComponent();
         $pstc = json_decode($function->getViewRequest($request_id,$rstlId,$pstc_id),true);
+       
         
         $post= Yii::$app->request->post('eRequest');
+        $customerdetails = $pstc['customer_data'];
+        //check if the customer already exist
+        $chkcustomer = Customer::find()->where(['email'=>$customerdetails['email']])->one();
+        if($chkcustomer){
+            $customerID = $chkcustomer->customer_id;
+        }else{
+            //save to customer first before assigning customer id
+            $customer = new Customer;
+            $customer->customer_name =$customerdetails['customer_name'];
+            $customer->customer_code =$customerdetails['customer_code'];
+            $customer->head=$customerdetails['head'];
+            $customer->tel=$customerdetails['tel'];
+            $customer->fax=$customerdetails['fax'];
+            $customer->email=$customerdetails['email'];
+            $customer->business_nature_id=$customerdetails['business_nature_id'];
+            $customer->industrytype_id=$customerdetails['industrytype_id'];
+            $customer->customer_type_id=$customerdetails['customer_type_id'];
+            $customer->classification_id=$customerdetails['classification_id'];
+            $customer->address=$customerdetails['address'];
+            $customer->rstl_id=$customerdetails['rstl_id'];
+            if($customer->save(false)){
+             $customerID =$customer->customer_id;
+            }
+        }
 
         $model = new Request;
         $model->request_datetime = $post['request_datetime'];
         $model->rstl_id = Yii::$app->user->identity->profile->rstl_id;
-        $model->customer_id = $pstc['request_data']['customer_id'];
+        $model->customer_id = $customerID;
         $model->lab_id = $post['lab_id'];
         $model->payment_type_id = 1;
         $model->discount_id = $post['discount_id'];
         $model->purpose_id = $post['purpose_id'];
         $model->modeofrelease_ids =1;
+        $model->status_id =1;
         $model->total = $post['lab_id'];
         $model->conforme = $post['conforme'];
         $model->receivedBy= $post['receivedBy'];
@@ -323,21 +383,21 @@ class PstcrequestController extends Controller
         $model->pstc_id = $pstc['request_data']['pstc_request_id'];
         if($model->save(false))
         {
-            foreach($pstc['sample_data'] as $sampol) 
+            foreach($pstc['sampleanalysis'] as $sampol) 
             {
                 $sample = new Sample;
                 $sample->request_id = $model->request_id;
                 $sample->rstl_id = Yii::$app->user->identity->profile->rstl_id;
-                $sample->sampletype_id = $sampol['sampletype_id'];
-                $sample->samplename = $sampol['sample_name'];
-                $sample->description = $sampol['sample_description'];
+                $sample->sampletype_id = $sampol[0]['sampletype_id'];
+                $sample->samplename = $sampol[0]['sample_name'];
+                $sample->description = $sampol[0]['sample_description'];
                 $sample->sampling_date = date('Y-m-d H:i:s');
                 $sample->sample_month = date_format(date_create($model->request_datetime),'m');
                 $sample->sample_year = date_format(date_create($model->request_datetime),'Y');
                 
                 if($sample->save(false))
                 {
-                    foreach($pstc['analysis_data'] as $an){
+                    foreach($sampol[0]['analysis'] as $an){
                         $analysis = new Analysis;
                         $analysis->request_id = $model->request_id;
                         $analysis->sample_id = $sample->sample_id;
@@ -350,19 +410,24 @@ class PstcrequestController extends Controller
                         $analysis->date_analysis = date('Y-m-d');
                         $analysis->rstl_id = $model->rstl_id;
                         $analysis->test_id = 0;
+                        $analysis->cancelled = 0;
                         $analysis->save(false);
+                        $total += $an['fee'];
                     }
-                    $pstc_id = $pstc['request_data']['pstc_request_id'];
-                    $function = new PstcComponent();
-                    $pstc = json_decode($function->getAccepted($pstc_id),true);
-                    // var_dump($pstc); exit();
-                    Yii::$app->session->setFlash('success', 'Request Saved to local!');
-
-                    // return $this->redirect(['/pstc/pstcrequest/view','request_id'=>$pstc['pstc_request_id'],'pstc_id'=>$pstc['pstc_id']]);
-                    return $this->redirect(['/lab/request/view','id'=>$model->request_id]);
                 }
             }
+            //update the request
+            $updrequest = Request::findOne($model->request_id);
+            $updrequest->total = $total;
+            $updrequest->save(false);
+            $pstc_id = $pstc['request_data']['pstc_request_id'];
+            $function = new PstcComponent();
+            $pstc = json_decode($function->getAccepted($pstc_id),true);
+            Yii::$app->session->setFlash('success', 'Request Saved to local!');
+            return $this->redirect(['/lab/request/view','id'=>$model->request_id]);
         }
+        Yii::$app->session->setFlash('Failed', 'Request Failed to Save!!');
+        return $this->redirect(['/pstc/pstcrequest/']);
     }
 
 
@@ -408,13 +473,14 @@ class PstcrequestController extends Controller
         if ($model->load(Yii::$app->request->post()) && count($analyses) >= count($samples)) {
             $post = Yii::$app->request->post('eRequest');
             $total_fee = $total - ($subtotal * ($post['discount']/100));
-
             $model->modeofrelease_ids = implode(",", $post['modeofreleaseids']);
             $model->total = $total_fee;
             $model->pstc_request_id = $requestId;
             $model->request_datetime = date('Y-m-d H:i:s');
             $model->created_at = date('Y-m-d H:i:s');
             $model->rstl_id = $rstlId;
+            //save the customer first before assigning //btc
+
             $model->customer_id = $request['customer_id'];
             $model->pstc_id = $pstcId;
 
@@ -1037,6 +1103,33 @@ class PstcrequestController extends Controller
         });
 
         return $testcategory;
+    }
+
+    public function actionCreatecustomer(){
+        $model = new Customer;
+
+         if ($model->load(Yii::$app->request->post())) {
+            $model->rstl_id = Yii::$app->user->identity->profile->rstl_id;
+
+            //contact api to save the customer info
+            $function = new PstcComponent();
+            $response = $function->createcustomer($model);
+
+            if($response){
+                Yii::$app->session->setFlash('success', 'Customer successfully saved!');
+            }else{
+                Yii::$app->session->setFlash('error', 'Customer Information failed to save!');
+            }
+
+            return $this->redirect(['/pstc/pstcrequest']);
+        }
+
+
+        if(Yii::$app->request->isAjax){
+            return $this->renderAjax('_formcustomer',[
+                'model'=>$model
+            ]);
+        }
     }
 
 }

@@ -139,12 +139,12 @@ $requestId = $request['pstc_request_id'];
         $btn_saveRequest = ($request['is_referral'] == 0) ? Html::button('<span class="glyphicon glyphicon-save"></span> Save as Local Request', ['value' => Url::to(['/pstc/pstcrequest/request_local','request_id'=>$request['pstc_request_id'],'pstc_id'=>$request['pstc_id']]),'title'=>'Save as Local Request', 'onclick'=>'saveRequest(this.value,this.title)', 'class' => 'btn btn-primary','id' => 'modalBtn']) : Html::button('<span class="glyphicon glyphicon-save"></span> Save as Referral Request', ['value' => Url::to(['/pstc/pstcrequest/request_referral','request_id'=>$request['pstc_request_id'],'pstc_id'=>$request['pstc_id']]),'title'=>'Save as Referral Request', 'onclick'=>'saveRequest(this.value,this.title)', 'class' => 'btn btn-primary','id' => 'modalBtn']);
             $sampleGridColumns = [
                 [
-                    'header' => 'Sample Code',
-                    'attribute'=>'sample_code',
+                    'header' => 'Temporary Sample ID',
+                    'attribute'=>'pstc_sample_id',
                     'enableSorting' => false,
                     'format' => 'raw',
                     'contentOptions' => [
-                        'style'=>'max-width:70px; overflow: auto; white-space: normal; word-wrap: break-word;'
+                        'style'=>'overflow: auto; white-space: normal; word-wrap: break-word;'
                     ],
                 ],
                 [
@@ -211,7 +211,7 @@ $requestId = $request['pstc_request_id'];
                 ], */
                 [
                     'class' => 'kartik\grid\ActionColumn',
-                    'template' => '{update}',
+                    'template' => '{delete}',
                     'dropdown' => false,
                     'dropdownOptions' => ['class' => 'pull-right'],
                     /*'urlCreator' => function ($action, $model, $key, $index) {
@@ -225,6 +225,13 @@ $requestId = $request['pstc_request_id'];
                         'update' => function ($url, $data) use ($accepted) {
                             if($data['active'] == 1 && $accepted == 0){
                                 return Html::a('<span class="glyphicon glyphicon-pencil"></span>', '#', ['class'=>'btn btn-primary','title'=>'Update PSTC Sample','onclick' => 'updateSample('.$data['pstc_sample_id'].','.$data['pstc_request_id'].','.$data['pstc_id'].',this.title)']);
+                            } else {
+                                return null;
+                            }
+                        },
+                        'delete' => function ($url, $data) use ($accepted) {
+                            if($data['active'] == 1 && $accepted == 0){
+                                return Html::a('<span class="glyphicon glyphicon-trash"></span>', '#', ['class'=>'btn btn-danger','title'=>'Delete PSTC Sample','onclick' => 'deleteSample('.$data['pstc_sample_id'].','.$data['pstc_request_id'].','.$data['pstc_id'].',this.title)']);
                             } else {
                                 return null;
                             }
@@ -265,9 +272,14 @@ $requestId = $request['pstc_request_id'];
         ?>
 
 <?php
-        $btn_saveRequest = ($request['is_referral'] == 0) ? Html::button('<span class="glyphicon glyphicon-save"></span> Save as Local Request', ['value' => Url::to(['/pstc/pstcrequest/request_local','request_id'=>$request['pstc_request_id'],'pstc_id'=>$request['pstc_id']]),'title'=>'Save as Local Request', 'onclick'=>'saveRequest(this.value,this.title)', 'class' => 'btn btn-primary','id' => 'modalBtn']) : Html::button('<span class="glyphicon glyphicon-save"></span> Save as Referral Request', ['value' => Url::to(['/pstc/pstcrequest/request_referral','request_id'=>$request['pstc_request_id'],'pstc_id'=>$request['pstc_id']]),'title'=>'Save as Referral Request', 'onclick'=>'saveRequest(this.value,this.title)', 'class' => 'btn btn-primary','id' => 'modalBtn']);
+        $btn_saveRequest = ($request['is_referral'] == 0) ? Html::button('<span class="glyphicon glyphicon-save"></span> Save as Local Request', ['value' => Url::to(['/pstc/pstcrequest/request_local','request_id'=>$request['pstc_request_id'],'pstc_id'=>$request['pstc_id']]),'title'=>'Save as Local Request', 'onclick'=>'saveRequest(this.value,this.title)', 'class' => 'btn btn-primary','id' => 'modalBtn'])." ".Html::button('<span class="glyphicon glyphicon-bell"></span> Notify CRO', ['value' => Url::to(['/pstc/pstcrequest/notifycro','request_id'=>$request['pstc_request_id'],'pstc_id'=>$request['pstc_id']]),'title'=>'Notifying CRO', 'onclick'=>'notify(this.value,this.title)', 'class' => 'btn btn-warning','id' => 'modalBtn']): Html::button('<span class="glyphicon glyphicon-save"></span> Save as Referral Request', ['value' => Url::to(['/pstc/pstcrequest/request_referral','request_id'=>$request['pstc_request_id'],'pstc_id'=>$request['pstc_id']]),'title'=>'Save as Referral Request', 'onclick'=>'saveRequest(this.value,this.title)', 'class' => 'btn btn-primary','id' => 'modalBtn']);
         $analysisGridColumns = [
-         
+             [
+                'attribute'=>'pstc_sample_id',
+                'header'=>'Temporary Sample ID',
+                'contentOptions' => ['style' => 'width: 15%;word-wrap: break-word;white-space:pre-line;'],
+                'enableSorting' => false,
+            ],
             [
                 'attribute'=>'testname',
                 'header'=>'Test/ Calibration Requested',
@@ -308,6 +320,28 @@ $requestId = $request['pstc_request_id'];
                       
                   },
             ],
+            [
+                    'class' => 'kartik\grid\ActionColumn',
+                    'template' => '{delete}',
+                    'dropdown' => false,
+                    'dropdownOptions' => ['class' => 'pull-right'],
+                    /*'urlCreator' => function ($action, $model, $key, $index) {
+                        if ($action === 'remove') {
+                            $url = '';//'/pstc/pstcsample/delete?id='.$model->pstc_sample_id;
+                            return $url;
+                        }
+                    },*/
+                    'headerOptions' => ['class' => 'kartik-sheet-style'],
+                    'buttons' => [
+                        'delete' => function ($url, $data) use ($accepted,$request) {
+                            if($accepted == 0){
+                                return Html::a('<span class="glyphicon glyphicon-trash"></span>', '#', ['class'=>'btn btn-danger','title'=>'Delete PSTC Analysis','onclick' => 'deleteTest('.$data['pstc_analysis_id'].','.$request['pstc_request_id'].','.$data['pstc_id'].',this.title)']);
+                            } else {
+                                return null;
+                            }
+                        },
+                    ],
+                ],
           
         ];
 
@@ -427,7 +461,36 @@ $requestId = $request['pstc_request_id'];
             .find('#modalContent')
             .load(url);
     }
+    //btc
+    function deleteSample(id,requestId,pstcId,title){
+        var url = '/pstc/pstcrequest/sample_delete?sample_id='+id+'&request_id='+requestId+'&pstc_id='+pstcId;
+        $('.modal-title').html(title);
+        $('#modal').modal('show')
+            .find('#modalContent')
+            .load(url);
+    }
+    function deleteTest(id,requestId,pstcId,title){
+        var url = '/pstc/pstcrequest/analysis_delete?analysis_id='+id+'&request_id='+requestId+'&pstc_id='+pstcId;
+        $('.modal-title').html(title);
+        $('#modal').modal('show')
+            .find('#modalContent')
+            .load(url);
+    }
 
+    // function notify(request_id,pstc_id){
+    //     var url = '/pstc/pstcrequest/notifycro?pstc_request_id='+request_id+'&pstc_id='+pstcId;
+    //     $('.modal-title').html(title);
+    //     $('#modal').modal('show')
+    //         .find('#modalContent')
+    //         .load(url);
+    // }
+
+    function notify(url,title){
+        $(".modal-title").html(title);
+        $('#modalPstcRequest').modal('show')
+            .find('#modalContent')
+            .load(url);
+    }
     /*function updateSample(id,requestId){
        var url = '/pstc/pstcsample/update?id='+id+'&request_id='+requestId;
         $('.modal-title').html('Update Sample');

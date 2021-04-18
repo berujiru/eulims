@@ -207,6 +207,11 @@ class AjaxController extends Controller{
                                 $items.= '<a href="/referrals/referral/view?id='.$item['referral_id'].'&notice_id='.$item['notification_id'].'">';
                                 $textcontent ="Sent a Referral!";
                                 break;
+
+                            case 11:
+                                $items.= '<a href="/pstc/pstcrequest/view?request_id='.$item['remarks'].'&pstc_id='.$item['sender_user_id'].'">';
+                                $textcontent ="Made a PSTC request!";
+                                break;
                             
                             default:
                                 $items.= '<a href="#">';

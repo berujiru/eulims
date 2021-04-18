@@ -20,6 +20,7 @@ use common\models\referral\Sampletype;
 use common\models\referral\Pstcanalysis;
 use common\models\referral\Methodreference;
 use common\models\referral\Customer;
+use common\models\referral\Notification;
 use yii\helpers\ArrayHelper;
 
 class RestpstcController extends \yii\rest\Controller
@@ -78,7 +79,7 @@ class RestpstcController extends \yii\rest\Controller
 
                 foreach($datas as $data){
 
-                    $customer = Customer::find()->where(['local_customer_id' =>  $data['customer_id']])->andWhere(['rstl_id' => $rstl_id])->one();
+                    $customer = Customer::find()->where(['customer_id' =>  $data['customer_id']])->andWhere(['rstl_id' => $rstl_id])->one();
 
                     $dataSet[] = [
                         'pstc_request_id'  => $data['pstc_request_id'],
@@ -106,6 +107,13 @@ class RestpstcController extends \yii\rest\Controller
 
     public function actionPstcaccepted()
     {
+        //update notification to responded
+        $chk = Notification::find()->where(['remarks'=> (int) Yii::$app->request->get('id'),'responded'=>0])->one();
+        if($chk){
+            $chk->responded =1;
+            $chk->save(false);
+        }
+
         $pstcId = (int) Yii::$app->request->get('id');
         $data = Pstcrequest::findOne($pstcId);
         $data->accepted = 1;
@@ -155,7 +163,7 @@ class RestpstcController extends \yii\rest\Controller
         $request_id = (int) $getrequest->get('request_id');
         $pstc_id = (int) $getrequest->get('pstc_id');
 
-        $request = []; $samples = []; $respond = []; $customer = []; $attachment = []; $pstc = [];
+        $request = []; $samples = []; $respond = []; $customer = []; $attachment = []; $pstc = []; $sample_analysis = [];
         $subtotal = 0; $discount = 0; $total = 0; $analysis = [];
 
         if(!empty($rstl_id) && !empty($request_id) && !empty($pstc_id)){
@@ -169,6 +177,8 @@ class RestpstcController extends \yii\rest\Controller
                 //return $request->samples[0]->analysis;
                 foreach($request->samples as $sample)
                 {   
+                    $sample_analysis[] = Pstcsample::find()->joinWith('analysis')->where(['tbl_pstcsample.pstc_sample_id'=>$sample->pstc_sample_id])->asArray()->all();
+
                     if(count($sample->analysis) > 0){
                         foreach($sample->analysis as $an){
                             $analysis[] = $an;
@@ -180,7 +190,7 @@ class RestpstcController extends \yii\rest\Controller
                 $total = $subtotal - $discount;
 
                 $customer_id = $request->customer_id;
-                $customer = Customer::find()->where(['local_customer_id' =>  $customer_id])->andWhere(['rstl_id' => $rstl_id])->one();
+                $customer = Customer::find()->where(['customer_id' =>  $customer_id])->andWhere(['rstl_id' => $rstl_id])->one();
             }
             
             return [
@@ -194,6 +204,7 @@ class RestpstcController extends \yii\rest\Controller
                 'subtotal' => $subtotal,
                 'discount' => $discount,
                 'total' => $total,
+                'sampleanalysis'=>$sample_analysis
             ];
             
 
@@ -359,7 +370,7 @@ class RestpstcController extends \yii\rest\Controller
         // $pstcs = ArrayHelper::map(Pstc::find()->where(['rsl_id' => $agency])->all(), 'pstc_id','name');
         // return $pstcs;
 
-        $customer = ArrayHelper::map(Customer::find()->where('rstl_id =:rstlId',[':rstlId'=>$agency])->all(), 'local_customer_id',
+        $customer = ArrayHelper::map(Customer::find()->where('rstl_id =:rstlId',[':rstlId'=>$agency])->all(), 'customer_id',
             function($customer, $defaultValue) {
                 return $customer->customer_name;
         });
@@ -453,4 +464,75 @@ class RestpstcController extends \yii\rest\Controller
         return $sample;
     }
 
+    public function actionCreatecustomer(){
+  
+        $customer = new Customer;
+        $customer->customer_name =Yii::$app->request->post('customer_name');
+        $customer->head=Yii::$app->request->post('head');
+        $customer->tel=Yii::$app->request->post('tel');
+        $customer->fax=Yii::$app->request->post('fax');
+        $customer->email=Yii::$app->request->post('email');
+        $customer->business_nature_id=Yii::$app->request->post('business_nature_id');
+        $customer->industrytype_id=Yii::$app->request->post('industrytype_id');
+        $customer->customer_type_id=Yii::$app->request->post('customer_type_id');
+        $customer->classification_id=Yii::$app->request->post('classification_id');
+        $customer->address=Yii::$app->request->post('address');
+        $customer->rstl_id=Yii::$app->request->post('rstl_id');
+        if($customer->save(false)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public function actionDeletesample(){
+        $sampdel = Pstcsample::findOne(Yii::$app->request->post('sample_id'))->delete();
+        if($sampdel){
+            //check all the test and delete it also
+            // $analysis = Pstcanalysis::find()->where(['pstc_sample_id'=>$sample_id])->all();
+            Pstcanalysis::deleteAll(['pstc_sample_id'=>$sample_id]);
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public function actionDeletetest(){
+        $analdest = Pstcanalysis::findOne(Yii::$app->request->post('analysis_id'))->delete();
+        if($analdest){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public function actionNotifycro(){
+        
+        $request_id = \Yii::$app->request->post('request_id');
+        $rstl_id = \Yii::$app->request->post('rstl_id');
+        $fullname = \Yii::$app->request->post('fullname');
+        $pstc_id = \Yii::$app->request->post('pstc_id');
+        //check if the notif is existing
+        $chk = Notification::find()->where(['remarks'=>$request_id,'notification_type_id'=>11,'recipient_id'=>$rstl_id,'responded'=>0])->one();
+        if($chk){
+            // $chk->responded =1;
+            // $chk->save(false);
+            return true;
+        }
+
+        $notification = new Notification;
+        $notification->referral_id = 0;
+        $notification->notification_type_id = 11;
+        $notification->sender_id = $rstl_id;
+        $notification->recipient_id = $rstl_id;
+        $notification->sender_user_id = $pstc_id;
+        $notification->sender_name = $fullname;
+        $notification->remarks = $request_id;
+        $notification->notification_date = date('Y-m-d H:i:s');
+        if($notification->save(false)){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

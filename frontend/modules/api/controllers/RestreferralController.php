@@ -22,6 +22,7 @@ use common\models\referral\Attachment;
 use common\models\referral\Pstcrequest;
 use common\models\referral\Customer;
 use common\models\referral\Referralextend;
+use common\models\referral\Rstl;
 
 
 use yii\db\Query;
@@ -33,7 +34,7 @@ class RestreferralController extends \yii\rest\Controller
         $behaviors = parent::behaviors();
         $behaviors['authenticator'] = [
             'class' => \sizeg\jwt\JwtHttpBearerAuth::class,
-            'except' => ['index'],
+            'except' => ['index','getdiscount'],
             'user'=> \Yii::$app->referralaccount
         ];
 
@@ -111,19 +112,23 @@ class RestreferralController extends \yii\rest\Controller
 
         \Yii::$app->response->format= \yii\web\Response::FORMAT_JSON;
 
-        $data = Agency::find()
+        $data = Rstl::find()
                     ->where([
-                        'agency_id' =>array_map('intval', explode(',', $agency_id)),
+                        'rstl_id' =>array_map('intval', explode(',', $agency_id)),
                     ])
-                    ->orderBy('agency_id')
+                    ->orderBy('rstl_id')
                     ->asArray()
                     ->all();
 
         return $data;
     }
 
-    public function actionShowupload($referral_id,$rstl_id,$type){
-        return null;
+    public function actionShowupload($referral_id,$type){
+        $data = Attachment::find()
+                            ->where('referral_id =:referral_id', [':referral_id'=>$referral_id])
+                            ->andWhere('attachment_type=:type', [':type'=>$type])
+                            ->all();
+        return $data;
     }
 
     public function actionReferred_agency($referral_id,$rstl_id){
@@ -216,11 +221,13 @@ class RestreferralController extends \yii\rest\Controller
         return $data;
     }
 
-    public function actionTestnamemethodref($testname_id){
+    public function actionTestnamemethodref($testname_id,$lab_id,$sampletypeId){
         \Yii::$app->response->format= \yii\web\Response::FORMAT_JSON;
         $data= Testnamemethod::find()
             ->joinWith(['testname','methodreference'])
             ->where('tbl_testname_method.testname_id = :testnameId', [':testnameId' => $testname_id])
+            ->andWhere(['sampletype_id' => explode(',', $sampletypeId)])
+            ->andWhere(['lab_id' => $lab_id])
             ->asArray()
             ->all();
         return $data;
@@ -261,7 +268,7 @@ class RestreferralController extends \yii\rest\Controller
         if(!$agency[0]) //if no value returns null
             return [];
 
-        $agen= Agency::findOne($agency[0]);
+        $agen= Rstl::findOne($agency[0]);
 
         return $agen;   
     }
@@ -429,7 +436,6 @@ class RestreferralController extends \yii\rest\Controller
     public function actionInsertreferraldata()
     {
         \Yii::$app->response->format= \yii\web\Response::FORMAT_JSON;
-		return "hahahaha";
         $return = 0;
         $referralId = 0;
         $referralSave = 0;
@@ -504,40 +510,38 @@ class RestreferralController extends \yii\rest\Controller
                                     $modelSample->active = $sample['active'];
                                     $modelSample->created_at = date('Y-m-d H:i:s');
                                     $modelSample->updated_at = date('Y-m-d H:i:s');
+
                                     if($modelSample->save(false)){
                                         $sampleSave = 1; //flags that 
                                         //now iterates the analyses
+                                        //foreach to save every test under a sample 
+                                    foreach ($sample['analyses'] as $analysis) {
+                                        $modelAnalysis = new Analysis;
+                                        $modelAnalysis->sample_id = $modelSample->sample_id;
+                                        $modelAnalysis->local_analysis_id = $analysis['analysis_id'];
+                                        $modelAnalysis->local_sample_id = $analysis['sample_id'];
+                                        $modelAnalysis->date_analysis = $analysis['date_analysis'];
+                                        $modelAnalysis->agency_id = $analysis['rstl_id'];
+                                        $modelAnalysis->package_id = $analysis['package_id'];
+                                        $modelAnalysis->testname_id = $analysis['test_id'];
+                                        $modelAnalysis->methodreference_id = $analysis['methodref_id'];
+                                        $modelAnalysis->analysis_fee = $analysis['fee'];
+                                        $modelAnalysis->cancelled = $analysis['cancelled'];
+                                        $modelAnalysis->status = 1;
+                                        $modelAnalysis->cancelled = 0;
+                                        $modelAnalysis->is_package = $analysis['is_package'];
+                                        $modelAnalysis->type_fee_id = $analysis['type_fee_id'];
+                                        $modelAnalysis->created_at = date('Y-m-d H:i:s');
+                                        $modelAnalysis->updated_at = date('Y-m-d H:i:s');
 
-                                        foreach ($analyses as $analysis) {
-                                            $modelAnalysis = new Analysis;
-                                            $modelAnalysis->sample_id = $modelSample->sample_id;
-                                            $modelAnalysis->local_analysis_id = $analysis['analysis_id'];
-                                            $modelAnalysis->local_sample_id = $analysis['sample_id'];
-                                            $modelAnalysis->date_analysis = $analysis['date_analysis'];
-                                            $modelAnalysis->agency_id = $analysis['rstl_id'];
-                                            $modelAnalysis->package_id = $analysis['package_id'];
-                                            $modelAnalysis->testname_id = $analysis['test_id'];
-                                            $modelAnalysis->methodreference_id = $analysis['methodref_id'];
-                                            $modelAnalysis->analysis_fee = $analysis['fee'];
-                                            $modelAnalysis->cancelled = $analysis['cancelled'];
-                                            $modelAnalysis->status = 1;
-                                            $modelAnalysis->cancelled = 0;
-                                            $modelAnalysis->is_package = $analysis['is_package'];
-                                            $modelAnalysis->type_fee_id = $analysis['type_fee_id'];
-                                            $modelAnalysis->created_at = date('Y-m-d H:i:s');
-                                            $modelAnalysis->updated_at = date('Y-m-d H:i:s');
-
-                                            if($modelAnalysis->save()){
-                                                $analysisSave = 1;
-                                            }else{
-                                                $analysisSave = 0;
-                                                $transaction->rollBack();
-                                                break;
-                                            }
+                                        if($modelAnalysis->save()){
+                                            $analysisSave = 1;
+                                        }else{
+                                            $analysisSave = 0;
+                                            $transaction->rollBack();
+                                            break;
                                         }
-                                        //checks if the analysis was not save therefore breaks this loop also
-                                        // if($analysisSave = 0)
-                                        //     break;
+                                    }
 
                                     }else{
                                         $sampleSave = 0; //flags the a sample was not save therefore rollsback
@@ -976,7 +980,7 @@ class RestreferralController extends \yii\rest\Controller
         }
     }
 
-    //salvaged code from STG attachment controller
+    //updated by EGG 03/24/21
     public function actionDownload()
     {
         set_time_limit(120);
@@ -985,22 +989,28 @@ class RestreferralController extends \yii\rest\Controller
             $referralId = (int) \Yii::$app->request->get('referral_id');
             $rstlId = (int) \Yii::$app->request->get('rstl_id');
             $fileId = (int) \Yii::$app->request->get('file');
-            return $attachment = Attachment::find()
+            /*return $attachment = Attachment::find()
                 ->select('tbl_attachment.*,tbl_referral.referral_code')
                 ->joinWith('referral',false)
                 ->where('tbl_attachment.referral_id =:referralId AND attachment_id =:fileId', [':referralId'=>$referralId,':fileId'=>$fileId])
-                ->andWhere('receiving_agency_id =:receivingAgency OR testing_agency_id =:testingAgency', [':receivingAgency'=>$rstlId,':testingAgency'=>$rstlId])
-                ->asArray()->one();
+               // ->andWhere('receiving_agency_id =:receivingAgency OR testing_agency_id =:testingAgency', [':receivingAgency'=>$rstlId,':testingAgency'=>$rstlId])
+                ->asArray()->one();*/
+            $attachment = Attachment::find()
+                            ->where('referral_id =:referral_id', [':referral_id'=>$referralId])
+                            ->andWhere('attachment_id=:fileId', [':fileId'=>$fileId])
+                            ->one();
             
-            $path = \Yii::getAlias('@webroot') . '/uploads';
+            $path = $_SERVER['DOCUMENT_ROOT'].'/uploads';
 
-            return $file = $path . "/referral/".$attachment['referral_code'].'/'.$attachment['filename'];
+            $file = $path . "/referral/".$attachment['filename'];
 
 
             // return $path = \Yii\helpers\Url::to("uploads/referral/".$attachment['referral_code'].'/'.$attachment['filename'];
 
-            if(file_exists($path)) {
-                return Yii::$app->response->sendFile($path);
+            if(file_exists($file)) {
+                //return Yii::$app->response->sendFile($file);
+//return Yii::$app->response->sendFile($file);
+                return $file;
             } else {
                 return 0;
             }
@@ -1187,7 +1197,7 @@ class RestreferralController extends \yii\rest\Controller
         }
     }
 
-    //salvaged from STG under attachment controller
+    //Updated by EGG Please check changes before updating this controller 03/23/21
     public function actionUpload_deposit()
     {
         set_time_limit(120);
@@ -1209,37 +1219,63 @@ class RestreferralController extends \yii\rest\Controller
                 $model->uploadedby_name = $upload->uploader;
                 if($model->save(false)){
                     $dir = $upload->referral_code;
-                    $path = "uploads/referral/".$dir."/";
-                    $dir_ok = 1;
-                    if(!is_dir($path)){
-                        if(mkdir($path, 0755, true)){
-                            $indexfile = fopen($path."index.php", 'w');
-                            if($indexfile){
-                                fwrite($indexfile, '<center><br><br><h1>Forbidden Access!</h1></center>');
-                                fclose($indexfile);
-                            } else {
-                                $transaction->rollBack();
-                                $dir_ok = 0;
-                                $return = 2;
-                            }
-                        } else {
-                            $transaction->rollBack();
-                            $dir_ok = 0;
-                            $return = 2;
-                        }
-                    }
-                    if($dir_ok == 1){
-                        if(move_uploaded_file($_FILES['file_data']['tmp_name'],$path.$_FILES['file_data']['name'])){
-                            $transaction->commit();
-                            $return = 1;
-                        } else {
-                            $transaction->rollBack();
-                            $return = 2;
-                        }
+                    $path = "uploads/referral/";
+                
+                  
+                    if(move_uploaded_file($_FILES['file_data']['tmp_name'],$path.$_FILES['file_data']['name'])){
+                        $transaction->commit();
+                        $return = 1;
                     } else {
                         $transaction->rollBack();
                         $return = 2;
                     }
+                     
+                } else {
+                    $transaction->rollBack();
+                    $return = 2;
+                }
+            } else {
+                $transaction->rollBack();
+                $return = 0;
+            }
+        } else {
+            $return = 0;
+        }
+        return $return;
+    }
+    
+     public function actionUpload_or()
+    {
+        set_time_limit(120);
+        
+        if(isset($_FILES['file_data']['tmp_name'])){
+            $connection= \Yii::$app->referraldb;
+            $connection->createCommand('SET FOREIGN_KEY_CHECKS=0')->execute();
+            $transaction = $connection->beginTransaction();
+            
+            if(count(\Yii::$app->request->post('uploader_data')) > 0){
+                $upload = json_decode(\Yii::$app->request->post('uploader_data'));
+                
+                $model = new Attachment;
+                $model->filename = $_FILES['file_data']['name'];
+                $model->attachment_type = 2; //OR
+                $model->referral_id = (int) $upload->referral_id;
+                $model->upload_date = date('Y-m-d H:i:s');
+                $model->uploadedby_user_id = (int) $upload->user_id;
+                $model->uploadedby_name = $upload->uploader;
+                if($model->save(false)){
+                    $dir = $upload->referral_code;
+                    $path = "uploads/referral/";
+                
+                  
+                    if(move_uploaded_file($_FILES['file_data']['tmp_name'],$path.$_FILES['file_data']['name'])){
+                        $transaction->commit();
+                        $return = 1;
+                    } else {
+                        $transaction->rollBack();
+                        $return = 2;
+                    }
+                     
                 } else {
                     $transaction->rollBack();
                     $return = 2;

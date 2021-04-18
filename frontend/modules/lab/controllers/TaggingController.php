@@ -135,8 +135,9 @@ class TaggingController extends Controller
       $nmonth = date('m', strtotime($month));
         $searchkey =  $year.'-'.$nmonth;
         $request_query = Request::find()
-        ->where(['like', 'request_datetime', $searchkey ])
+        ->where(['like', 'request_datetime', $searchkey])
         ->andWhere(['lab_id'=> $lab_id,'status_id'=>1,'request_type_id'=>1])
+        ->andWhere(['not', ['request_ref_num' => null]])
         ->with(['samples' => function($query){
                 $query->andWhere(['active'=>'1']);
             }]);

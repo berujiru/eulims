@@ -342,17 +342,11 @@ if(count($sampletype) > 0){
     </div> -->
     <div class="row">
         <div class="col-md-6">
-                <div class="input-group">
-                    <?php
-                    $func = new Functions();
-                    echo $func->GetCustomerList($form, $model, true,'Customer');
-                    if($disabled){
-                        $btnDisp=" disabled='disabled'";
-                    }else{
-                        $btnDisp="";
-                    }
-                    ?>
-                </div>
+            <label class="control-label">Customer</label>
+            <div class="alert alert-info" style="background: #d4f7e8 !important;margin-top: 1px !important;">
+                <a href="#" class="close" data-dismiss="alert">×</a>
+                <p class="note" style="color:#265e8d"><b><?=$customer['customer_name']?></b><br/><i>Customer Information will be downloaded too.</i></p>
+            </div>
         </div>
         <div class="col-md-6">
             <?= $form->field($model, 'modeofreleaseids')->widget(Select2::classname(), [

@@ -16,7 +16,8 @@ use yii\helpers\ArrayHelper;
 
     <div class="row">
         <div class="col-md-12">
-            <?= $form->field($model, 'customer_id')->widget(Select2::classname(), [
+            <div class="input-group">
+              <?= $form->field($model, 'customer_id')->widget(Select2::classname(), [
                 'data' => $customers,
                 //'type'=>DepDrop::TYPE_SELECT2,
                 'language' => 'en',
@@ -28,6 +29,10 @@ use yii\helpers\ArrayHelper;
                    'allowClear' => true
                 ],
             ])->label('Customer'); ?>
+             <span class="input-group-btn" style="padding-top: 25.5px">
+                <button onclick="LoadModal('Create New Cusotmer', '/pstc/pstcrequest/createcustomer');"class="btn btn-default" type="button"><i class="fa fa-plus"></i></button>
+            </span> 
+            </div>
         </div>
         <div class="col-md-12">
             <?= $form->field($model, 'submitted_by')->textInput(['placeholder' => 'Enter name ...']) ?>

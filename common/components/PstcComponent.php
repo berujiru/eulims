@@ -13,6 +13,7 @@ use yii\base\Component;
 use yii\web\JsExpression;
 use yii\web\NotFoundHttpException;
 use linslin\yii2\curl;
+use common\models\system\User;
 //use common\models\lab\exRequestreferral;
 //use common\models\lab\Analysis;
 //use common\models\lab\Sample;
@@ -414,5 +415,73 @@ class PstcComponent extends Component {
         return $lists;
     }
 
+    function createcustomer($model){
+
+        $customer = [
+            'customer_name' => $model->customer_name,
+            'head' =>$model->head,
+            'tel' =>$model->tel,
+            'fax' =>$model->fax,
+            'email' =>$model->email,
+            'business_nature_id' =>$model->business_nature_id,
+            'industrytype_id' =>$model->industrytype_id,
+            'customer_type_id' =>$model->customer_type_id,
+            'classification_id' =>$model->classification_id,
+            'address' =>$model->address,
+            'rstl_id' =>$model->rstl_id,
+        ];
+
+        $apiUrl=$this->source.'createcustomer';
+        $token= 'Authorization: Bearer '.$_SESSION['usertoken'];
+
+        $curl = new curl\Curl();
+        $curl->setRequestBody(json_encode($customer));
+        $curl->setOption(CURLOPT_HTTPHEADER, ['Content-Type: application/json' , $token]);
+        $curl->setOption(CURLOPT_CONNECTTIMEOUT, 120);
+        $curl->setOption(CURLOPT_TIMEOUT, 120);
+        $curl->setOption(CURLOPT_SSL_VERIFYPEER, false);
+        return $data = $curl->post($apiUrl);
+
+        return true;
+    }
+
+    function deletesample($sample_id,$request_id,$pstc_id){
+        $token= 'Authorization: Bearer '.$_SESSION['usertoken'];
+        $curl = new curl\Curl();
+        $curl->setRequestBody(json_encode(['sample_id'=>$sample_id]));
+        $curl->setOption(CURLOPT_HTTPHEADER, ['Content-Type: application/json' , $token]);
+        $curl->setOption(CURLOPT_CONNECTTIMEOUT, 120);
+        $curl->setOption(CURLOPT_TIMEOUT, 120);
+        $curl->setOption(CURLOPT_SSL_VERIFYPEER, false);
+        $lists = $curl->post($this->source."deletesample");
+        return $lists;
+    }
+
+    function deleteanalysis($analysis_id){
+        $token= 'Authorization: Bearer '.$_SESSION['usertoken'];
+        $curl = new curl\Curl();
+        $curl->setRequestBody(json_encode(['analysis_id'=>$analysis_id]));
+        $curl->setOption(CURLOPT_HTTPHEADER, ['Content-Type: application/json' , $token]);
+        $curl->setOption(CURLOPT_CONNECTTIMEOUT, 120);
+        $curl->setOption(CURLOPT_TIMEOUT, 120);
+        $curl->setOption(CURLOPT_SSL_VERIFYPEER, false);
+        $lists = $curl->post($this->source."deletetest");
+        return $lists;
+    }
+
+    function notify($request_id,$rstlId,$pstc_id){
+        $CurrentUser= User::findOne(['user_id'=> Yii::$app->user->identity->user_id]);
+        $fullname = $CurrentUser->profile ? $CurrentUser->profile->fullname : $CurrentUser->username;
+
+        $token= 'Authorization: Bearer '.$_SESSION['usertoken'];
+        $curl = new curl\Curl();
+        $curl->setRequestBody(json_encode(['request_id'=>$request_id,'rstl_id'=>$rstlId,'fullname'=>$fullname,'pstc_id'=>$pstc_id]));
+        $curl->setOption(CURLOPT_HTTPHEADER, ['Content-Type: application/json' , $token]);
+        $curl->setOption(CURLOPT_CONNECTTIMEOUT, 120);
+        $curl->setOption(CURLOPT_TIMEOUT, 120);
+        $curl->setOption(CURLOPT_SSL_VERIFYPEER, false);
+        $lists = $curl->post($this->source."notifycro");
+        return $lists;
+    }
 }
 
