@@ -208,10 +208,10 @@ class PstcrequestController extends Controller
             $data = json_decode($function->getSamplecreate($testarray),true);
             
             if($data){
-                Yii::$app->session->setFlash('success', 'Request successfully saved!');
+                Yii::$app->session->setFlash('success', 'Sample successfully saved!');
                 return $this->redirect(['/pstc/pstcrequest/view','request_id'=>$data['pstc_request_id'],'pstc_id'=>$data['pstc_id']]);
             }else{
-                Yii::$app->session->setFlash('error', 'Failed!');
+                Yii::$app->session->setFlash('error', 'Sample failed to save!');
                 return $this->redirect(['/lab/request/view','request_id'=>$data['pstc_request_id'],'pstc_id' => $data['pstc_id']]);
             }
         }

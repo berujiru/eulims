@@ -136,7 +136,6 @@ $requestId = $request['pstc_request_id'];
     <div class="container">
         <div class="table-responsive">
         <?php
-        $btn_saveRequest = ($request['is_referral'] == 0) ? Html::button('<span class="glyphicon glyphicon-save"></span> Save as Local Request', ['value' => Url::to(['/pstc/pstcrequest/request_local','request_id'=>$request['pstc_request_id'],'pstc_id'=>$request['pstc_id']]),'title'=>'Save as Local Request', 'onclick'=>'saveRequest(this.value,this.title)', 'class' => 'btn btn-primary','id' => 'modalBtn']) : Html::button('<span class="glyphicon glyphicon-save"></span> Save as Referral Request', ['value' => Url::to(['/pstc/pstcrequest/request_referral','request_id'=>$request['pstc_request_id'],'pstc_id'=>$request['pstc_id']]),'title'=>'Save as Referral Request', 'onclick'=>'saveRequest(this.value,this.title)', 'class' => 'btn btn-primary','id' => 'modalBtn']);
             $sampleGridColumns = [
                 [
                     'header' => 'Temporary Sample ID',
@@ -231,7 +230,8 @@ $requestId = $request['pstc_request_id'];
                         },
                         'delete' => function ($url, $data) use ($accepted) {
                             if($data['active'] == 1 && $accepted == 0){
-                                return Html::a('<span class="glyphicon glyphicon-trash"></span>', '#', ['class'=>'btn btn-danger','title'=>'Delete PSTC Sample','onclick' => 'deleteSample('.$data['pstc_sample_id'].','.$data['pstc_request_id'].','.$data['pstc_id'].',this.title)']);
+                                $urls = '/pstc/pstcrequest/sample_delete?sample_id='.$data['pstc_sample_id'].'&request_id='.$data['pstc_request_id'].'&pstc_id='.$data['pstc_id'];
+                                return Html::a('<span class="glyphicon glyphicon-trash"></span>', $urls,['data-confirm'=>"Tests under this sample will also be deleted, Are you sure you want to delete this <b>".$data['sample_name']."</b> sample?", 'data-method'=>'post', 'class'=>'btn btn-danger','title'=>'Delete PSTC Sample','data-pjax'=>'0']);
                             } else {
                                 return null;
                             }
@@ -335,7 +335,11 @@ $requestId = $request['pstc_request_id'];
                     'buttons' => [
                         'delete' => function ($url, $data) use ($accepted,$request) {
                             if($accepted == 0){
-                                return Html::a('<span class="glyphicon glyphicon-trash"></span>', '#', ['class'=>'btn btn-danger','title'=>'Delete PSTC Analysis','onclick' => 'deleteTest('.$data['pstc_analysis_id'].','.$request['pstc_request_id'].','.$data['pstc_id'].',this.title)']);
+                                // return Html::a('<span class="glyphicon glyphicon-trash"></span>', '#', ['class'=>'btn btn-danger','title'=>'Delete PSTC Analysis','onclick' => 'deleteTest('.$data['pstc_analysis_id'].','.$request['pstc_request_id'].','.$data['pstc_id'].',this.title)']);
+
+                                $urls = '/pstc/pstcrequest/analysis_delete?analysis_id='.$data['pstc_analysis_id'].'&request_id='.$request['pstc_request_id'].'&pstc_id='.$data['pstc_id'];
+                                return Html::a('<span class="glyphicon glyphicon-trash"></span>', $urls,['data-confirm'=>"Are you sure you want to delete this <b>".$data['testname']."</b> test?", 'data-method'=>'post', 'class'=>'btn btn-danger','title'=>'Delete PSTC Test','data-pjax'=>'0']);
+
                             } else {
                                 return null;
                             }

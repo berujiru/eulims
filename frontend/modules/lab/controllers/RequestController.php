@@ -542,13 +542,13 @@ class RequestController extends Controller
             if($response){
 
                 //query customer using $Request->customer_id
-                $customer = Customer::find()->where(['customer_id'=>$Request->customer_id])->one();
-                $apiUrl=$GLOBALS['newapi_url'].'restcustomer/mailcode?email='.$customer->email;
-                $curl = new curl\Curl();
-                $curl->setOption(CURLOPT_CONNECTTIMEOUT, 180);
-                $curl->setOption(CURLOPT_TIMEOUT, 180);
-                $curl->setOption(CURLOPT_SSL_VERIFYPEER, false);
-                $list = Json::decode($curl->get($apiUrl));
+                // $customer = Customer::find()->where(['customer_id'=>$Request->customer_id])->one();
+                // $apiUrl=$GLOBALS['newapi_url'].'restcustomer/mailcode?email='.$customer->email;
+                // $curl = new curl\Curl();
+                // $curl->setOption(CURLOPT_CONNECTTIMEOUT, 180);
+                // $curl->setOption(CURLOPT_TIMEOUT, 180);
+                // $curl->setOption(CURLOPT_SSL_VERIFYPEER, false);
+                // $list = Json::decode($curl->get($apiUrl));
 
 
                 $return="Success";

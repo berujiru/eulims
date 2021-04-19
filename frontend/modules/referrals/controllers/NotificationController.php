@@ -55,6 +55,7 @@ class NotificationController extends Controller
             $notice_list = $notification['notification'];
             foreach ($notice_list as $data) {
                 //$notification_type = $data['notification_type_id'];
+                $arr_data = [];
                 switch($data['notification_type_id']){
                     case 1:
                         $agencyName = $this->getAgency($data['sender_id']);

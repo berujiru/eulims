@@ -5,6 +5,10 @@ use yii\widgets\Pjax;
 ?>
 
 <div class="notification-view notification-display">
+	<div class="alert alert-danger" style="background: #ffc0cb !important;">
+        <a href="#" class="close" data-dismiss="alert" >×</a>
+        <p class="note" style="color:#d73925"><b>PSTC Notification will not appear here.</b></p>
+      </div>
 	<div class="alert alert-info" style="border-bottom: 2px solid #555;margin-bottom:2px;">
 	  <strong style="color:#000;">List of Referral Notifications</strong>
 	</div>
