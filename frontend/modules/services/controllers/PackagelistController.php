@@ -27,6 +27,8 @@ use yii\helpers\Json;
 
 use common\models\lab\Testname;
 use common\models\lab\Sampletype;
+use common\models\lab\Discount;
+
 
 /**
  * PackagelistController implements the CRUD actions for Packagelist model.
@@ -215,6 +217,24 @@ class PackagelistController extends Controller
                       
                     }      
                  }                   
+
+                 //recalculate the total amount
+
+                $requestquery = Request::find()->where(['request_id' => $request_id])->one();
+                $discountquery = Discount::find()->where(['discount_id' => $requestquery->discount_id])->one();
+                $rate =  $discountquery->rate;       
+                $sql = "SELECT SUM(fee) as subtotal FROM tbl_analysis WHERE request_id=$request_id";
+                $Connection = Yii::$app->labdb;
+                $command = $Connection->createCommand($sql);
+                $row = $command->queryOne();
+                $subtotal = $row['subtotal'];
+                $total = $subtotal - ($subtotal * ($rate/100));
+
+                $Connection= Yii::$app->labdb;
+                $sql="UPDATE `tbl_request` SET `total`='$total' WHERE `request_id`=".$request_id;
+                $Command=$Connection->createCommand($sql);
+                $Command->execute();
+
                  Yii::$app->session->setFlash('success', 'Package Succesfull Added');
                  return $this->redirect(['/lab/request/view', 'id' =>$request_id]);
         } 
