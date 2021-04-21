@@ -88,7 +88,7 @@ if($notification['notification_type_id'] == 3 && $notification['responded'] == 0
                         [
                             'label'=>'Address',
                             'format'=>'raw',
-                            'value'=> $request['customer_id'] > 0 && count($customer) > 0 ? $customer['address'] : "",
+                            'value'=> $customer > 0 ? $customer['address'] : "",
                             'valueColOptions'=>['style'=>'width:30%'], 
                             'displayOnly'=>true
                         ],
@@ -107,7 +107,7 @@ if($notification['notification_type_id'] == 3 && $notification['responded'] == 0
                         [
                             'label'=>'Tel no.',
                             'format'=>'raw',
-                            'value'=> $request['customer_id'] > 0 && count($customer) > 0 ? $customer['tel'] : "",
+                            'value'=> $customer > 0 ? $customer['tel'] : "",
                             'valueColOptions'=>['style'=>'width:30%'], 
                             'displayOnly'=>true
                         ],
@@ -125,7 +125,7 @@ if($notification['notification_type_id'] == 3 && $notification['responded'] == 0
                         [
                             'label'=>'Fax no.',
                             'format'=>'raw',
-                            'value'=> $request['customer_id'] > 0 && count($customer) > 0 ? $customer['fax'] : "",
+                            'value'=> $customer > 0 ? $customer['fax'] : "",
                             'valueColOptions'=>['style'=>'width:30%'], 
                             'displayOnly'=>true
                         ],
