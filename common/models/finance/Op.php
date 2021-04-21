@@ -62,7 +62,7 @@ class Op extends \yii\db\ActiveRecord
             [['rstl_id', 'collectiontype_id', 'payment_mode_id', 'customer_id', 'receipt_id','on_account','payment_status_id'], 'integer'],
             [['order_date','RequestIds','payment_status_id','subsidiary_customer_ids'], 'safe'],
             [['total_amount'], 'number'],
-            [['transactionnum','RequestIds','invoice_number'], 'string', 'max' => 100],
+            [['transactionnum','invoice_number'], 'string', 'max' => 100],
             [['purpose'], 'string', 'max' => 200],
             [['collectiontype_id'], 'exist', 'skipOnError' => true, 'targetClass' => Collectiontype::className(), 'targetAttribute' => ['collectiontype_id' => 'collectiontype_id']],
             [['payment_mode_id'], 'exist', 'skipOnError' => true, 'targetClass' => Paymentmode::className(), 'targetAttribute' => ['payment_mode_id' => 'payment_mode_id']],
