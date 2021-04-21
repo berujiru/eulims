@@ -150,7 +150,7 @@ class RequestController extends Controller
             //gets all the matching agency ??? hard to maintain, needs inovative idea here //btc 
             $agency = $refcomponent->listMatchAgency($id);
 
-            // var_dump($agency); exit;
+
 
             //updated by egg 04/06/21
             $deposit = $refcomponent->getAttachment($reqModel->referral_id,1);

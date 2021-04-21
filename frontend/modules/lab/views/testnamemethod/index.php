@@ -23,6 +23,18 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="testnamemethod-index">
+<div class="info-box">
+<span class="info-box-icon bg-aqua"><i class="fa fa-question-circle"></i></span>
+<a href="#" class="close" data-dismiss="alert" >×</a>
+<div class="info-box-content bg-aqua">
+    <span class="info-box-number">Manuals</span>
+    <span class="info-box-text"><?= Html::a('How to create a new test service</b>', 'https://tinyurl.com/wawdry67',['class'=>'btn-info','target'=>"_blank"]); ?></span>
+    <span class="info-box-text"><?= Html::a('How to enroll test services to referral', 'https://tinyurl.com/rht3rp5a',['class'=>'btn-info','target'=>"_blank"]); ?></span>
+    <span class="info-box-text">.</span>
+</div>
+<!-- /.info-box-content -->
+
+</div>
 
 <?php $this->registerJsFile("/js/services/services.js"); ?>
 
