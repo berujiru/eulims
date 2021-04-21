@@ -24,7 +24,6 @@ use common\models\referral\Customer;
 use common\models\referral\Referralextend;
 use common\models\referral\Rstl;
 
-
 use yii\db\Query;
 
 class RestreferralController extends \yii\rest\Controller
@@ -34,7 +33,7 @@ class RestreferralController extends \yii\rest\Controller
         $behaviors = parent::behaviors();
         $behaviors['authenticator'] = [
             'class' => \sizeg\jwt\JwtHttpBearerAuth::class,
-            'except' => ['index','getdiscount'],
+            'except' => ['index','upload_deposit','upload_or','getdiscount'],
             'user'=> \Yii::$app->referralaccount
         ];
 
@@ -122,13 +121,13 @@ class RestreferralController extends \yii\rest\Controller
 
         return $data;
     }
-
+    //EGG 03/23/21
     public function actionShowupload($referral_id,$type){
         $data = Attachment::find()
                             ->where('referral_id =:referral_id', [':referral_id'=>$referral_id])
-                            ->andWhere('attachment_type=:type', [':type'=>$type])
+							->andWhere('attachment_type=:type', [':type'=>$type])
                             ->all();
-        return $data;
+		return $data;
     }
 
     public function actionReferred_agency($referral_id,$rstl_id){
@@ -638,7 +637,6 @@ class RestreferralController extends \yii\rest\Controller
     public function actionCountnotification($rstl_id)
     {
         \Yii::$app->response->format= \yii\web\Response::FORMAT_JSON;
-
         if($rstl_id > 0){
             $model = new Notification;
             try {
@@ -699,7 +697,8 @@ class RestreferralController extends \yii\rest\Controller
             
             $query = $model::find()
                 ->joinWith(['referral'],false)
-                ->where('recipient_id =:recipientId', [':recipientId'=>$rstl_id]);
+                ->where('recipient_id =:recipientId', [':recipientId'=>$rstl_id])
+                ->andWhere(['!=', 'tbl_notification.referral_id', 0]);
             
             $notificationCount = $query->count();
             $notification = $query->orderBy('notification_date DESC')->all();
@@ -707,11 +706,11 @@ class RestreferralController extends \yii\rest\Controller
             if($notificationCount > 0){
                 return ['notification'=>$notification,'count_notification'=>$notificationCount];
             } else {
-                return ['notification'=>null,'count_notification'=>0];
+                return ['notification'=>[],'count_notification'=>0];
             }
             
         } catch (Exception $e) {
-            return ['notification'=>null,'count_notification'=>0];
+            return ['notification'=>[],'count_notification'=>0];
         }
         
     }
@@ -852,7 +851,7 @@ class RestreferralController extends \yii\rest\Controller
             $request = \Yii::$app->request->post('request_data');
             $samples = \Yii::$app->request->post('sample_data');
             //$analyses = Yii::$app->request->post('analysis_data');
-
+            
             $checkReferral = $this->checkReferral($request['request_id'],$request['rstl_id']);
             
             if($checkReferral == 0){
@@ -917,7 +916,6 @@ class RestreferralController extends \yii\rest\Controller
                         //return "No referral data!";
                         $return = 2;
                     }
-
                     if($referralSave == 1 && $sampleSave == 1){
 
                         //find and update the pstc if meron
@@ -959,8 +957,8 @@ class RestreferralController extends \yii\rest\Controller
             try {
                 $referralId = (int) \Yii::$app->request->get('referral_id');
                 $rstlId = (int) \Yii::$app->request->get('rstl_id');
-                $type = (int) \Yii::$app->request->get('type');
-                
+               // $type = (int) \Yii::$app->request->get('type');
+                 //$type =2;
                 $attachment = Attachment::find()
                     ->joinWith('referral',false)
                     ->where('tbl_attachment.referral_id =:referralId AND attachment_type =:attachmentType', [':referralId'=>$referralId,':attachmentType'=>$type])
@@ -995,9 +993,9 @@ class RestreferralController extends \yii\rest\Controller
                 ->where('tbl_attachment.referral_id =:referralId AND attachment_id =:fileId', [':referralId'=>$referralId,':fileId'=>$fileId])
                // ->andWhere('receiving_agency_id =:receivingAgency OR testing_agency_id =:testingAgency', [':receivingAgency'=>$rstlId,':testingAgency'=>$rstlId])
                 ->asArray()->one();*/
-            $attachment = Attachment::find()
+			$attachment = Attachment::find()
                             ->where('referral_id =:referral_id', [':referral_id'=>$referralId])
-                            ->andWhere('attachment_id=:fileId', [':fileId'=>$fileId])
+							->andWhere('attachment_id=:fileId', [':fileId'=>$fileId])
                             ->one();
             
             $path = $_SERVER['DOCUMENT_ROOT'].'/uploads';
@@ -1010,7 +1008,7 @@ class RestreferralController extends \yii\rest\Controller
             if(file_exists($file)) {
                 //return Yii::$app->response->sendFile($file);
 //return Yii::$app->response->sendFile($file);
-                return $file;
+				return $file;
             } else {
                 return 0;
             }
@@ -1044,27 +1042,24 @@ class RestreferralController extends \yii\rest\Controller
     //salvaged data from STG
     //for saving eulims local
     public function actionGetreferraldetail($referral_id,$rstl_id){
-        \Yii::$app->response->format= \yii\web\Response::FORMAT_JSON;
         $getrequest = \Yii::$app->request;
         if($referral_id && $rstl_id){
+            
             $checkTestingLab = $this->checkTestingLab($referral_id,$rstl_id);
             $checkOwner = $this->actionCheckowner($referral_id,$rstl_id);
-
             if($checkTestingLab > 0 || $checkOwner > 0){
                 
                 $referral = Referral::find()
                     ->where('referral_id =:referralId', [':referralId'=>$referral_id])
                     ->one();
+                
                 $samples_analyses = Sample::find()
                     ->joinWith(['analyses','analyses.testname','analyses.methodreference'])
                     ->where('referral_id =:referralId', [':referralId'=>$referral_id])
                     ->asArray()
                     ->all();
-
-                $customer = Customer::find()
-                    ->where(['local_customer_id'=>$referral->customer_id,'rstl_id'=>$referral->receiving_agency_id])->one();
-
-                $data = ['request_data'=>$referral,'sample_analysis_data'=>$samples_analyses,'customer_data'=>$customer];
+                    
+                $data = ['request_data'=>$referral,'sample_analysis_data'=>$samples_analyses,'customer_data'=>true];
                 
                 return $data;
                 
@@ -1222,13 +1217,13 @@ class RestreferralController extends \yii\rest\Controller
                     $path = "uploads/referral/";
                 
                   
-                    if(move_uploaded_file($_FILES['file_data']['tmp_name'],$path.$_FILES['file_data']['name'])){
-                        $transaction->commit();
-                        $return = 1;
-                    } else {
-                        $transaction->rollBack();
-                        $return = 2;
-                    }
+					if(move_uploaded_file($_FILES['file_data']['tmp_name'],$path.$_FILES['file_data']['name'])){
+						$transaction->commit();
+						$return = 1;
+					} else {
+						$transaction->rollBack();
+						$return = 2;
+					}
                      
                 } else {
                     $transaction->rollBack();
@@ -1243,8 +1238,8 @@ class RestreferralController extends \yii\rest\Controller
         }
         return $return;
     }
-    
-     public function actionUpload_or()
+	
+	 public function actionUpload_or()
     {
         set_time_limit(120);
         
@@ -1268,13 +1263,13 @@ class RestreferralController extends \yii\rest\Controller
                     $path = "uploads/referral/";
                 
                   
-                    if(move_uploaded_file($_FILES['file_data']['tmp_name'],$path.$_FILES['file_data']['name'])){
-                        $transaction->commit();
-                        $return = 1;
-                    } else {
-                        $transaction->rollBack();
-                        $return = 2;
-                    }
+					if(move_uploaded_file($_FILES['file_data']['tmp_name'],$path.$_FILES['file_data']['name'])){
+						$transaction->commit();
+						$return = 1;
+					} else {
+						$transaction->rollBack();
+						$return = 2;
+					}
                      
                 } else {
                     $transaction->rollBack();
@@ -1289,6 +1284,7 @@ class RestreferralController extends \yii\rest\Controller
         }
         return $return;
     }
+
 
     /** ACCOMPLISHMENT REPORT **/
     public function actionAccomplishmentreportall($rstl_id,$fromDate,$toDate){
