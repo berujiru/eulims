@@ -40,24 +40,92 @@ $(".kv-row-checkbox").click(function(){
    var keys = $('#sample-grid').yiiGridView('getSelectedRows');
    var keylist= keys.join();
    $("#sample_ids").val(keylist);
-  // $("#sample-testcategory_id").prop('disabled', false);
-  $("#package_btn").prop('disabled', keys=='');  
-   
+   if(($("#sample_ids").val())&&($('#package_ids').val()!=0)){
+        $('#package_btn').prop('disabled', false);                    
+    }else{
+        $('#package_btn').prop('disabled', true);
+    } 
 });    
 $(".select-on-check-all").change(function(){
 
  var keys = $('#sample-grid').yiiGridView('getSelectedRows');
  var keylist= keys.join();
   $("#sample_ids").val(keylist);
- // $("#sample-testcategory_id").prop('disabled', false);
- $("#package_btn").prop('disabled', keys=='');  
+  if(($("#sample_ids").val())&&($('#package_ids').val()!=0)){
+        $('#package_btn').prop('disabled', false);                    
+    }else{
+        $('#package_btn').prop('disabled', true);
+    } 
  
 });
+
+
+
 
 SCRIPT;
 $this->registerJs($js);
 
+$this->registerJs("$('#sample-sample_type_id').on('depdrop:afterChange',function(){
+    var id = $('#sample-sample_type_id').val();
+        $.ajax({
+            url: '".Url::toRoute("packagelist/getpackage")."',
+            dataType: 'json',
+            method: 'GET',
+            data: {packagelist_id: id},
+            success: function (data, textStatus, jqXHR) {
+               
+                $('#packagelist-rate').val(data.rate);
+                $('#packagelist-rate-disp').val(data.rate);
+                $('#packagelist-tests').val(data.tests);
+                $('#package_ids').val(data.ids);
+                $('.image-loader').removeClass( \"img-loader\" );
+
+                if((data.ids != 0)&&($('#sample_ids').val())){
+                    $('#package_btn').prop('disabled', false);                    
+                }else{
+                    $('#package_btn').prop('disabled', true);
+                }
+            },
+            beforeSend: function (xhr) {
+                //alert('Please wait...');
+                $('.image-loader').addClass( \"img-loader\" );
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('An error occured!');
+                alert('Error in ajax request');
+            }
+        });
+});");
+
+$this->registerJs("$('#sample-sample_type_id').on('change',function(){
+    var id = $('#sample-sample_type_id').val();
+        $.ajax({
+            url: '".Url::toRoute("packagelist/getpackage")."',
+            dataType: 'json',
+            method: 'GET',
+            //data: {id: $(this).val()},
+            data: {packagelist_id: id},
+            success: function (data, textStatus, jqXHR) {
+             
+                $('#packagelist-rate').val(data.rate);
+                $('#packagelist-rate-disp').val(data.rate);
+                $('#packagelist-tests').val(data.tests);
+                $('#package_ids').val(data.ids);
+                $('.image-loader').removeClass( \"img-loader\" );
+            },
+            beforeSend: function (xhr) {
+                //alert('Please wait...');
+                $('.image-loader').addClass( \"img-loader\" );
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log('An error occured!');
+                alert('Error in ajax request');
+            }
+        });
+});");
 ?>
+
+
 
 
 <div class="packagelist-form" style="padding-bottom: 10px">
@@ -153,7 +221,7 @@ $this->registerJs($js);
 
              <?= $form->field($model, 'tests')->textarea(['rows' => 4, 'readonly' => true]) ?>
 
-             <?= Html::textInput('package_ids', '', ['class' => 'form-control', 'id'=>'package_ids', 'type'=>"hidden"], ['readonly' => true]) ?>
+             <?= Html::textInput('package_ids', '', ['class' => 'form-control', 'id'=>'package_ids'], ['readonly' => true]) ?>
           
              <?= $form->field($model, 'rstl_id')->hiddenInput(['value'=> 1])->label(false) ?>
 
@@ -170,57 +238,3 @@ $this->registerJs($js);
 
 </div>
 
-<?php
-$this->registerJs("$('#sample-sample_type_id').on('depdrop:afterChange',function(){
-    var id = $('#sample-sample_type_id').val();
-        $.ajax({
-            url: '".Url::toRoute("packagelist/getpackage")."',
-            dataType: 'json',
-            method: 'GET',
-            data: {packagelist_id: id},
-            success: function (data, textStatus, jqXHR) {
-               
-                $('#packagelist-rate').val(data.rate);
-                $('#packagelist-rate-disp').val(data.rate);
-                $('#packagelist-tests').val(data.tests);
-                $('#package_ids').val(data.ids);
-                $('.image-loader').removeClass( \"img-loader\" );
-            },
-            beforeSend: function (xhr) {
-                //alert('Please wait...');
-                $('.image-loader').addClass( \"img-loader\" );
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log('An error occured!');
-                alert('Error in ajax request');
-            }
-        });
-});");
-
-$this->registerJs("$('#sample-sample_type_id').on('change',function(){
-    var id = $('#sample-sample_type_id').val();
-        $.ajax({
-            url: '".Url::toRoute("packagelist/getpackage")."',
-            dataType: 'json',
-            method: 'GET',
-            //data: {id: $(this).val()},
-            data: {packagelist_id: id},
-            success: function (data, textStatus, jqXHR) {
-             
-                $('#packagelist-rate').val(data.rate);
-                $('#packagelist-rate-disp').val(data.rate);
-                $('#packagelist-tests').val(data.tests);
-                $('#package_ids').val(data.ids);
-                $('.image-loader').removeClass( \"img-loader\" );
-            },
-            beforeSend: function (xhr) {
-                //alert('Please wait...');
-                $('.image-loader').addClass( \"img-loader\" );
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log('An error occured!');
-                alert('Error in ajax request');
-            }
-        });
-});");
-?>
