@@ -504,7 +504,7 @@ $requestId = $request['pstc_request_id'];
     } */
 
     function addAnalysis(url,title){
-        $(".modal-title").html(title);
+        $("#modalContent").html("<div class='img-loader'></div>");
         $('#modal').modal('show')
             .find('#modalContent')
             .load(url);

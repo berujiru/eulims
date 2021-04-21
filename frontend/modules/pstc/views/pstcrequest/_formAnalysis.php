@@ -16,6 +16,7 @@ use yii\helpers\ArrayHelper;
 /* @var $this yii\web\View */
 /* @var $model common\models\lab\Sample */
 /* @var $form yii\widgets\ActiveForm */
+
 ?>
 
 
@@ -94,7 +95,7 @@ use yii\helpers\ArrayHelper;
 
     <div class="form-group" style="padding-bottom: 3px;">
         <div style="float:right;">
-            <?= Html::submitButton($model->isNewRecord ? 'Save' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary','id'=>'btn-update']) ?>
+            <?= Html::submitButton($model->isNewRecord ? 'Save' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary','id'=>'btn-update','disabled'=>true]) ?>
             <?= Html::button('Close', ['class' => 'btn', 'data-dismiss' => 'modal']) ?>
             <br>
         </div>

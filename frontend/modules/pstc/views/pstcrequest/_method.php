@@ -34,6 +34,28 @@ $("#testname-grid").change(function(){
 SCRIPT;
 $this->registerJs($js, $this::POS_READY);
 
+
+
+$js=<<<SCRIPT
+$(".kv-row-radio-select").click(function(){
+   var key = $("input[name='method_id']:checked").val();
+ $('#btn-update').prop('disabled',key==""); 
+
+});    
+
+$(".kv-clear-radio").click(function(){
+ $('#btn-update').prop('disabled',true); 
+
+});    
+
+
+
+
+SCRIPT;
+$this->registerJs($js);
+
+
+
 $referralcomp = new ReferralComponent();
 ?>
 
