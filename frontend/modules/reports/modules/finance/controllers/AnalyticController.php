@@ -69,6 +69,7 @@ class AnalyticController extends \yii\web\Controller
             ->select([
                 'monthnum'=>'DATE_FORMAT(`request_datetime`, "%m")',
                 'totalrequests'=>'SUM(total)',
+                'request_datetime'
             ])
             ->where('rstl_id =:rstlId AND status_id > :statusId AND lab_id = :labId AND DATE_FORMAT(`request_datetime`, "%Y-%m") = :year AND request_ref_num != ""', [':rstlId'=>$rstlId,':statusId'=>0,':labId'=>$labId,':year'=>$myear])
             ->groupBy(['DATE_FORMAT(request_datetime, "%Y-%m")'])
@@ -157,7 +158,8 @@ class AnalyticController extends \yii\web\Controller
 
     		$reqs =  Request::find()
     		->select(['total'=>'count(tbl_customer.customer_id)','customer_id'=>'business_nature_id'])
-    		->where(['DATE_FORMAT(`request_datetime`, "%Y-%m")' => $yearmonth,'lab_id'=>$lab_id])
+    		->where(['DATE_FORMAT(`request_datetime`, "%Y-%m")' => $yearmonth])
+            ->andWhere(['lab_id'=> $lab_id,'status_id'=>1,'request_type_id'=>1])
     		->andWhere(['>','status_id',0])
 			->joinWith(['customer' => function($query){ return $query;}])
     		->groupBy(['business_nature_id'])
@@ -166,12 +168,13 @@ class AnalyticController extends \yii\web\Controller
 
     		$series = [];
     		foreach ($reqs as $req) {
-
-    			$bn = Businessnature::findOne($req->customer_id);
-    			$new = new Reportholder;
-    			$new->name = $bn->nature;
-    			$new->y = (int)$req->total;
-    			$series[]=$new;
+    			$bn = Businessnature::findOne($req->customer?$req->customer->business_nature_id:null);
+                if($bn){
+                    $new = new Reportholder;
+                    $new->name = $bn->nature;
+                    $new->y = (int)$req->total;
+                    $series[]=$new;
+                }
     		}
 
 
@@ -190,6 +193,7 @@ class AnalyticController extends \yii\web\Controller
     		->select(['conforme'=>'sampletype_id'])
     		->where(['DATE_FORMAT(`request_datetime`, "%Y-%m")' => $yearmonth,'lab_id'=>$lab_id])
     		->andWhere(['>','status_id',0])
+            ->andWhere(['status_id'=>1,'request_type_id'=>1])
 			->joinWith(['samples'])
     		->groupBy(['sampletype_id'])
     		->orderBy('sampletype_id ASC')
@@ -217,7 +221,7 @@ class AnalyticController extends \yii\web\Controller
 	    		foreach ($inner_reqs as $inner_req) {
 	    			$data[]=['name'=>$inner_req['conforme'],'value'=>(int)$inner_req['total']];
 	    		}
-    			$series[]=['name'=>$st->type,'data'=>$data];
+    			$series[]=['name'=>$st?$st->type:'unknown','data'=>$data];
             }
             
 
