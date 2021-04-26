@@ -227,9 +227,20 @@ $this->registerJs($js,\yii\web\View::POS_READY);
                     ->where(['tbl_tagging.tagging_status_id'=>2, 'tbl_request.request_id'=>$model->request_id ])
                     ->andWhere(['<>','tbl_analysis.references', '-'])
                     ->all();
+
+                    $samples_pretagged= Analysis::find()
+                    ->leftJoin('tbl_sample', 'tbl_sample.sample_id=tbl_analysis.sample_id')
+                    ->leftJoin('tbl_request', 'tbl_request.request_id=tbl_sample.request_id')
+                    ->innerJoin('tbl_tagging', 'tbl_analysis.analysis_id=tbl_tagging.analysis_id')   
+                    ->where(['tbl_request.request_id'=>$model->request_id ])
+                    ->andWhere(['<>','tbl_analysis.references', '-'])
+                    ->all(); 
+
+
                     $scount = count($samples_count); 
                     $rcount = count($sampletagged); 
-                    if ($scount==0){
+                    $precount = count($samples_pretagged);
+                    if ($precount==0){
                         return Html::button('<span"><b>PENDING</span>', ['value'=>Url::to(['/lab/tagging/samplestatus','id'=>$model->request_id]),'onclick'=>'LoadModal(this.title, this.value, true, 1200);', 'class' => 'btn btn-default','title' => Yii::t('app', "Analyses Monitoring"), 'style'=>'width:110px;']);
                         
                     }elseif ($scount>$rcount){
