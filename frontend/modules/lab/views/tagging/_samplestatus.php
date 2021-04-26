@@ -43,6 +43,16 @@ $sampletagged= Sample::find()
 ->leftJoin('tbl_request', 'tbl_request.request_id=tbl_analysis.request_id')    
 ->where(['tbl_tagging.tagging_status_id'=>2, 'tbl_request.request_id'=>$request->request_id])
 ->all();  
+
+//check if there are already ongoing test
+ $samples_pretagged= Analysis::find()
+->leftJoin('tbl_sample', 'tbl_sample.sample_id=tbl_analysis.sample_id')
+->leftJoin('tbl_request', 'tbl_request.request_id=tbl_sample.request_id')
+->innerJoin('tbl_tagging', 'tbl_analysis.analysis_id=tbl_tagging.analysis_id')   
+->where(['tbl_request.request_id'=>$request->request_id ])
+->andWhere(['<>','tbl_analysis.references', '-'])
+->all(); 
+
 //$st = count($sampletagged);
 // $requestcount= Sample::find()
 // ->leftJoin('tbl_request', 'tbl_sample.request_id=tbl_request.request_id')
@@ -60,7 +70,7 @@ $rcount = count($sampletagged);
 
 //echo $rcount."<br>".$scount."<br>";
 
-if ($rcount==0){
+if ($samples_pretagged==0){
     echo "<span class='payment alert-default' style='float:right; min-width:80px; min-height:30px; line-height:30px;text-align:center;display:inline-block;font-weight:bold;'>PENDING</span><br><br>";
 }elseif ($scount>$rcount){
     echo "<span class='payment alert-info' style='float:right; min-width:80px; min-height:30px; line-height:30px;text-align:center;display:inline-block;font-weight:bold;'>ONGOING</span><br><br>";
@@ -234,6 +244,19 @@ if ($rcount==0){
                             'value'=> function ($model){
                                 $samples = Sample::find()->where(['sample_id' =>$model->sample_id])->one();
                                 $count = Analysis::find()->where(['sample_id' =>$model->sample_id])->andWhere(['<>','references', '-'])->count();
+
+                                //check if there are already ongoing test
+                                 $samples_pretagged= Analysis::find()
+                                ->leftJoin('tbl_sample', 'tbl_sample.sample_id=tbl_analysis.sample_id')
+                                ->innerJoin('tbl_tagging', 'tbl_analysis.analysis_id=tbl_tagging.analysis_id')   
+                                ->where(['tbl_sample.sample_id'=>$model->sample_id ])
+                                ->andWhere(['<>','tbl_analysis.references', '-'])
+                                ->count(); 
+
+                                if($samples_pretagged){
+                                    return "<span class='badge btn-primary' style='width:90px;height:20px'>ONGOING</span>";
+                                }
+
                              
                                 if ($samples->completed==0) {
                                     return "<span class='badge btn-default' style='width:90px;height:20px'>PENDING</span>";
