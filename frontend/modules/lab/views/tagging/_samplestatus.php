@@ -249,7 +249,7 @@ if ($samples_pretagged==0){
                                  $samples_pretagged= Analysis::find()
                                 ->leftJoin('tbl_sample', 'tbl_sample.sample_id=tbl_analysis.sample_id')
                                 ->innerJoin('tbl_tagging', 'tbl_analysis.analysis_id=tbl_tagging.analysis_id')   
-                                ->where(['tbl_sample.sample_id'=>$model->sample_id ])
+                                ->where(['tbl_sample.sample_id'=>$model->sample_id,'tbl_tagging.tagging_status_id'=>1])
                                 ->andWhere(['<>','tbl_analysis.references', '-'])
                                 ->count(); 
 
