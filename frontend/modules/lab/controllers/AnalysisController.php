@@ -212,7 +212,7 @@ class AnalysisController extends Controller
             //************************************************
 
             //this line belows removes the purpose of the sampletype _testname table , gets all the testnamemethod join with testname under certain sampletype_id
-            $list = Testnamemethod::find()->with('testname')->where(['sampletype_id'=>$sampletypeId])->asArray()->all();
+            $list = Testnamemethod::find()->with('testname')->where(['sampletype_id'=>$sampletypeId])->groupby('testname_id')->asArray()->all();
 
             $selected  = null;
             if ($sampletypeId != null && count($list) > 0) {

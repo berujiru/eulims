@@ -1193,8 +1193,8 @@ class SiteController extends Controller
        
         if(!empty(\Yii::$app->request->get())){
             $post = \Yii::$app->request->get();
-            $year = $post['year'];
-            $lab = $post['lab'] + 1;
+            $year = isset($post['year']);
+            $lab = isset($post['lab']) + 1;
         }else{
             $year = date('Y');
             $lab = 1;
@@ -1206,7 +1206,8 @@ class SiteController extends Controller
             'package_rate' => 'count(sampletype_id)',
         ])
         ->innerJoin('tbl_request', 'tbl_sample.request_id = tbl_request.request_id')
-        ->where('year(tbl_request.request_datetime) = '.$year.'')->andWhere(['tbl_request.lab_id' => $lab])
+        ->where('year(tbl_request.request_datetime) = '.$year.'')
+        ->andWhere(['tbl_request.lab_id' => $lab,'tbl_request.status_id'=>1,'tbl_sample.active'=>1])
         ->groupBy('sampletype_id')
         ->orderBy('package_rate DESC')
         ->limit(10);

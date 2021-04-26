@@ -229,7 +229,7 @@ $this->registerJs($js,\yii\web\View::POS_READY);
                     ->all();
                     $scount = count($samples_count); 
                     $rcount = count($sampletagged); 
-                    if ($rcount==0){
+                    if ($scount==0){
                         return Html::button('<span"><b>PENDING</span>', ['value'=>Url::to(['/lab/tagging/samplestatus','id'=>$model->request_id]),'onclick'=>'LoadModal(this.title, this.value, true, 1200);', 'class' => 'btn btn-default','title' => Yii::t('app', "Analyses Monitoring"), 'style'=>'width:110px;']);
                         
                     }elseif ($scount>$rcount){
