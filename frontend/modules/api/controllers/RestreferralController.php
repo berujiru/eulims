@@ -220,10 +220,15 @@ class RestreferralController extends \yii\rest\Controller
         return $data;
     }
 
-    public function actionTestnamemethodref($testname_id,$lab_id,$sampletypeId){
+    public function actionTestnamemethodref($testname_id,$lab_id,$sampletypeId,$test_rstl_id){
         \Yii::$app->response->format= \yii\web\Response::FORMAT_JSON;
+
         $data= Testnamemethod::find()
-            ->joinWith(['testname','methodreference'])
+            ->joinWith(['testname'])
+            ->innerJoinWith(['methodreference' => function($query)use($test_rstl_id){
+                    if($test_rstl_id)
+                        $query->where(['like', 'sync_id', $test_rstl_id.'-%',false]);
+                }])
             ->where('tbl_testname_method.testname_id = :testnameId', [':testnameId' => $testname_id])
             ->andWhere(['sampletype_id' => explode(',', $sampletypeId)])
             ->andWhere(['lab_id' => $lab_id])
@@ -1312,6 +1317,17 @@ class RestreferralController extends \yii\rest\Controller
                 ]);
 
         return $modelReferral;
+    }
+
+    public function actionAgencies(){
+     \Yii::$app->response->format= \yii\web\Response::FORMAT_JSON;
+
+        $data = Rstl::find()
+                    ->orderBy('rstl_id')
+                    ->asArray()
+                    ->all();
+
+        return $data;   
     }
 
     //salvaged from STG

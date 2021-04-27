@@ -427,8 +427,8 @@ class ReferralComponent extends Component {
     }
 
     //btc this function here is same with the top but with only testname_id only as argument
-    function getMethodrefbytestnameidonly($testnameId,$lab_id,$sampletypeId){
-        $apiUrl=$this->source.'/testnamemethodref?testname_id='.$testnameId.'&lab_id='.$lab_id.'&sampletypeId='.$sampletypeId;
+    function getMethodrefbytestnameidonly($testnameId,$lab_id,$sampletypeId,$test_rstl_id){
+        $apiUrl=$this->source.'/testnamemethodref?testname_id='.$testnameId.'&lab_id='.$lab_id.'&sampletypeId='.$sampletypeId.'&test_rstl_id='.$test_rstl_id;
         $curl = new curl\Curl();
         $token= 'Authorization: Bearer '.$_SESSION['usertoken'];
             $curl->setOption(CURLOPT_HTTPHEADER, ['Content-Type: application/json' , $token]);
@@ -1071,6 +1071,19 @@ class ReferralComponent extends Component {
         } else {
             return false;
         }
+    }
+
+    function getAgencies(){
+            $apiUrl=$this->source.'/agencies';
+            $curl = new curl\Curl();
+            $token= 'Authorization: Bearer '.$_SESSION['usertoken'];
+            $curl->setOption(CURLOPT_HTTPHEADER, ['Content-Type: application/json' , $token]);
+            $curl->setOption(CURLOPT_CONNECTTIMEOUT, 180);
+            $curl->setOption(CURLOPT_TIMEOUT, 180);
+            $curl->setOption(CURLOPT_SSL_VERIFYPEER, false);
+            $list = $curl->get($apiUrl);
+            return json_decode($list);
+
     }
     
 }

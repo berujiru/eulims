@@ -182,6 +182,33 @@ use yii\web\JsExpression;
                 'language' => 'en-US',
                 'width' => '100%',
                 'theme' => Select2::THEME_KRAJEE,
+                'placeholder' => 'Select Agency',
+                'allowClear' => true,
+            ];
+
+            echo $form->field($model,'rstl_id')->widget(Select2::classname(),[
+                'data' => $agencies,
+                'theme' => Select2::THEME_KRAJEE,
+                //'theme' => Select2::THEME_BOOTSTRAP,
+                'options' => $options,
+                'pluginOptions' => [
+                    'allowClear' => true,
+                ],
+                'pluginEvents' => [
+                    "change" => "function() {
+                        var select = $('#analysisextend-test_id');
+                        select.val('').trigger('change');
+                    }",
+                ],
+            ])->label('Agency');
+        ?>
+        </div>
+        <div class="col-sm-8">
+        <?php
+            $options = [
+                'language' => 'en-US',
+                'width' => '100%',
+                'theme' => Select2::THEME_KRAJEE,
                 'placeholder' => 'Select Testname',
                 'allowClear' => true,
             ];
@@ -196,6 +223,8 @@ use yii\web\JsExpression;
                 ],
                 'pluginEvents' => [
                     "change" => "function() {
+
+                        var selectrstl = $('#analysisextend-rstl_id');
                         var testId = this.value;
                         var analysisId = '".$model->analysis_id."';
                         var labId = '".$labId."';
@@ -204,7 +233,7 @@ use yii\web\JsExpression;
                             url: '".Url::toRoute("analysisreferral/gettestnamemethod")."',
                             //dataType: 'json',
                             method: 'GET',
-                            data: {test_id:testId,analysis_id:analysisId,lab_id:labId,sample_id:key_id},
+                            data: {test_id:testId,analysis_id:analysisId,lab_id:labId,sample_id:key_id,rstl_id:selectrstl.val()},
                             //data: $(this).serialize(),
                             success: function (data, textStatus, jqXHR) {
                                 $('.image-loader').removeClass( \"img-loader\" );
