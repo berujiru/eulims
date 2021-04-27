@@ -753,7 +753,7 @@ if($requeststatus > 0 && $notified == 1 && $hasTestingAgency > 0 && !empty($mode
                 'panel' => [
                     'heading'=>'<h3 class="panel-title">Agency</h3>',
                     'type'=>'primary',
-                    'before'=>'<p class="text-danger"><strong>Note:</strong> Sending Notification to the target agency is disabled if there are testmethods that are not offered from them.</p>',
+                    'before'=>'<p class="text-danger"><strong>Note:</strong> Sending Notification is disabled if there are multiple agency for analysis.</p>',
                     'after'=>'<p class="text-primary"><strong>Note:</strong> To be able to refer to other member, make sure to select testmethod for a specific agency only.</p>',
                 ],
                 'columns' => $agencyGridColumns,
