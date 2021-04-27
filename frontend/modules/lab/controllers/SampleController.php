@@ -14,6 +14,7 @@ use common\models\lab\Samplecode;
 use common\models\lab\SampleName;
 use common\models\lab\Testnamemethod;
 use common\models\lab\Analysis;
+use common\models\lab\Discount;
 use common\models\finance\Paymentitem;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -326,6 +327,26 @@ class SampleController extends Controller
                                 $analysis->cancelled = 1;
                                 $analysis->update(false); // skip validation no user input is involved
                             }
+
+
+                            //update the totalof the request
+                            $requestquery = Request::find()->where(['request_id' =>$model->request_id])->one();
+                            
+                            $discountquery = Discount::find()->where(['discount_id' => $requestquery->discount_id])->one();
+                            $rate =  $discountquery->rate;       
+                            $sql = "SELECT SUM(fee) as subtotal FROM tbl_analysis WHERE request_id=$model->request_id and cancelled=0";
+                            $Connection = Yii::$app->labdb;
+                            $command = $Connection->createCommand($sql);
+                            $row = $command->queryOne();
+                            $subtotal = $row['subtotal'];
+                            $total = $subtotal - ($subtotal * ($rate/100));
+                    
+                            $Connection= Yii::$app->labdb;
+                            $sql="UPDATE `tbl_request` SET `total`='$total' WHERE `request_id`=".$model->request_id;
+                            $Command=$Connection->createCommand($sql);
+                            $Command->execute();
+
+
                             $transaction->commit();
                             Yii::$app->session->setFlash('warning',"Successfully Cancelled.");
                             return $this->redirect(['/lab/request/view', 'id' => $model->request_id]);

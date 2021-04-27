@@ -470,7 +470,7 @@ class AnalysisController extends Controller
                 
                 $discountquery = Discount::find()->where(['discount_id' => $requestquery->discount_id])->one();
                 $rate =  $discountquery->rate;       
-                $sql = "SELECT SUM(fee) as subtotal FROM tbl_analysis WHERE request_id=$model->request_id";
+                $sql = "SELECT SUM(fee) as subtotal FROM tbl_analysis WHERE request_id=$model->request_id and cancelled=0";
                 $Connection = Yii::$app->labdb;
                 $command = $Connection->createCommand($sql);
                 $row = $command->queryOne();
