@@ -259,18 +259,21 @@ class InfoController extends Controller
 				$curl->setOption(CURLOPT_TIMEOUT, 180);
 				$curl->setOption(CURLOPT_SSL_VERIFYPEER, false);
 			    $response = $curl->post($apiUrl);
-				$decode=Json::decode($response);
-			    $res=$decode['success'];
-				if($res == 'true'){
-					$token=$decode['token'];
-					$userid=$decode['userid'];
-					$pstcid=$decode['pstcid'];
-					$this->Settoken($token,$userid,$pstcid);
-					 Yii::$app->session->setFlash('success', 'Successfully logged in!');
-				} else{
-					 Yii::$app->session->setFlash('error', 'Login failed!');
-				}
-		
+			    if(!$response){
+			    	Yii::$app->session->setFlash('error', "Can't establish a connection to the referral network!");
+			    }else{
+			    	$decode=Json::decode($response);
+				    $res=$decode['success'];
+					if($res == 'true'){
+						$token=$decode['token'];
+						$userid=$decode['userid'];
+						$pstcid=$decode['pstcid'];
+						$this->Settoken($token,$userid,$pstcid);
+						 Yii::$app->session->setFlash('success', 'Successfully logged in!');
+					} else{
+						 Yii::$app->session->setFlash('error', 'Login failed!');
+					}
+			    }
 				return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
 			
 		}else{
