@@ -416,6 +416,10 @@ class TaggingController extends Controller
              $analysis_id = $_POST['analysis_id'];
              $analysisID = explode(",", $ids);
              $profile= Profile::find()->where(['user_id'=> Yii::$app->user->id])->one();
+             $counttag = 0;
+             $taggingcount=0;
+             $Connection= Yii::$app->labdb;
+
              if ($ids){
                  foreach ($analysisID as $aid){
                     $tagging= Tagging::find()->where(['analysis_id'=> $aid])->one();
@@ -423,20 +427,19 @@ class TaggingController extends Controller
                 
                     if ($tagging){
                         $now = date('Y-m-d');
-                        $Connection= Yii::$app->labdb;
                         $sql="UPDATE `tbl_tagging` SET `end_date`='$now', `tagging_status_id`='2' WHERE `tagging_id`=".$tagging->tagging_id;
                         $Command=$Connection->createCommand($sql);
                         $Command->execute();                      
                         $sample= Sample::find()->where(['sample_id'=> $aid])->one();
                         //count number of completed analysis of the sample        
-                        $taggingcount= Tagging::find()
+                                                               
+                    }
+
+                    $taggingcount= Tagging::find()
                         ->leftJoin('tbl_analysis', 'tbl_tagging.analysis_id=tbl_analysis.analysis_id')
                         ->leftJoin('tbl_sample', 'tbl_analysis.sample_id=tbl_sample.sample_id')    
                         ->where(['tbl_tagging.tagging_status_id'=>2, 'tbl_sample.sample_id'=>$analysis->sample_id ])
-                        ->all();                                        
-                    }else{
-
-                    }                     
+                        ->all(); 
              } 
 
              if ($taggingcount){
