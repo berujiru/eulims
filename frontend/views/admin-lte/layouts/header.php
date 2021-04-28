@@ -234,8 +234,9 @@ if(isset($_SESSION['usertoken'])){
                         <!-- Menu Footer-->
                         <li class="user-footer">
                             <div class="pull-left">
-                                <?php if(Yii::$app->user->can('access-profile') || Yii::$app->user->can('access-his-profile')){ ?>
-                                <a href="<?= Url::toRoute('/profile') ?>" class="btn btn-default btn-flat">Profile</a>
+                                <?php if(Yii::$app->user->can('access-profile') || Yii::$app->user->can('access-his-profile')){
+                                echo Html::button('<span class="fa fa-eye"></span>', ['value'=>Url::toRoute('/profile/info/view?id='.Yii::$app->user->identity->profile->profile_id), 'class' => 'btn btn-modal btn-primary', 'name'=> 'View Profile', 'title' => Yii::t('app', "View Profile")]).Html::button('<span class="fa fa-cog"></span>', ['value'=>Url::toRoute('/admin/user/update?id='.Yii::$app->user->identity->profile->user_id), 'class' => 'btn btn-modal btn-primary', 'name'=> 'Update Password', 'title' => Yii::t('app', "View Profile")])
+                                ?>
                                 <?php }else{ ?>
                                 <a href="#" class="btn btn-default btn-flat disabled">Profile</a>
                                 <?php } ?>
