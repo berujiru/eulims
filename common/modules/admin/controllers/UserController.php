@@ -104,7 +104,8 @@ class UserController extends Controller
             $model->save(true);
             Helper::invalidate();
             Yii::$app->session->setFlash('success', 'User Successfuly Updated!');
-            return $this->redirect("/admin/user");
+            return $this->goBack();
+            // return $this->redirect("/admin/user");
         } else {
             if(Yii::$app->request->isAjax){
                 return $this->renderAjax('update', [
