@@ -180,6 +180,24 @@ echo "<h1>Monthly Report for <b>".$month." ".$year."</b></h1>";
                 'width' => '100px',
                 'enableSorting' => false,
                 'value' => function($model) {
+                    if($model->discount_id == 8){
+                        $discountquery = Discount::find()->where(['discount_id' => $model->discount_id])->one();
+                        $rate =  $discountquery->rate;
+
+                        $ids="";
+                        $amount =0;
+                        $samplesquery = Sample::find()->where(['request_id' => $model->request_id, 'active' => 1])->all();
+                        foreach($samplesquery as $samples){
+                            $ids .= $samples['sample_id'].",";
+                            if($samples->analyses){
+                                foreach ($samples->analyses as $analysis) {
+                                   $amount += $analysis->fee; 
+                                }
+                            }
+                        }
+                        $theamount = $amount * ((int)$rate * 0.01);
+                        return number_format((float)$theamount, 2, '.', '');
+                    }
                     return "";
                 },
                 'contentOptions' => ['style' => 'width:40px; white-space: normal;'],                 
@@ -200,24 +218,25 @@ echo "<h1>Monthly Report for <b>".$month." ".$year."</b></h1>";
                 'width' => '100px',
                 'enableSorting' => false,
                 'value' => function($model) {
-                    $discountquery = Discount::find()->where(['discount_id' => $model->discount_id])->one();
-                    $rate =  $discountquery->rate;
+                    if($model->discount_id != 8){
+                        $discountquery = Discount::find()->where(['discount_id' => $model->discount_id])->one();
+                        $rate =  $discountquery->rate;
 
-                    $ids="";
-                    $amount =0;
-                    $samplesquery = Sample::find()->where(['request_id' => $model->request_id, 'active' => 1])->all();
-                    foreach($samplesquery as $samples){
-                        $ids .= $samples['sample_id'].",";
-                        if($samples->analyses){
-                            foreach ($samples->analyses as $analysis) {
-                               $amount += $analysis->fee; 
+                        $ids="";
+                        $amount =0;
+                        $samplesquery = Sample::find()->where(['request_id' => $model->request_id, 'active' => 1])->all();
+                        foreach($samplesquery as $samples){
+                            $ids .= $samples['sample_id'].",";
+                            if($samples->analyses){
+                                foreach ($samples->analyses as $analysis) {
+                                   $amount += $analysis->fee; 
+                                }
                             }
                         }
+                        $theamount = $amount * ((int)$rate * 0.01);
+                        return number_format((float)$theamount, 2, '.', '');
                     }
-                    $theamount = $amount * ((int)$rate * 0.01);
-                    return number_format((float)$theamount, 2, '.', '');
-
-
+                    return "";
                 },
                 'contentOptions' => ['style' => 'width:40px; white-space: normal;'],                 
             ],
