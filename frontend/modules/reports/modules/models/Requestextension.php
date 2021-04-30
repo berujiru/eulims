@@ -23,6 +23,7 @@ class Requestextension extends Request
         $data = explode("-",$yearmonth);
         $year = $data[0]; 
         $month = $data[1];
+        $rstl_id =Yii::$app->user->identity->profile->rstl_id;
 
         switch($type) {
             case 'request':
@@ -53,7 +54,7 @@ class Requestextension extends Request
                 INNER JOIN tbl_sample s ON s.request_id = r.request_id 
                 INNER JOIN tbl_analysis a ON s.sample_id = a.sample_id 
                 WHERE r.lab_id =$lab
-                AND r.rstl_id = 11
+                AND r.rstl_id = $rstl_id
                 AND r.status_id > 0 
                 AND r.request_ref_num != ''
                 AND r.request_type_id = 1
@@ -71,11 +72,11 @@ class Requestextension extends Request
                 INNER JOIN tbl_sample s ON s.request_id = r.request_id 
                 INNER JOIN tbl_analysis a ON s.sample_id = a.sample_id 
                 WHERE r.lab_id =$lab
-                AND r.rstl_id = 11
+                AND r.rstl_id = $rstl_id
                 AND r.status_id > 0 
                 AND r.request_ref_num != ''
                 AND r.request_type_id = 1
-                AND r.payment_type_id != 2
+                AND r.discount_id != 8
                 AND s.active = 1
                 AND a.cancelled = 0
                 -- AND a.references <> '-'
@@ -90,11 +91,11 @@ class Requestextension extends Request
                 INNER JOIN tbl_sample s ON s.request_id = r.request_id 
                 INNER JOIN tbl_analysis a ON s.sample_id = a.sample_id 
                 WHERE r.lab_id =$lab
-                AND r.rstl_id = 11
+                AND r.rstl_id = $rstl_id
                 AND r.status_id > 0 
                 AND r.request_ref_num != ''
                 AND r.request_type_id = 1
-                AND r.payment_type_id = 2
+                AND r.discount_id = 8
                 AND s.active = 1
                 AND a.cancelled = 0
                 -- AND a.references <> '-'
@@ -109,7 +110,7 @@ class Requestextension extends Request
                 INNER JOIN tbl_sample s ON s.request_id = r.request_id 
                 INNER JOIN tbl_analysis a ON s.sample_id = a.sample_id 
                 WHERE r.lab_id = $lab
-                AND r.rstl_id = 11
+                AND r.rstl_id = $rstl_id
                 AND r.status_id > 0 
                 AND r.request_ref_num != ''
                 AND r.request_type_id = 1
